@@ -36,3 +36,4 @@ set(image-unittest false)
 
 # Include sub-projects.
 add_subdirectory("base")
+add_subdirectory("image-processing")

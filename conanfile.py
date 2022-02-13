@@ -17,7 +17,10 @@ class ToolsConan(ConanFile):
     
     def config_options(self):
         pass
-        
+
+    def imports(self):
+       self.copy("*.dll")     
+    
     def requirements(self):
         self.requires("cxxopts/[>=3.0.0]@")
         self.requires("catch2/[>=2.13.7]@")
@@ -35,7 +38,6 @@ class ToolsConan(ConanFile):
         cmake.build()
         
     def package(self):
-        self.copy("*.dll", dst="bin", src="bin")
         cmake = self._configure_cmake()
         cmake.install()
         

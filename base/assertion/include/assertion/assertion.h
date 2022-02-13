@@ -20,5 +20,5 @@ public:
 if (!condition) { \
 	std::string msg = base::String::CombineStrings("Assertion failed. ", message); \
 	base::Assertion::m_logger << MESSAGE(msg.c_str(), static_cast<base::Logger::Severity>(severity)); \
-	assert(condition); \
+	assert((condition)); \
 }
