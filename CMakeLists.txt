@@ -22,6 +22,9 @@ project(${project_name} LANGUAGES C CXX CUDA)
 
 include(conan)
 
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_VERBOSE_MAKEFILE TRUE)
+
 conan_check(VERSION 1.16.0 REQUIRED)
 conan_cmake_run(CONANFILE conanfile.py BASIC_SETUP CMAKE_TARGETS KEEP_RPATHS UPDATE)
 
@@ -37,3 +40,4 @@ set(image-unittest false)
 # Include sub-projects.
 add_subdirectory("base")
 add_subdirectory("image-processing")
+add_subdirectory("ui")

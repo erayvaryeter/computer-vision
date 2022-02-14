@@ -2,7 +2,7 @@ from conans import ConanFile, CMake, tools
 
 class ToolsConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
-    generators = "cmake_multi", "txt", "cmake"
+    generators = "cmake_multi", "txt", "cmake", "cmake_find_package_multi"
     
     name = "tools"
     version = "1.0.0"
@@ -10,10 +10,6 @@ class ToolsConan(ConanFile):
     description = "tools"
     no_copy_source = True
     exports_sources = [ "*" ]
-    
-    default_options = {
-
-    }
     
     def config_options(self):
         pass
@@ -27,6 +23,7 @@ class ToolsConan(ConanFile):
         self.requires("spdlog/[>=1.9.2]@")
         self.requires("opencv-cuda/[=4.5.3]@")
         self.requires("cuda/[=11.5]@")
+        self.requires("qt/[>=6.2.3]@")
 
     def _configure_cmake(self):
         cmake = CMake(self)
