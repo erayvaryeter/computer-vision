@@ -17,42 +17,25 @@ set(resource_files
 	resource/QtWidgetsApplication1.qrc
 )
 
-add_executable(${project_name} ${include_files} ${source_files} ${form_files} ${resource_files})
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_PREFIX_PATH "C:/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5")
+set(CMAKE_AUTOUIC_SEARCH_PATHS "${CMAKE_CURRENT_LIST_DIR}/form")
+
+file(COPY "${CMAKE_CURRENT_LIST_DIR}/../platform-files/" DESTINATION "${PROJECT_BINARY_DIR}/bin")
+
+find_package(Qt5 COMPONENTS Widgets REQUIRED)
+
+add_executable(${project_name} ${form_files} ${include_files} ${source_files} ${resource_files})
 target_include_directories(${project_name} PUBLIC include)
 
 set_target_properties(${project_name} PROPERTIES LINK_FLAGS "/INCREMENTAL:NO")
 set_target_properties(${project_name} PROPERTIES LINK_FLAGS "/ignore:4099")
-set_target_properties(${project_name} PROPERTIES LINK_FLAGS "/ignore:2005")
 
 target_link_libraries(${project_name} histogram)
-target_link_libraries(${project_name} CONAN_PKG::qt)
-
-find_package(ZLIB CONFIG REQUIRED PATHS ${CMAKE_BINARY_DIR})
-find_package(PNG CONFIG REQUIRED PATHS ${CMAKE_BINARY_DIR})
-find_package(freetype CONFIG REQUIRED PATHS ${CMAKE_BINARY_DIR})
-find_package(BZip2 CONFIG REQUIRED PATHS ${CMAKE_BINARY_DIR})
-find_package(double-conversion CONFIG REQUIRED PATHS ${CMAKE_BINARY_DIR})
-find_package(pcre2 CONFIG REQUIRED PATHS ${CMAKE_BINARY_DIR})
-find_package(libelf CONFIG REQUIRED PATHS ${CMAKE_BINARY_DIR})
-find_package(Iconv CONFIG REQUIRED PATHS ${CMAKE_BINARY_DIR})
-find_package(Intl CONFIG REQUIRED PATHS ${CMAKE_BINARY_DIR})
-find_package(PCRE CONFIG REQUIRED PATHS ${CMAKE_BINARY_DIR})
-find_package(libffi CONFIG REQUIRED PATHS ${CMAKE_BINARY_DIR})
-find_package(glib CONFIG REQUIRED PATHS ${CMAKE_BINARY_DIR})
-find_package(harfbuzz CONFIG REQUIRED PATHS ${CMAKE_BINARY_DIR})
-find_package(Brotli CONFIG REQUIRED PATHS ${CMAKE_BINARY_DIR})
-find_package(OpenSSL CONFIG REQUIRED PATHS ${CMAKE_BINARY_DIR})
-find_package(PostgreSQL CONFIG REQUIRED PATHS ${CMAKE_BINARY_DIR})
-find_package(SQLite3 CONFIG REQUIRED PATHS ${CMAKE_BINARY_DIR})
-find_package(Qt6 CONFIG REQUIRED PATHS ${CMAKE_BINARY_DIR})
-
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTORCC ON)
-
-if(WIN32)
-  set(CMAKE_WIN32_EXECUTABLE ON)
-endif()
+target_link_libraries(${project_name} Qt5::Widgets)
 
 file(GLOB_RECURSE bin_files "${PROJECT_BINARY_DIR}/bin/*")
 install(TARGETS ${project_name} RUNTIME DESTINATION bin)

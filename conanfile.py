@@ -15,7 +15,7 @@ class ToolsConan(ConanFile):
         pass
 
     def imports(self):
-       self.copy("*.dll")     
+       self.copy("*.dll")
     
     def requirements(self):
         self.requires("cxxopts/[>=3.0.0]@")
@@ -23,7 +23,6 @@ class ToolsConan(ConanFile):
         self.requires("spdlog/[>=1.9.2]@")
         self.requires("opencv-cuda/[=4.5.3]@")
         self.requires("cuda/[=11.5]@")
-        self.requires("qt/[>=6.2.3]@")
 
     def _configure_cmake(self):
         cmake = CMake(self)
