@@ -53,6 +53,26 @@ TEST_CASE_METHOD(Fixture, "Calculate & Normalize & Compare Histograms") {
 	CheckVectorElements(histograms);
 	CheckVectorElements(normalizedHistograms);
 
+	cv::Mat comparisonResults = cv::Mat(1, 256, CV_64FC1);
+	int counter = 0;
+	for (std::size_t i = 0; i < normalizedHistograms.size(); ++i) {
+		for (std::size_t j = 0; j < normalizedHistograms.size(); ++j) {
+			comparisonResults.at<double>(0, counter) = 
+				m_histogramHandler->CompareHistogram(normalizedHistograms[i], normalizedHistograms[j], 
+					imgproc::HistogramComparisonMetrics::CORRELATION);
+			comparisonResults.at<double>(0, counter) =
+				m_histogramHandler->CompareHistogram(normalizedHistograms[i], normalizedHistograms[j],
+					imgproc::HistogramComparisonMetrics::CHI_SQUARE);
+			comparisonResults.at<double>(0, counter) =
+				m_histogramHandler->CompareHistogram(normalizedHistograms[i], normalizedHistograms[j],
+					imgproc::HistogramComparisonMetrics::INTERSECTION);
+			comparisonResults.at<double>(0, counter) =
+				m_histogramHandler->CompareHistogram(normalizedHistograms[i], normalizedHistograms[j],
+					imgproc::HistogramComparisonMetrics::BHATTACHARYYA_DISTANCE);
+			counter++;
+		}
+	}
+
 #ifdef DUMP_RESULTS
 	m_fileStorage->AppendNode("Color1_B", b_hist_1);
 	m_fileStorage->AppendNode("Color2_B", b_hist_2);
@@ -71,6 +91,8 @@ TEST_CASE_METHOD(Fixture, "Calculate & Normalize & Compare Histograms") {
 	m_fileStorage->AppendNode("Normalized_Color2_R", r_hist_2_norm);
 	m_fileStorage->AppendNode("Normalized_Gray_1", gray_1_norm);
 	m_fileStorage->AppendNode("Normalized_Gray_2", gray_2_norm);
+
+	m_fileStorage->AppendNode("ComparisonResults", comparisonResults);
 #else
 	CHECK(CheckImagesEqual(b_hist_1, m_fileStorage->ReadNode<cv::Mat>("Color1_B")));
 	CHECK(CheckImagesEqual(b_hist_2, m_fileStorage->ReadNode<cv::Mat>("Color2_B")));
@@ -89,6 +111,48 @@ TEST_CASE_METHOD(Fixture, "Calculate & Normalize & Compare Histograms") {
 	CHECK(CheckImagesEqual(r_hist_2_norm, m_fileStorage->ReadNode<cv::Mat>("Normalized_Color2_R")));
 	CHECK(CheckImagesEqual(gray_1_norm, m_fileStorage->ReadNode<cv::Mat>("Normalized_Gray_1")));
 	CHECK(CheckImagesEqual(gray_2_norm, m_fileStorage->ReadNode<cv::Mat>("Normalized_Gray_2")));
+
+	CHECK(CheckImagesEqual(comparisonResults, m_fileStorage->ReadNode<cv::Mat>("ComparisonResults")));
 #endif
 
+}
+
+TEST_CASE_METHOD(Fixture, "Histogram Equalization Test") {
+	auto equResultColor1 = m_histogramHandler->ApplyHistogramEqualization(m_colorImage1);
+	auto equResultColor2 = m_histogramHandler->ApplyHistogramEqualization(m_colorImage2);
+	auto equGray1 = m_histogramHandler->ApplyHistogramEqualization(m_grayImage1);
+	auto equGray2 = m_histogramHandler->ApplyHistogramEqualization(m_grayImage2);
+	auto adaptiveEquResultColor1 = m_histogramHandler->ApplyAdaptiveHistogramEqualization(m_colorImage1);
+	auto adaptiveEquResultColor2 = m_histogramHandler->ApplyAdaptiveHistogramEqualization(m_colorImage2);
+	auto adaptiveEquGray1 = m_histogramHandler->ApplyAdaptiveHistogramEqualization(m_grayImage1);
+	auto adaptiveEquGray2 = m_histogramHandler->ApplyAdaptiveHistogramEqualization(m_grayImage2);
+
+	cv::imwrite(m_resourceDirectory / "equResultColor1.jpg", equResultColor1);
+	cv::imwrite(m_resourceDirectory / "equResultColor2.jpg", equResultColor2);
+	cv::imwrite(m_resourceDirectory / "equGray1.jpg", equGray1);
+	cv::imwrite(m_resourceDirectory / "equGray2.jpg", equGray2);
+	cv::imwrite(m_resourceDirectory / "adaptiveEquResultColor1.jpg", adaptiveEquResultColor1);
+	cv::imwrite(m_resourceDirectory / "adaptiveEquResultColor2.jpg", adaptiveEquResultColor2);
+	cv::imwrite(m_resourceDirectory / "adaptiveEquGray1.jpg", adaptiveEquGray1);
+	cv::imwrite(m_resourceDirectory / "adaptiveEquGray2.jpg", adaptiveEquGray2);
+
+#ifdef DUMP_RESULTS
+	m_fileStorage->AppendNode("equResultColor1", equResultColor1);
+	m_fileStorage->AppendNode("equResultColor2", equResultColor2);
+	m_fileStorage->AppendNode("equGray1", equGray1);
+	m_fileStorage->AppendNode("equGray2", equGray2);
+	m_fileStorage->AppendNode("adaptiveEquResultColor1", adaptiveEquResultColor1);
+	m_fileStorage->AppendNode("adaptiveEquResultColor2", adaptiveEquResultColor2);
+	m_fileStorage->AppendNode("adaptiveEquGray1", adaptiveEquGray1);
+	m_fileStorage->AppendNode("adaptiveEquGray2", adaptiveEquGray2);
+#else
+	CHECK(CheckImagesEqual(equResultColor1, m_fileStorage->ReadNode<cv::Mat>("equResultColor1")));
+	CHECK(CheckImagesEqual(equResultColor2, m_fileStorage->ReadNode<cv::Mat>("equResultColor2")));
+	CHECK(CheckImagesEqual(equGray1, m_fileStorage->ReadNode<cv::Mat>("equGray1")));
+	CHECK(CheckImagesEqual(equGray2, m_fileStorage->ReadNode<cv::Mat>("equGray2")));
+	CHECK(CheckImagesEqual(adaptiveEquResultColor1, m_fileStorage->ReadNode<cv::Mat>("adaptiveEquResultColor1")));
+	CHECK(CheckImagesEqual(adaptiveEquResultColor2, m_fileStorage->ReadNode<cv::Mat>("adaptiveEquResultColor2")));
+	CHECK(CheckImagesEqual(adaptiveEquGray1, m_fileStorage->ReadNode<cv::Mat>("adaptiveEquGray1")));
+	CHECK(CheckImagesEqual(adaptiveEquGray2, m_fileStorage->ReadNode<cv::Mat>("adaptiveEquGray2")));
+#endif
 }

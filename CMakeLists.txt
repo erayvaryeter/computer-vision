@@ -35,7 +35,7 @@ set(file-unittest false)
 set(logger-unittest true)
 set(string-unittest true)
 
-set(image-unittest false)
+set(histogram-unittest true)
 
 # Include sub-projects.
 add_subdirectory("base")

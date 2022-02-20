@@ -8,12 +8,13 @@
 #include <string>
 #include <vector>
 
-// #define DUMP_RESULTS
+//#define DUMP_RESULTS
 
 class Fixture {
 public:
 	Fixture() {
-        m_resourceDirectory = base::File::GetExecutablePath() / ".." / ".." / ".." / ".." / ".." / "resource";
+        m_resourceDirectory = base::File::GetExecutablePath() / ".." / ".." / ".." / ".." / ".."
+            / "image-processing" / "histogram" / "resource";
         m_colorImage1 = cv::imread(m_resourceDirectory / "Lena.jpg");
         m_colorImage2 = cv::imread(m_resourceDirectory / "SheldonCooper.jpg");
         m_grayImage1 = cv::imread(m_resourceDirectory / "Lena.jpg", cv::IMREAD_GRAYSCALE);
@@ -24,10 +25,14 @@ public:
         ASSERT((m_grayImage2.channels() == 1), "Gray Image 2 must be 1 channel grayscale image", base::Logger::Severity::Error);
         m_histogramHandler = std::make_shared<imgproc::HistogramHandler>();
 
+        auto xml = m_resourceDirectory / "HistogramResults.xml";
 #ifdef DUMP_RESULTS
-        m_fileStorage = std::make_shared<imgproc::FileStorage>(m_resourceDirectory / "HistogramResults.xml", cv::FileStorage::WRITE);
+        if (base::File::FileExists(xml))
+            m_fileStorage = std::make_shared<imgproc::FileStorage>(xml, cv::FileStorage::APPEND);
+        else
+            m_fileStorage = std::make_shared<imgproc::FileStorage>(xml, cv::FileStorage::WRITE);
 #else
-        m_fileStorage = std::make_shared<imgproc::FileStorage>(m_resourceDirectory / "HistogramResults.xml", cv::FileStorage::READ);
+        m_fileStorage = std::make_shared<imgproc::FileStorage>(xml, cv::FileStorage::READ);
 #endif
 	}
 
@@ -37,21 +42,22 @@ public:
 	}
 
     bool CheckImagesEqual(const cv::Mat Mat1, const cv::Mat Mat2) {
-        if (Mat1.dims == Mat2.dims && Mat1.size == Mat2.size && Mat1.elemSize() == Mat2.elemSize()) {
-            if (Mat1.isContinuous() && Mat2.isContinuous()) {
-                return 0 == memcmp(Mat1.ptr(), Mat2.ptr(), Mat1.total() * Mat1.elemSize());
-            }
-            else {
-                const cv::Mat* arrays[] = { &Mat1, &Mat2, 0 };
-                uchar* ptrs[2];
-                cv::NAryMatIterator it(arrays, ptrs, 2);
-                for (unsigned int p = 0; p < it.nplanes; p++, ++it)
-                    if (0 != memcmp(it.ptrs[0], it.ptrs[1], it.size * Mat1.elemSize()))
-                        return false;
-                return true;
-            }
+        if (Mat1.channels() == 1 && Mat2.channels() == 1) {
+            auto diff = Mat1 != Mat2;
+            return cv::countNonZero(diff) == 0;
         }
-        return false;
+        else {
+            std::vector<cv::Mat> channels1, channels2;
+            cv::split(Mat1, channels1);
+            cv::split(Mat2, channels2);
+            for (size_t i = 0; i < channels1.size(); ++i) {
+                auto diff = channels1[i] != channels2[i];
+                auto equal = cv::countNonZero(diff) == 0;
+                if (!equal)
+                    return false;
+            }
+            return true;
+        }
     }
 
     // Member variables

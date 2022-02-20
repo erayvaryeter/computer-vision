@@ -36,7 +36,7 @@ HistogramHandler::CompareHistogram(cv::Mat& hist1, cv::Mat& hist2, HistogramComp
 
 cv::Mat 
 HistogramHandler::ApplyHistogramEqualization(cv::Mat& image) {
-	ASSERT(image.channels() == 1 || image.channels() >= 3, "Input image must have either 1 or 3 channels", base::Logger::Severity::Error);
+	ASSERT((image.channels() == 1 || image.channels() == 3), "Input image must have either 1 or 3 channels", base::Logger::Severity::Error);
 	cv::Mat dst;
 	// gray image
 	if (image.channels() == 1) {
@@ -57,7 +57,7 @@ HistogramHandler::ApplyHistogramEqualization(cv::Mat& image) {
 
 cv::Mat 
 HistogramHandler::ApplyAdaptiveHistogramEqualization(cv::Mat& image, double clipLimit) {
-	ASSERT(image.channels() == 1 || image.channels() >= 3, "Input image must have either 1 or 3 channels", base::Logger::Severity::Error);
+	ASSERT((image.channels() == 1 || image.channels() == 3), "Input image must have either 1 or 3 channels", base::Logger::Severity::Error);
 	cv::Mat dst;
 	cv::Ptr<cv::CLAHE> clahe = cv::createCLAHE();
 	clahe->setClipLimit(clipLimit);
