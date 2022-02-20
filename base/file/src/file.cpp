@@ -103,14 +103,11 @@ File::GetParentPath(std::string& path) {
 std::string 
 File::GetFileExtension(std::string& file) {
     auto exist = base::File::FileExists(file);
-    if (exist) {
-        std::filesystem::path p(file);
-        if (p.has_extension())
-            return p.extension().string();
-        else
-            return "";
-    }
-    return "";
+    std::filesystem::path p(file);
+    if (p.has_extension())
+        return p.extension().string();
+    else
+        return "";
 }
 
 std::vector<std::pair<std::string, std::string>>

@@ -23,7 +23,7 @@ public:
 	cv::Mat NormalizeHistogram(cv::Mat& channel, double alpha = 0, double beta = 1);
 	double CompareHistogram(cv::Mat& hist1, cv::Mat& hist2, HistogramComparisonMetrics method = CORRELATION);
 	cv::Mat ApplyHistogramEqualization(cv::Mat& image);
-	cv::Mat ApplyHistogramEqualization(cv::Mat& image, double clipLimit = 4.0);
+	cv::Mat ApplyAdaptiveHistogramEqualization(cv::Mat& image, double clipLimit = 4.0);
 
 private:
 	static std::shared_ptr<base::Logger> m_logger;

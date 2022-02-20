@@ -1,16 +1,16 @@
-﻿set(project_name histogram)
+﻿set(project_name file-storage)
 
 set(include_files
-	include/histogram/histogram.h
+	include/file-storage/file-storage.h
 )
 
 set(source_files
-	src/histogram.cpp
+	src/file-storage.cpp
 )
 
 set(test_files
     test/main.cpp
-	test/histogram-test.cpp
+	test/file-storage-test.cpp
 	test/Fixture.h
 )
 
@@ -23,7 +23,6 @@ set_target_properties(${project_name} PROPERTIES LINK_FLAGS "/ignore:2005")
 target_link_libraries(${project_name} string)
 target_link_libraries(${project_name} assertion)
 target_link_libraries(${project_name} file)
-target_link_libraries(${project_name} file-storage)
 target_link_libraries(${project_name} CONAN_PKG::opencv-cuda)
 
 file(GLOB_RECURSE lib_files "${PROJECT_BINARY_DIR}/lib/*")

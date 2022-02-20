@@ -50,13 +50,13 @@ HistogramHandler::ApplyHistogramEqualization(cv::Mat& image) {
 		cv::split(ycrcb, channels);
 		cv::equalizeHist(channels[0], channels[0]);
 		cv::merge(channels, ycrcb);
-		cvtColor(ycrcb, dst, cv::COLOR_YCrCb2BGR);
+		cv::cvtColor(ycrcb, dst, cv::COLOR_YCrCb2BGR);
 	}
 	return dst;
 }
 
 cv::Mat 
-HistogramHandler::ApplyHistogramEqualization(cv::Mat& image, double clipLimit) {
+HistogramHandler::ApplyAdaptiveHistogramEqualization(cv::Mat& image, double clipLimit) {
 	ASSERT(image.channels() == 1 || image.channels() >= 3, "Input image must have either 1 or 3 channels", base::Logger::Severity::Error);
 	cv::Mat dst;
 	cv::Ptr<cv::CLAHE> clahe = cv::createCLAHE();

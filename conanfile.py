@@ -1,10 +1,10 @@
 from conans import ConanFile, CMake, tools
 
-class ToolsConan(ConanFile):
+class DevelopmentConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
-    generators = "cmake_multi", "txt", "cmake", "cmake_find_package_multi"
+    generators = "cmake_multi", "txt", "cmake"
     
-    name = "tools"
+    name = "development"
     version = "1.0.0"
     license = "proprietary"
     description = "tools"
