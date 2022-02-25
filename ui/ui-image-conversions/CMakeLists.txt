@@ -1,26 +1,30 @@
-﻿set(project_name datetime)
+﻿set(project_name ui-image-conversions)
 
 set(include_files
-	include/datetime/datetime.h
+	include/ui-image-conversions/ui-image-conversions.h
 )
 
 set(source_files
-	src/datetime.cpp
+	src/ui-image-conversions.cpp
 )
 
 set(test_files
     test/main.cpp
-	test/datetime-test.cpp
+	test/ui-image-conversions-test.cpp
+	test/Fixture.h
 )
+
+find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
 add_library(${project_name} ${include_files} ${source_files})
 target_include_directories(${project_name} PUBLIC include)
+
 set_target_properties(${project_name} PROPERTIES LINK_FLAGS "/INCREMENTAL:NO")
 set_target_properties(${project_name} PROPERTIES LINK_FLAGS "/ignore:4099")
-set_target_properties(${project_name} PROPERTIES LINK_FLAGS "/ignore:2005")
-set_target_properties(${project_name} PROPERTIES LINK_FLAGS "/ignore:4996")
-target_link_libraries(${project_name} string)
-target_link_libraries(${project_name} assertion)
+
+target_link_libraries(${project_name} file)
+target_link_libraries(${project_name} CONAN_PKG::opencv-cuda)
+target_link_libraries(${project_name} Qt5::Widgets)
 
 file(GLOB_RECURSE lib_files "${PROJECT_BINARY_DIR}/lib/*")
 install(TARGETS ${project_name} RUNTIME DESTINATION bin)

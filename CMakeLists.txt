@@ -28,16 +28,8 @@ set(CMAKE_VERBOSE_MAKEFILE TRUE)
 conan_check(VERSION 1.16.0 REQUIRED)
 conan_cmake_run(CONANFILE conanfile.py BASIC_SETUP CMAKE_TARGETS KEEP_RPATHS UPDATE)
 
-# TESTS
-set(assertion-unittest true)
-set(datetime-unittest true)
-set(file-unittest false)
-set(logger-unittest true)
-set(string-unittest true)
-
-set(histogram-unittest true)
-
 # Include sub-projects.
 add_subdirectory("base")
 add_subdirectory("image-processing")
+add_subdirectory("code-coverage")
 add_subdirectory("ui")

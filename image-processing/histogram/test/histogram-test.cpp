@@ -1,7 +1,11 @@
 #include <catch2/catch.hpp>
+#include <logger/logger.h>
 #include "Fixture.h"
 
+auto histogramLogger = std::make_shared<base::Logger>();
+
 TEST_CASE_METHOD(Fixture, "Calculate & Normalize & Compare Histograms") {
+	histogramLogger << MESSAGE("Calculate & Normalize & Compare Histograms Test", base::Logger::Severity::Info);
 	std::vector<cv::Mat> planes1;
 	std::vector<cv::Mat> planes2;
 	cv::split(m_colorImage1, planes1);
@@ -118,6 +122,7 @@ TEST_CASE_METHOD(Fixture, "Calculate & Normalize & Compare Histograms") {
 }
 
 TEST_CASE_METHOD(Fixture, "Histogram Equalization Test") {
+	histogramLogger << MESSAGE("Histogram Equalization Test", base::Logger::Severity::Info);
 	auto equResultColor1 = m_histogramHandler->ApplyHistogramEqualization(m_colorImage1);
 	auto equResultColor2 = m_histogramHandler->ApplyHistogramEqualization(m_colorImage2);
 	auto equGray1 = m_histogramHandler->ApplyHistogramEqualization(m_grayImage1);

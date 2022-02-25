@@ -1,7 +1,11 @@
 #include <catch2/catch.hpp>
 #include <string/string.h>
+#include <logger/logger.h>
+
+auto stringLogger = std::make_shared<base::Logger>();
 
 TEST_CASE("Split String") {
+	stringLogger << MESSAGE("Split String Test", base::Logger::Severity::Info);
 	auto CheckStrings = [&] (const auto& splits, const std::string& delimiter) {
 		REQUIRE(splits.size() == 5);
 		CHECK(splits[0] == "Test");
@@ -26,6 +30,7 @@ TEST_CASE("Split String") {
 }
 
 TEST_CASE("Substring Existance") {
+	stringLogger << MESSAGE("Substring Existance Test", base::Logger::Severity::Info);
 	std::string string1 = "TestString";
 	std::string string2 = "String";
 	const char* cString1 = "TestString";
@@ -54,6 +59,7 @@ TEST_CASE("Substring Existance") {
 }
 
 TEST_CASE("Combine Strings") {
+	stringLogger << MESSAGE("Combine Strings Test", base::Logger::Severity::Info);
 	std::string string1 = "Test";
 	std::string string2 = "String";
 	const char* cString1 = "Test";
@@ -65,6 +71,7 @@ TEST_CASE("Combine Strings") {
 }
 
 TEST_CASE("Combine Numericals to Strings - Strings to Numericals") {
+	stringLogger << MESSAGE("Combine Numericals to Strings - Strings to Numericals Test", base::Logger::Severity::Info);
 	//// CONVERT NUMERICALS TO STRINGS ////
 	auto int1 = base::String::ConvertNumericalToString(std::numeric_limits<int>::min(), 0);
 	auto int2 = base::String::ConvertNumericalToString(std::numeric_limits<int>::max(), 0);
@@ -157,6 +164,7 @@ TEST_CASE("Combine Numericals to Strings - Strings to Numericals") {
 }
 
 TEST_CASE("Upper / Lower Cases") {
+	stringLogger << MESSAGE("Upper / Lower Cases Test", base::Logger::Severity::Info);
 	std::string test1 = "Test Cases With Space Delimiters";
 	const char* test2 = "Test Cases With Space Delimiters";
 	CHECK(base::String::ToLowerCase(test1) == "test cases with space delimiters");
@@ -166,6 +174,7 @@ TEST_CASE("Upper / Lower Cases") {
 }
 
 TEST_CASE("Replace Strings") {
+	stringLogger << MESSAGE("Replace Strings Test", base::Logger::Severity::Info);
 	std::string test1 = "D:\\Workspace\\Test\\Project1";
 	const char* test2 = "D:\\Workspace\\Test\\Project2";
 	auto test1Fixed = base::String::ReplaceAll(test1, "\\", "/");

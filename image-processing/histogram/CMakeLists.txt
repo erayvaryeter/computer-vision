@@ -41,12 +41,3 @@ if(MSVC)
 else()
   target_compile_options(${project_name}-test PRIVATE)
 endif()
-
-if(${histogram-unittest})
-    add_custom_command(
-         TARGET ${project_name}-test
-         COMMENT "Run histogram tests"
-         POST_BUILD 
-         COMMAND ${project_name}-test
-    )
-endif()

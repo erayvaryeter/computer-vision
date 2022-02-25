@@ -7,7 +7,7 @@
 
 namespace base {
 
-Logger::Severity Logger::m_logLevel = base::Logger::Severity::Error;
+Logger::Severity Logger::m_logLevel = base::Logger::Severity::Info;
 std::shared_ptr<spdlog::logger> Logger::m_consoleLogger = spdlog::stdout_color_mt("console");
 std::shared_ptr<spdlog::logger> Logger::m_asyncLogger = spdlog::basic_logger_mt<spdlog::async_factory>("async_file_logger", "logs/async_log.txt");
 

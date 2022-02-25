@@ -35,12 +35,3 @@ if(MSVC)
 else()
   target_compile_options(${project_name}-test PRIVATE)
 endif()
-
-if(${string-unittest})
-    add_custom_command(
-         TARGET ${project_name}-test
-         COMMENT "Run string tests"
-         POST_BUILD 
-         COMMAND ${project_name}-test
-    )
-endif()

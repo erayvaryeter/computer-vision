@@ -1,9 +1,13 @@
 #include <catch2/catch.hpp>
 #include <datetime/datetime.h>
+#include <logger/logger.h>
 #include <iostream>
 #include <thread>
 
+auto datetimeLogger = std::make_shared<base::Logger>();
+
 TEST_CASE("Date Time to Text Conversion") {
+	datetimeLogger << MESSAGE("Date Time to Text Conversion Test", base::Logger::Severity::Info);
 	auto datetime = base::DateTime::DateTime(2020, 5, 20, 17, 15, 45, 100);
 	auto datetimeStr = base::DateTime::GetDateTimeAsString(datetime);
 	CHECK(datetimeStr == "2020-5-20 17:15:45.100");
@@ -18,6 +22,7 @@ TEST_CASE("Date Time to Text Conversion") {
 }
 
 TEST_CASE("Append Date Times") {
+	datetimeLogger << MESSAGE("Append Date Times Test", base::Logger::Severity::Info);
 	auto datetime = base::DateTime::GetCurrentDateTime();
 	auto dateTimeStr1 = base::DateTime::GetCurrentDateTimeAsString();
 	auto dateTimeStr2 = base::DateTime::GetDateTimeAsString(datetime);

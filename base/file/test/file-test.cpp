@@ -1,7 +1,11 @@
 #include <catch2/catch.hpp>
 #include <file/file.h>
+#include <logger/logger.h>
+
+auto fileLogger = std::make_shared<base::Logger>();
 
 TEST_CASE("Get Executable Path") {
+	fileLogger << MESSAGE("Get Executable Test", base::Logger::Severity::Info);
 	auto exeDir = base::File::GetExecutableDirectory();
 	CHECK(base::File::DirectoryExists(exeDir) == true);
 	auto exePath = base::File::GetExecutablePath();
@@ -17,6 +21,7 @@ TEST_CASE("Get Executable Path") {
 }
 
 TEST_CASE("Add & Remove Files and Directories") {
+	fileLogger << MESSAGE("Get Executable Test", base::Logger::Severity::Info);
 	auto newDir = base::File::GetExecutableDirectory() / "TestDirectory";
 	CHECK(base::File::Create_Directory(newDir) == true);
 	CHECK(base::File::DirectoryExists(newDir) == true);

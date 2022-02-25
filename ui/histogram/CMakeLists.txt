@@ -35,6 +35,8 @@ set_target_properties(${project_name} PROPERTIES LINK_FLAGS "/INCREMENTAL:NO")
 set_target_properties(${project_name} PROPERTIES LINK_FLAGS "/ignore:4099")
 
 target_link_libraries(${project_name} histogram)
+target_link_libraries(${project_name} file)
+target_link_libraries(${project_name} ui-image-conversions)
 target_link_libraries(${project_name} Qt5::Widgets)
 
 file(GLOB_RECURSE bin_files "${PROJECT_BINARY_DIR}/bin/*")

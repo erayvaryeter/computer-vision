@@ -12,7 +12,7 @@ namespace imgproc {
 FileStorage::FileStorage(std::string fileName, cv::FileStorage::Mode storageMode) {
 	m_storageMode = storageMode;
 	auto extension = base::File::GetFileExtension(fileName);
-	ASSERT((extension == ".xml"), "File must have XML extension", base::Logger::Severity::Error);
+	ASSERT((extension == ".xml" || extension == ".yml"), "File must have XML or YML extension", base::Logger::Severity::Error);
 	if (m_storageMode == cv::FileStorage::READ || m_storageMode == cv::FileStorage::APPEND) {
 		ASSERT(base::File::FileExists(fileName), "File does not exist, reading/appending not possible", base::Logger::Severity::Error);
 		m_fileName = fileName;
@@ -29,7 +29,7 @@ FileStorage::FileStorage(std::string fileName, cv::FileStorage::Mode storageMode
 
 template<typename T>
 void
-	FileStorage::AppendNode(std::string nodeName, T object) {
+FileStorage::AppendNode(std::string nodeName, T object) {
 	try {
 		m_fileStorage << nodeName << object;
 	}
@@ -41,7 +41,7 @@ void
 
 template<typename T>
 T
-	FileStorage::ReadNode(std::string nodeName) {
+FileStorage::ReadNode(std::string nodeName) {
 	try {
 		T retVal;
 		m_fileStorage[nodeName.c_str()] >> retVal;
@@ -56,8 +56,16 @@ T
 void TempFunc() {
 	cv::Mat img;
 	FileStorage fs_write("", cv::FileStorage::WRITE);
-	FileStorage fs_read("", cv::FileStorage::READ);
+	fs_write.AppendNode<int>("", 1);
+	fs_write.AppendNode<double>("", 1.0);
+	fs_write.AppendNode<float>("", 1.0f);
+	fs_write.AppendNode<std::string>("", "");
 	fs_write.AppendNode<cv::Mat>("", img);
+	FileStorage fs_read("", cv::FileStorage::READ);
+	fs_read.ReadNode<int>("");
+	fs_read.ReadNode<double>("");
+	fs_read.ReadNode<float>("");
+	fs_read.ReadNode<std::string>("");
 	fs_read.ReadNode<cv::Mat>("");
 }
 
