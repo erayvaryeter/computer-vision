@@ -61,9 +61,9 @@
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>80</x>
-      <y>190</y>
-      <width>811</width>
+      <x>81</x>
+      <y>191</y>
+      <width>801</width>
       <height>84</height>
      </rect>
     </property>
@@ -95,6 +95,19 @@
         <widget class="QPushButton" name="ApplyAdaptiveHistogram">
          <property name="text">
           <string>Apply Adaptive Histogram</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Clip Limit: </string>
          </property>
         </widget>
        </item>

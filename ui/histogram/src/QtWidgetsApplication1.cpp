@@ -58,12 +58,15 @@ QtWidgetsApplication1::OnApplyHistogramClicked(bool checked) {
         QMessageBox::critical(this, "Image", "Image could not be read", QMessageBox::Ok);
         return;
     }
-    
-    auto inputPixmap = ui::UiImageConversion::CvMatToQPixmap(inputImage);
-    auto resultImage = m_histogramHandler->ApplyHistogramEqualization(inputImage);
-    auto outputPixmap = ui::UiImageConversion::CvMatToQPixmap(resultImage);
 
+    auto resultImage = m_histogramHandler->ApplyHistogramEqualization(inputImage);
+
+    inputImage = ui::UiImageConversion::AdjustImageSize(inputImage);
+    auto inputPixmap = ui::UiImageConversion::CvMatToQPixmap(inputImage);
     ui.Image1->setPixmap(inputPixmap);
+
+    resultImage = ui::UiImageConversion::AdjustImageSize(resultImage);
+    auto outputPixmap = ui::UiImageConversion::CvMatToQPixmap(resultImage);
     ui.Image2->setPixmap(outputPixmap);
 }
 
@@ -83,10 +86,13 @@ QtWidgetsApplication1::OnApplyAdaptiveHistogramClicked(bool checked) {
         return;
     }
 
-    auto inputPixmap = ui::UiImageConversion::CvMatToQPixmap(inputImage);
     auto resultImage = m_histogramHandler->ApplyAdaptiveHistogramEqualization(inputImage, m_clipLimit);
-    auto outputPixmap = ui::UiImageConversion::CvMatToQPixmap(resultImage);
 
+    inputImage = ui::UiImageConversion::AdjustImageSize(inputImage);
+    auto inputPixmap = ui::UiImageConversion::CvMatToQPixmap(inputImage);
     ui.Image1->setPixmap(inputPixmap);
+
+    resultImage = ui::UiImageConversion::AdjustImageSize(resultImage);
+    auto outputPixmap = ui::UiImageConversion::CvMatToQPixmap(resultImage);
     ui.Image2->setPixmap(outputPixmap);
 }

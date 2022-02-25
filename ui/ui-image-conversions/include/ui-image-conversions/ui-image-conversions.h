@@ -16,6 +16,8 @@ namespace ui {
 class UiImageConversion {
 public:
 
+	static cv::Mat AdjustImageSize(const cv::Mat& inMat, int uiWidth = 800, int uiHeight = 450);
+
 	static QImage CvMatToQImage(const cv::Mat& inMat);
 	static QPixmap CvMatToQPixmap(const cv::Mat& inMat);
 

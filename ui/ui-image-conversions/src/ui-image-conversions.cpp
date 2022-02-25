@@ -1,12 +1,34 @@
 #include <opencv2/imgproc.hpp>
+#include <opencv2/opencv.hpp>
 #include "ui-image-conversions/ui-image-conversions.h"
 
 namespace ui {
 
+cv::Mat
+UiImageConversion::AdjustImageSize(const cv::Mat& inMat, int uiWidth, int uiHeight) {
+    cv::Mat outMat;
+    double ratioWidth = static_cast<double>(uiWidth) / static_cast<double>(inMat.size().width);
+    double ratioHeight = static_cast<double>(uiHeight) / static_cast<double>(inMat.size().height);
+    // CASE 1: If both image sizes are less than ui, just skip
+    if (ratioWidth >= 1.0 && ratioHeight >= 1.0)
+        outMat = inMat.clone();
+    // CASE 2: If even one image size is bigger than ui, adapt accordingly both
+    else if (ratioWidth < 1.0 || ratioHeight < 1.0) {
+        if (ratioWidth <= ratioHeight) {
+            cv::resize(inMat, outMat, cv::Size(static_cast<int>(inMat.size().width * ratioWidth), 
+                static_cast<int>(inMat.size().height * ratioWidth)));
+        }
+        else {
+            cv::resize(inMat, outMat, cv::Size(static_cast<int>(inMat.size().width * ratioHeight),
+                static_cast<int>(inMat.size().height * ratioHeight)));
+        }
+    }
+    return outMat;
+}
+
 QImage
 UiImageConversion::CvMatToQImage(const cv::Mat& inMat) {
-    switch (inMat.type())
-    {
+    switch (inMat.type()) {
     // 8-bit, 4 channel
     case CV_8UC4:
     {
@@ -52,8 +74,7 @@ UiImageConversion::CvMatToQPixmap(const cv::Mat& inMat) {
 
 cv::Mat
 UiImageConversion::QImageToCvMat(const QImage& inImage, bool inCloneImageData) {
-    switch (inImage.format())
-    {
+    switch (inImage.format()) {
         // 8-bit, 4 channel
     case QImage::Format_ARGB32:
     case QImage::Format_ARGB32_Premultiplied:
