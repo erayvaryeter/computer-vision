@@ -12,6 +12,7 @@ TEST_CASE_METHOD(Fixture, "Write Storage XML Files") {
 	fileStorage->AppendNode("FLOAT", m_floatValue);
 	fileStorage->AppendNode("STRING", m_stringValue);
 	fileStorage->AppendNode("IMAGE", m_image);
+	fileStorage->AppendNode("GPU-IMAGE", m_gpuImage);
 }
 
 TEST_CASE_METHOD(Fixture, "Write Storage YML Files") {
@@ -22,6 +23,7 @@ TEST_CASE_METHOD(Fixture, "Write Storage YML Files") {
 	fileStorage->AppendNode("FLOAT", m_floatValue);
 	fileStorage->AppendNode("STRING", m_stringValue);
 	fileStorage->AppendNode("IMAGE", m_image);
+	fileStorage->AppendNode("GPU-IMAGE", m_gpuImage);
 }
 
 TEST_CASE_METHOD(Fixture, "Read Storage XML Files") {
@@ -32,6 +34,7 @@ TEST_CASE_METHOD(Fixture, "Read Storage XML Files") {
 	CHECK(fileStorage->ReadNode<float>("FLOAT") == m_floatValue);
 	CHECK(fileStorage->ReadNode<std::string>("STRING") == m_stringValue);
 	CHECK(CheckImagesEqual(fileStorage->ReadNode<cv::Mat>("IMAGE"), m_image));
+	CHECK(CheckImagesEqual(fileStorage->ReadNode<cv::cuda::GpuMat>("GPU-IMAGE"), m_gpuImage));
 }
 
 TEST_CASE_METHOD(Fixture, "Read Storage YML Files") {
@@ -42,4 +45,5 @@ TEST_CASE_METHOD(Fixture, "Read Storage YML Files") {
 	CHECK(fileStorage->ReadNode<float>("FLOAT") == m_floatValue);
 	CHECK(fileStorage->ReadNode<std::string>("STRING") == m_stringValue);
 	CHECK(CheckImagesEqual(fileStorage->ReadNode<cv::Mat>("IMAGE"), m_image));
+	CHECK(CheckImagesEqual(fileStorage->ReadNode<cv::cuda::GpuMat>("GPU-IMAGE"), m_gpuImage));
 }

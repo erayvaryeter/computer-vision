@@ -25,6 +25,12 @@ public:
 	cv::Mat ApplyHistogramEqualization(cv::Mat& image);
 	cv::Mat ApplyAdaptiveHistogramEqualization(cv::Mat& image, double clipLimit = 4.0);
 
+	cv::cuda::GpuMat CalculateHistogram(cv::cuda::GpuMat& channel);
+	cv::cuda::GpuMat NormalizeHistogram(cv::cuda::GpuMat& channel, double alpha = 0, double beta = 1);
+	double CompareHistogram(cv::cuda::GpuMat& hist1, cv::cuda::GpuMat& hist2, HistogramComparisonMetrics method = CORRELATION);
+	cv::cuda::GpuMat ApplyHistogramEqualization(cv::cuda::GpuMat& image);
+	cv::cuda::GpuMat ApplyAdaptiveHistogramEqualization(cv::cuda::GpuMat& image, double clipLimit = 4.0);
+
 private:
 	static std::shared_ptr<base::Logger> m_logger;
 };

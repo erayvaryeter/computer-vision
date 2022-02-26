@@ -15,6 +15,9 @@ public:
 	FileStorage(std::string fileName, cv::FileStorage::Mode storageMode);
 	~FileStorage() { m_fileStorage.release(); }
 
+	friend cv::FileStorage& operator<< (cv::FileStorage& fs, cv::cuda::GpuMat& gpuMat);
+	friend void operator>> (const cv::FileNode& n, cv::cuda::GpuMat& gpuMat);
+
 	template<typename T>
 	void AppendNode(std::string nodeName, T object);
 

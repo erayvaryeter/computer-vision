@@ -2,10 +2,27 @@
 #include <assertion/assertion.h>
 #include <file/file.h>
 #include <opencv2/core.hpp>
+#include <opencv2/cudacodec.hpp>
+#include <type_traits>
 
 #include "file-storage/file-storage.h"
 
 std::shared_ptr<base::Logger> imgproc::FileStorage::m_logger = std::make_shared<base::Logger>();
+
+cv::FileStorage&
+operator<<(cv::FileStorage& fs, cv::cuda::GpuMat& gpuMat) {
+	cv::Mat cpuMat;
+	gpuMat.download(cpuMat);
+	fs << cpuMat;
+	return fs;
+}
+
+void 
+operator>> (const cv::FileNode& n, cv::cuda::GpuMat& gpuMat) {
+	cv::Mat cpuMat;
+	n >> cpuMat;
+	gpuMat.upload(cpuMat);
+}
 
 namespace imgproc {
 
@@ -55,18 +72,21 @@ FileStorage::ReadNode(std::string nodeName) {
 
 void TempFunc() {
 	cv::Mat img;
+	cv::cuda::GpuMat gpuImg;
 	FileStorage fs_write("", cv::FileStorage::WRITE);
 	fs_write.AppendNode<int>("", 1);
 	fs_write.AppendNode<double>("", 1.0);
 	fs_write.AppendNode<float>("", 1.0f);
 	fs_write.AppendNode<std::string>("", "");
 	fs_write.AppendNode<cv::Mat>("", img);
+	fs_write.AppendNode<cv::cuda::GpuMat>("", gpuImg);
 	FileStorage fs_read("", cv::FileStorage::READ);
 	fs_read.ReadNode<int>("");
 	fs_read.ReadNode<double>("");
 	fs_read.ReadNode<float>("");
 	fs_read.ReadNode<std::string>("");
 	fs_read.ReadNode<cv::Mat>("");
+	fs_read.ReadNode<cv::cuda::GpuMat>("");
 }
 
 }

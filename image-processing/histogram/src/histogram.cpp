@@ -1,8 +1,12 @@
 #include <logger/logger.h>
 #include <assertion/assertion.h>
+
 #include <opencv2/imgproc.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/core/base.hpp>
+
+#include <opencv2/cudaimgproc.hpp>
+#include <opencv2/cudacodec.hpp>
 
 #include "histogram/histogram.h"
 
@@ -17,6 +21,14 @@ HistogramHandler::CalculateHistogram(cv::Mat& channel, const int histSize, float
 	float range[] = { rangeMin, rangeMax }; 
 	const float* histRange[] = { range };
 	cv::calcHist(&channel, 1, 0, cv::Mat(), histogram, 1, &histSize, histRange, uniform, accumulate);
+	return histogram;
+}
+
+cv::cuda::GpuMat 
+HistogramHandler::CalculateHistogram(cv::cuda::GpuMat& channel) {
+	ASSERT(channel.channels() == 1, "Histogram calculation works only on 1 channel image, exitting ...", base::Logger::Severity::Error);
+	cv::cuda::GpuMat histogram;
+	cv::cuda::calcHist(channel, histogram);
 	return histogram;
 }
 
