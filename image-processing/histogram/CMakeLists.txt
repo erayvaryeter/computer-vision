@@ -11,6 +11,7 @@ set(source_files
 set(test_files
     test/main.cpp
 	test/histogram-test.cpp
+	test/histogram-test-gpu.cpp
 	test/Fixture.h
 )
 
