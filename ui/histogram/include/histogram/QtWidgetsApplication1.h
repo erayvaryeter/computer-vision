@@ -13,6 +13,7 @@ public:
     void OnBrowseClicked(bool checked);
     void OnApplyHistogramClicked(bool checked);
     void OnApplyAdaptiveHistogramClicked(bool checked);
+    void OnClipLimitChanged(double value);
 
 private:
     Ui::QtWidgetsApplication1Class ui;

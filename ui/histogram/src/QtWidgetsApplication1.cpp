@@ -27,6 +27,7 @@ QtWidgetsApplication1::QtWidgetsApplication1(QWidget *parent)
     connect(ui.Browse, &QToolButton::clicked, this, &QtWidgetsApplication1::OnBrowseClicked);
     connect(ui.ApplyHistogram, &QPushButton::clicked, this, &QtWidgetsApplication1::OnApplyHistogramClicked);
     connect(ui.ApplyAdaptiveHistogram, &QPushButton::clicked, this, &QtWidgetsApplication1::OnApplyAdaptiveHistogramClicked);
+    connect(ui.ClipLimit, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &QtWidgetsApplication1::OnClipLimitChanged);
 }
 
 void 
@@ -95,4 +96,9 @@ QtWidgetsApplication1::OnApplyAdaptiveHistogramClicked(bool checked) {
     resultImage = ui::UiImageConversion::AdjustImageSize(resultImage);
     auto outputPixmap = ui::UiImageConversion::CvMatToQPixmap(resultImage);
     ui.Image2->setPixmap(outputPixmap);
+}
+
+void 
+QtWidgetsApplication1::OnClipLimitChanged(double value) {
+    m_clipLimit = value;
 }
