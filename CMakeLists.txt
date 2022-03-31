@@ -30,4 +30,4 @@ conan_cmake_run(CONANFILE conanfile.py BASIC_SETUP CMAKE_TARGETS KEEP_RPATHS UPD
 
 # Include sub-projects.
 add_subdirectory("base")
-add_subdirectory("image-processing")
+add_subdirectory("features")
