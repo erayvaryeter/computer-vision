@@ -2,8 +2,6 @@
 #include <assertion/assertion.h>
 #include <file/file.h>
 #include <opencv2/core.hpp>
-#include <opencv2/cudacodec.hpp>
-#include <opencv2/cudaimgproc.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
 

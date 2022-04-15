@@ -12,7 +12,31 @@ class DevelopmentConan(ConanFile):
     exports_sources = [ "*" ]
     
     def config_options(self):
-        pass
+        opencv:contrib=True
+        opencv:contrib_freetype=True
+        opencv:contrib_sfm=False
+        opencv:cpu_baseline=None
+        opencv:cpu_dispatch=None
+        opencv:dnn=True
+        opencv:nonfree=True
+        opencv:parallel=False
+        opencv:shared=False
+        opencv:with_ade=True
+        opencv:with_cuda=False
+        opencv:with_eigen=True
+        opencv:with_ffmpeg=True
+        opencv:with_imgcodec_hdr=False
+        opencv:with_imgcodec_pfm=False
+        opencv:with_imgcodec_pxm=False
+        opencv:with_imgcodec_sunraster=False
+        opencv:with_ipp=False
+        opencv:with_jpeg="libjpeg"
+        opencv:with_jpeg2000="jasper"
+        opencv:with_openexr=True
+        opencv:with_png=True
+        opencv:with_quirc=True
+        opencv:with_tiff=True
+        opencv:with_webp=True
 
     def imports(self):
        self.copy("*.dll")
@@ -21,8 +45,7 @@ class DevelopmentConan(ConanFile):
         self.requires("cxxopts/[>=3.0.0]@")
         self.requires("catch2/[>=2.13.7]@")
         self.requires("spdlog/[>=1.9.2]@")
-        self.requires("opencv/[=4.5.3]@")
-        self.requires("cuda/[=11.5]@")
+        self.requires("opencv/[>=4.5.5]@")
 
     def _configure_cmake(self):
         cmake = CMake(self)

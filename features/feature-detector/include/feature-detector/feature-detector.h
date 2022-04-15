@@ -2,9 +2,7 @@
 
 #include <memory>
 #include <opencv2/core/mat.hpp>
-#include <opencv2/core/cuda.hpp>
-#include <opencv2/xfeatures2d.hpp>
-#include <opencv2/xfeatures2d/cuda.hpp>
+#include <opencv2/features2d/features2d.hpp>
 
 namespace base {
 	class Logger;
