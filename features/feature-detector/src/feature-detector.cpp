@@ -33,4 +33,35 @@ FeatureDetector::ApplyHarrisCornerDetection(cv::Mat image, int blockSize, int ap
     }
 }
 
+void 
+FeatureDetector::ApplyShiTomasiCornerDetection(cv::Mat image, int maxCorners, double qualityLevel, double minDistance, int blockSize, int gradientSize, 
+    bool useHarris, double k) {
+    cv::Mat destination = cv::Mat::zeros(image.size(), CV_32FC1);
+    m_lastImageWithFeatures = image.clone();
+    if (image.channels() != 1)
+        cv::cvtColor(image, image, cv::COLOR_BGR2GRAY);
+    
+    std::vector<cv::Point2f> corners;
+    cv::goodFeaturesToTrack(
+        image,
+        corners,
+        maxCorners,
+        qualityLevel,
+        minDistance,
+        cv::Mat(),
+        blockSize,
+        gradientSize,
+        useHarris,
+        k
+    );
+
+    m_features.clear();
+
+    for (const auto& corner : corners) {
+        cv::circle(m_lastImageWithFeatures, cv::Point(corner.x, corner.y), 2, cv::Scalar(255), 2, 8, 0);
+        auto feature = cv::KeyPoint(corner.x, corner.y, 1.0f);
+        m_features.emplace_back(std::move(feature));
+    }
+}
+
 }

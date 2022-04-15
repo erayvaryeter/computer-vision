@@ -1,13 +1,18 @@
 #include "HarrisCornerDetector.h"
+#include "ShiTomasiCornerDetector.h"
 
 enum class DetectorType {
-	HARRIS_CORNER_DETECTOR = 0
+	HARRIS_CORNER_DETECTOR = 0,
+	SHI_TOMASI_CORNER_DETECTION = 1
 };
 
 DetectorType
 ConvertDetectorType(std::string detectorType) {
 	if (detectorType == "HarrisCorner") {
 		return DetectorType::HARRIS_CORNER_DETECTOR;
+	}
+	else if (detectorType == "ShiTomasi") {
+		return DetectorType::SHI_TOMASI_CORNER_DETECTION;
 	}
 	else {
 		std::cout << "Given detector type string is invalid, exitting" << std::endl;
@@ -19,7 +24,7 @@ int main(int argc, char** argv) {
 	cxxopts::Options options("Feature Detector");
 	options.add_options()
 		("i,image", "Input image path", cxxopts::value<std::string>()->default_value("../../../../features/feature-detector/resource/Chessboard.jpg"))
-		("d,detector-type", "Types: HarrisCorner - ", cxxopts::value<std::string>()->default_value("HarrisCorner"))
+		("d,detector-type", "Types: HarrisCorner - ShiTomasi - ", cxxopts::value<std::string>()->default_value("HarrisCorner"))
 		("h,help", "Print usage");
 
 	auto result = options.parse(argc, argv);
@@ -52,6 +57,12 @@ int main(int argc, char** argv) {
 	case DetectorType::HARRIS_CORNER_DETECTOR: 
 	{
 		auto detector = std::make_shared<HarrisCornerDetector>(imagePath);
+		detector->Run();
+		break;
+	}
+	case DetectorType::SHI_TOMASI_CORNER_DETECTION:
+	{
+		auto detector = std::make_shared<ShiTomasiCornerDetector>(imagePath);
 		detector->Run();
 		break;
 	}

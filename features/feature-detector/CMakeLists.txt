@@ -14,6 +14,12 @@ set(test_files
 	test/Fixture.h
 )
 
+set(cli-files
+	src/cli/HarrisCornerDetector.h
+	src/cli/ShiTomasiCornerDetector.h
+	src/cli/main.cpp
+)
+
 add_library(${project_name} ${include_files} ${source_files})
 target_include_directories(${project_name} PUBLIC include)
 set_target_properties(${project_name} PROPERTIES LINK_FLAGS "/INCREMENTAL:NO")
@@ -41,5 +47,5 @@ else()
   target_compile_options(${project_name}-test PRIVATE)
 endif()
 
-add_executable(${project_name}-cli "src/cli/HarrisCornerDetector.h" "src/cli/main.cpp")
+add_executable(${project_name}-cli ${cli-files})
 target_link_libraries(${project_name}-cli ${project_name})

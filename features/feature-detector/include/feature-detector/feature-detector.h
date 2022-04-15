@@ -18,6 +18,8 @@ public:
 	std::vector<cv::KeyPoint> GetFeatures() { return m_features; }
 	cv::Mat GetImageWithFeatures() { return m_lastImageWithFeatures; }
 	void ApplyHarrisCornerDetection(cv::Mat image, int blockSize = 2, int apertureSize = 3, double k = 0.04, float thresh = 200.f);
+	void ApplyShiTomasiCornerDetection(cv::Mat image, int maxCorners = 25, double qualityLevel = 0.01, double minDistance = 10, int blockSize = 3, 
+		int gradientSize = 3, bool useHarris = false, double k = 0.04);
 
 private:
 	std::vector<cv::KeyPoint> m_features;
