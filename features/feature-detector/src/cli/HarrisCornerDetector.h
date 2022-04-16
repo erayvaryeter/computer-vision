@@ -40,7 +40,7 @@ public:
 			auto obj = static_cast<HarrisCornerAlgOptions*>(ptr);
 			obj->blockSize = val;
 			obj->featureDetector->ApplyHarrisCornerDetection(obj->image, obj->blockSize, obj->apertureSize, obj->k, obj->thresh);
-			obj->featureDetector->GetImageWithFeatures().copyTo(obj->outputImage);
+			obj->featureDetector->GetImageWithKeypoints().copyTo(obj->outputImage);
 		};
 
 		auto OnApertureSizeTrackbar = [](int val, void* ptr) {
@@ -48,7 +48,7 @@ public:
 				auto obj = static_cast<HarrisCornerAlgOptions*>(ptr);
 				obj->apertureSize = val;
 				obj->featureDetector->ApplyHarrisCornerDetection(obj->image, obj->blockSize, obj->apertureSize, obj->k, obj->thresh);
-				obj->featureDetector->GetImageWithFeatures().copyTo(obj->outputImage);
+				obj->featureDetector->GetImageWithKeypoints().copyTo(obj->outputImage);
 			}
 		};
 
@@ -56,14 +56,14 @@ public:
 			auto obj = static_cast<HarrisCornerAlgOptions*>(ptr);
 			obj->k = static_cast<double>(val) / 100.0;
 			obj->featureDetector->ApplyHarrisCornerDetection(obj->image, obj->blockSize, obj->apertureSize, obj->k, obj->thresh);
-			obj->featureDetector->GetImageWithFeatures().copyTo(obj->outputImage);
+			obj->featureDetector->GetImageWithKeypoints().copyTo(obj->outputImage);
 		};
 
 		auto OnThresholdTrackbar = [](int val, void* ptr) {
 			auto obj = static_cast<HarrisCornerAlgOptions*>(ptr);
 			obj->thresh = static_cast<float>(val);
 			obj->featureDetector->ApplyHarrisCornerDetection(obj->image, obj->blockSize, obj->apertureSize, obj->k, obj->thresh);
-			obj->featureDetector->GetImageWithFeatures().copyTo(obj->outputImage);
+			obj->featureDetector->GetImageWithKeypoints().copyTo(obj->outputImage);
 		};
 
 		cv::namedWindow("Harris Corner Detector", cv::WINDOW_KEEPRATIO);

@@ -15,8 +15,8 @@ public:
 	FeatureDetector() {}
 	~FeatureDetector() {}
 
-	std::vector<cv::KeyPoint> GetFeatures() { return m_features; }
-	cv::Mat GetImageWithFeatures() { return m_lastImageWithFeatures; }
+	std::vector<cv::KeyPoint> GetKeypoints() { return m_keypoints; }
+	cv::Mat GetImageWithKeypoints() { return m_lastImageWithKeypoints; }
 
 	void ApplyHarrisCornerDetection(cv::Mat image, int blockSize = 2, int apertureSize = 3, double k = 0.04, float thresh = 200.f);
 	void ApplyShiTomasiCornerDetection(cv::Mat image, int maxCorners = 25, double qualityLevel = 0.01, double minDistance = 10, int blockSize = 3, 
@@ -27,8 +27,9 @@ public:
 		bool upright = false);
 
 private:
-	std::vector<cv::KeyPoint> m_features;
-	cv::Mat m_lastImageWithFeatures;
+	std::vector<cv::KeyPoint> m_keypoints;
+	cv::Mat m_descriptor;
+	cv::Mat m_lastImageWithKeypoints;
 	static std::shared_ptr<base::Logger> m_logger;
 };
 

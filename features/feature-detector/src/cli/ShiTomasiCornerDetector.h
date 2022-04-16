@@ -47,7 +47,7 @@ public:
 			obj->maxCorners = val;
 			obj->featureDetector->ApplyShiTomasiCornerDetection(obj->image, obj->maxCorners, obj->qualityLevel, obj->minDistance, obj->blockSize,
 				obj->gradientSize, obj->useHarris, obj->k);
-			obj->featureDetector->GetImageWithFeatures().copyTo(obj->outputImage);
+			obj->featureDetector->GetImageWithKeypoints().copyTo(obj->outputImage);
 		};
 
 		auto OnQualityLevelTrackbar = [](int val, void* ptr) {
@@ -56,7 +56,7 @@ public:
 				obj->qualityLevel = static_cast<double>(val) / 100.0;
 				obj->featureDetector->ApplyShiTomasiCornerDetection(obj->image, obj->maxCorners, obj->qualityLevel, obj->minDistance, obj->blockSize,
 					obj->gradientSize, obj->useHarris, obj->k);
-				obj->featureDetector->GetImageWithFeatures().copyTo(obj->outputImage);
+				obj->featureDetector->GetImageWithKeypoints().copyTo(obj->outputImage);
 			}
 		};
 
@@ -65,7 +65,7 @@ public:
 			obj->minDistance = static_cast<double>(val);
 			obj->featureDetector->ApplyShiTomasiCornerDetection(obj->image, obj->maxCorners, obj->qualityLevel, obj->minDistance, obj->blockSize,
 				obj->gradientSize, obj->useHarris, obj->k);
-			obj->featureDetector->GetImageWithFeatures().copyTo(obj->outputImage);
+			obj->featureDetector->GetImageWithKeypoints().copyTo(obj->outputImage);
 		};
 
 		auto OnBlockSizeTrackbar = [](int val, void* ptr) {
@@ -74,7 +74,7 @@ public:
 				obj->blockSize = val;
 				obj->featureDetector->ApplyShiTomasiCornerDetection(obj->image, obj->maxCorners, obj->qualityLevel, obj->minDistance, obj->blockSize,
 					obj->gradientSize, obj->useHarris, obj->k);
-				obj->featureDetector->GetImageWithFeatures().copyTo(obj->outputImage);
+				obj->featureDetector->GetImageWithKeypoints().copyTo(obj->outputImage);
 			}
 		};
 
@@ -84,7 +84,7 @@ public:
 				obj->gradientSize = val;
 				obj->featureDetector->ApplyShiTomasiCornerDetection(obj->image, obj->maxCorners, obj->qualityLevel, obj->minDistance, obj->blockSize,
 					obj->gradientSize, obj->useHarris, obj->k);
-				obj->featureDetector->GetImageWithFeatures().copyTo(obj->outputImage);
+				obj->featureDetector->GetImageWithKeypoints().copyTo(obj->outputImage);
 			}
 		};
 
@@ -93,7 +93,7 @@ public:
 			obj->k = static_cast<double>(val) / 100.0;
 			obj->featureDetector->ApplyShiTomasiCornerDetection(obj->image, obj->maxCorners, obj->qualityLevel, obj->minDistance, obj->blockSize,
 				obj->gradientSize, obj->useHarris, obj->k);
-			obj->featureDetector->GetImageWithFeatures().copyTo(obj->outputImage);
+			obj->featureDetector->GetImageWithKeypoints().copyTo(obj->outputImage);
 		};
 
 		auto OnUseHarrisTrackbar = [](int val, void* ptr) {
@@ -101,7 +101,7 @@ public:
 			val == 0 ? obj->k = false : obj->k = true;
 			obj->featureDetector->ApplyShiTomasiCornerDetection(obj->image, obj->maxCorners, obj->qualityLevel, obj->minDistance, obj->blockSize,
 				obj->gradientSize, obj->useHarris, obj->k);
-			obj->featureDetector->GetImageWithFeatures().copyTo(obj->outputImage);
+			obj->featureDetector->GetImageWithKeypoints().copyTo(obj->outputImage);
 		};
 
 		cv::namedWindow("Shi Tomasi Corner Detector", cv::WINDOW_KEEPRATIO);

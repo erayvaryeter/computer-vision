@@ -23,19 +23,19 @@ FeatureDetector::ApplyHarrisCornerDetection(cv::Mat image, int blockSize, int ap
     cv::cornerHarris(grayImage, destination, blockSize, apertureSize, k);
     cv::Mat destinationNormalized;
     cv::normalize(destination, destinationNormalized, 0, 255, cv::NORM_MINMAX, CV_32FC1, cv::Mat());
-    m_features.clear();
+    m_keypoints.clear();
 
     for (int i = 0; i < destinationNormalized.rows; i++) {
         for (int j = 0; j < destinationNormalized.cols; j++) {
             if (destinationNormalized.at<float>(i, j) > thresh) {
                 auto feature = cv::KeyPoint(static_cast<float>(j), static_cast<float>(i), 1.0f);
-                m_features.emplace_back(std::move(feature));
+                m_keypoints.emplace_back(std::move(feature));
             }
         }
     }
 
-    m_lastImageWithFeatures.release();
-    cv::drawKeypoints(image, m_features, m_lastImageWithFeatures);
+    m_lastImageWithKeypoints.release();
+    cv::drawKeypoints(image, m_keypoints, m_lastImageWithKeypoints);
 }
 
 void 
@@ -62,33 +62,37 @@ FeatureDetector::ApplyShiTomasiCornerDetection(cv::Mat image, int maxCorners, do
         k
     );
 
-    m_features.clear();
+    m_keypoints.clear();
 
     for (const auto& corner : corners) {
         auto feature = cv::KeyPoint(corner.x, corner.y, 1.0f);
-        m_features.emplace_back(std::move(feature));
+        m_keypoints.emplace_back(std::move(feature));
     }
 
-    m_lastImageWithFeatures.release();
-    cv::drawKeypoints(image, m_features, m_lastImageWithFeatures);
+    m_lastImageWithKeypoints.release();
+    cv::drawKeypoints(image, m_keypoints, m_lastImageWithKeypoints);
 }
 
 void
 FeatureDetector::ApplySIFT(cv::Mat image, int nFeatures, int nOctaveLayers, double contrastThreshold, double edgeThreshold, double sigma) {
     cv::Ptr<cv::SIFT> siftPtr = cv::SIFT::create(nFeatures, nOctaveLayers, contrastThreshold, edgeThreshold, sigma);
-    m_features.clear();
-    siftPtr->detect(image, m_features);
-    m_lastImageWithFeatures.release();
-    cv::drawKeypoints(image, m_features, m_lastImageWithFeatures);
+    m_keypoints.clear();
+    siftPtr->detect(image, m_keypoints);
+    m_lastImageWithKeypoints.release();
+    cv::drawKeypoints(image, m_keypoints, m_lastImageWithKeypoints);
+    m_descriptor.release();
+    siftPtr->compute(image, m_keypoints, m_descriptor);
 }
 
 void
 FeatureDetector::ApplySURF(cv::Mat image, double hessianThreshold, int nOctaves, int nOctaveLayers, bool extended, bool upright) {
     cv::Ptr<cv::xfeatures2d::SURF> surfPtr = cv::xfeatures2d::SURF::create(hessianThreshold, nOctaves, nOctaveLayers, extended, upright);
-    m_features.clear();
-    surfPtr->detect(image, m_features);
-    m_lastImageWithFeatures.release();
-    cv::drawKeypoints(image, m_features, m_lastImageWithFeatures);
+    m_keypoints.clear();
+    surfPtr->detect(image, m_keypoints);
+    m_lastImageWithKeypoints.release();
+    cv::drawKeypoints(image, m_keypoints, m_lastImageWithKeypoints);
+    m_descriptor.release();
+    surfPtr->compute(image, m_keypoints, m_descriptor);
 }
 
 }

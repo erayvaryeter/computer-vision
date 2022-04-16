@@ -37,7 +37,7 @@ public:
 		cv::Mat outputImage;
 		void Run() {
 			featureDetector->ApplySURF(image);
-			featureDetector->GetImageWithFeatures().copyTo(outputImage);
+			featureDetector->GetImageWithKeypoints().copyTo(outputImage);
 		}
 	};
 

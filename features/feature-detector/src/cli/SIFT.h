@@ -37,7 +37,7 @@ public:
 		cv::Mat outputImage;
 		void Run() {
 			featureDetector->ApplySIFT(image, nFeatures, nOctaveLayers, contrastThreshold, edgeThreshold, sigma);
-			featureDetector->GetImageWithFeatures().copyTo(outputImage);
+			featureDetector->GetImageWithKeypoints().copyTo(outputImage);
 		}
 	};
 
