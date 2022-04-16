@@ -98,7 +98,7 @@ public:
 
 		auto OnUseHarrisTrackbar = [](int val, void* ptr) {
 			auto obj = static_cast<ShiTomasiCornerAlgOptions*>(ptr);
-			val == 0 ? obj->k = false : true;
+			val == 0 ? obj->k = false : obj->k = true;
 			obj->featureDetector->ApplyShiTomasiCornerDetection(obj->image, obj->maxCorners, obj->qualityLevel, obj->minDistance, obj->blockSize,
 				obj->gradientSize, obj->useHarris, obj->k);
 			obj->featureDetector->GetImageWithFeatures().copyTo(obj->outputImage);

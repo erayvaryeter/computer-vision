@@ -18,6 +18,7 @@ set(cli-files
 	src/cli/HarrisCornerDetector.h
 	src/cli/ShiTomasiCornerDetector.h
 	src/cli/SIFT.h
+	src/cli/SURF.h
 	src/cli/main.cpp
 )
 

@@ -23,6 +23,8 @@ public:
 		int gradientSize = 3, bool useHarris = false, double k = 0.04);
 	void ApplySIFT(cv::Mat image, int nFeatures = 0, int nOctaveLayers = 3, double contrastThreshold = 0.04, double edgeThreshold = 10.0, 
 		double sigma = 1.60);
+	void ApplySURF(cv::Mat image, double hessianThreshold = 100, int nOctaves = 4, int nOctaveLayers = 3, bool extended = false, 
+		bool upright = false);
 
 private:
 	std::vector<cv::KeyPoint> m_features;

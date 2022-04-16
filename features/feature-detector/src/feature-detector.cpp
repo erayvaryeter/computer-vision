@@ -5,6 +5,7 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/features2d/features2d.hpp>
+#include <opencv2/xfeatures2d/nonfree.hpp>
 #include "feature-detector/feature-detector.h"
 
 std::shared_ptr<base::Logger> features::FeatureDetector::m_logger = std::make_shared<base::Logger>();
@@ -33,6 +34,7 @@ FeatureDetector::ApplyHarrisCornerDetection(cv::Mat image, int blockSize, int ap
         }
     }
 
+    m_lastImageWithFeatures.release();
     cv::drawKeypoints(image, m_features, m_lastImageWithFeatures);
 }
 
@@ -67,6 +69,7 @@ FeatureDetector::ApplyShiTomasiCornerDetection(cv::Mat image, int maxCorners, do
         m_features.emplace_back(std::move(feature));
     }
 
+    m_lastImageWithFeatures.release();
     cv::drawKeypoints(image, m_features, m_lastImageWithFeatures);
 }
 
@@ -75,6 +78,16 @@ FeatureDetector::ApplySIFT(cv::Mat image, int nFeatures, int nOctaveLayers, doub
     cv::Ptr<cv::SIFT> siftPtr = cv::SIFT::create(nFeatures, nOctaveLayers, contrastThreshold, edgeThreshold, sigma);
     m_features.clear();
     siftPtr->detect(image, m_features);
+    m_lastImageWithFeatures.release();
+    cv::drawKeypoints(image, m_features, m_lastImageWithFeatures);
+}
+
+void
+FeatureDetector::ApplySURF(cv::Mat image, double hessianThreshold, int nOctaves, int nOctaveLayers, bool extended, bool upright) {
+    cv::Ptr<cv::xfeatures2d::SURF> surfPtr = cv::xfeatures2d::SURF::create(hessianThreshold, nOctaves, nOctaveLayers, extended, upright);
+    m_features.clear();
+    surfPtr->detect(image, m_features);
+    m_lastImageWithFeatures.release();
     cv::drawKeypoints(image, m_features, m_lastImageWithFeatures);
 }
 
