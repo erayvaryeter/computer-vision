@@ -4,7 +4,7 @@
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
-
+#include <opencv2/features2d/features2d.hpp>
 #include "feature-detector/feature-detector.h"
 
 std::shared_ptr<base::Logger> features::FeatureDetector::m_logger = std::make_shared<base::Logger>();
@@ -14,10 +14,12 @@ namespace features {
 void 
 FeatureDetector::ApplyHarrisCornerDetection(cv::Mat image, int blockSize, int apertureSize, double k, float thresh) {
     cv::Mat destination = cv::Mat::zeros(image.size(), CV_32FC1);
-    m_lastImageWithFeatures = image.clone();
+    cv::Mat grayImage;
     if (image.channels() != 1)
-        cv::cvtColor(image, image, cv::COLOR_BGR2GRAY);
-    cv::cornerHarris(image, destination, blockSize, apertureSize, k);
+        cv::cvtColor(image, grayImage, cv::COLOR_BGR2GRAY);
+    else
+        image.copyTo(grayImage);
+    cv::cornerHarris(grayImage, destination, blockSize, apertureSize, k);
     cv::Mat destinationNormalized;
     cv::normalize(destination, destinationNormalized, 0, 255, cv::NORM_MINMAX, CV_32FC1, cv::Mat());
     m_features.clear();
@@ -25,25 +27,28 @@ FeatureDetector::ApplyHarrisCornerDetection(cv::Mat image, int blockSize, int ap
     for (int i = 0; i < destinationNormalized.rows; i++) {
         for (int j = 0; j < destinationNormalized.cols; j++) {
             if (destinationNormalized.at<float>(i, j) > thresh) {
-                cv::circle(m_lastImageWithFeatures, cv::Point(j, i), 2, cv::Scalar(255), 2, 8, 0);
-                auto feature = cv::KeyPoint(static_cast<float>(i), static_cast<float>(j), 1.0f);
+                auto feature = cv::KeyPoint(static_cast<float>(j), static_cast<float>(i), 1.0f);
                 m_features.emplace_back(std::move(feature));
             }
         }
     }
+
+    cv::drawKeypoints(image, m_features, m_lastImageWithFeatures);
 }
 
 void 
 FeatureDetector::ApplyShiTomasiCornerDetection(cv::Mat image, int maxCorners, double qualityLevel, double minDistance, int blockSize, int gradientSize, 
     bool useHarris, double k) {
     cv::Mat destination = cv::Mat::zeros(image.size(), CV_32FC1);
-    m_lastImageWithFeatures = image.clone();
+    cv::Mat grayImage;
     if (image.channels() != 1)
-        cv::cvtColor(image, image, cv::COLOR_BGR2GRAY);
-    
+        cv::cvtColor(image, grayImage, cv::COLOR_BGR2GRAY);
+    else
+        image.copyTo(grayImage);
+
     std::vector<cv::Point2f> corners;
     cv::goodFeaturesToTrack(
-        image,
+        grayImage,
         corners,
         maxCorners,
         qualityLevel,
@@ -58,10 +63,19 @@ FeatureDetector::ApplyShiTomasiCornerDetection(cv::Mat image, int maxCorners, do
     m_features.clear();
 
     for (const auto& corner : corners) {
-        cv::circle(m_lastImageWithFeatures, cv::Point(corner.x, corner.y), 2, cv::Scalar(255), 2, 8, 0);
         auto feature = cv::KeyPoint(corner.x, corner.y, 1.0f);
         m_features.emplace_back(std::move(feature));
     }
+
+    cv::drawKeypoints(image, m_features, m_lastImageWithFeatures);
+}
+
+void
+FeatureDetector::ApplySIFT(cv::Mat image, int nFeatures, int nOctaveLayers, double contrastThreshold, double edgeThreshold, double sigma) {
+    cv::Ptr<cv::SIFT> siftPtr = cv::SIFT::create(nFeatures, nOctaveLayers, contrastThreshold, edgeThreshold, sigma);
+    m_features.clear();
+    siftPtr->detect(image, m_features);
+    cv::drawKeypoints(image, m_features, m_lastImageWithFeatures);
 }
 
 }
