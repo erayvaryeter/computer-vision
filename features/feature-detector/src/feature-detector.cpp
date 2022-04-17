@@ -4,8 +4,6 @@
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
-#include <opencv2/features2d/features2d.hpp>
-#include <opencv2/xfeatures2d/nonfree.hpp>
 #include "feature-detector/feature-detector.h"
 
 std::shared_ptr<base::Logger> features::FeatureDetector::m_logger = std::make_shared<base::Logger>();
@@ -32,6 +30,11 @@ FeatureDetector::ApplyHarrisCornerDetection(cv::Mat image, int blockSize, int ap
                 m_keypoints.emplace_back(std::move(feature));
             }
         }
+    }
+
+    if (m_keypoints.size() <= 2000) {
+        m_descriptor.release();
+        m_briskDescriptorExtractor->compute(image, m_keypoints, m_descriptor);
     }
 
     m_lastImageWithKeypoints.release();
@@ -69,42 +72,69 @@ FeatureDetector::ApplyShiTomasiCornerDetection(cv::Mat image, int maxCorners, do
         m_keypoints.emplace_back(std::move(feature));
     }
 
+    if (m_keypoints.size() <= 2000) {
+        m_descriptor.release();
+        m_briskDescriptorExtractor->compute(image, m_keypoints, m_descriptor);
+    }
+
     m_lastImageWithKeypoints.release();
     cv::drawKeypoints(image, m_keypoints, m_lastImageWithKeypoints);
 }
 
 void
 FeatureDetector::ApplySIFT(cv::Mat image, int nFeatures, int nOctaveLayers, double contrastThreshold, double edgeThreshold, double sigma) {
-    cv::Ptr<cv::SIFT> siftPtr = cv::SIFT::create(nFeatures, nOctaveLayers, contrastThreshold, edgeThreshold, sigma);
+    auto siftPtr = cv::SIFT::create(nFeatures, nOctaveLayers, contrastThreshold, edgeThreshold, sigma);
     m_keypoints.clear();
-    siftPtr->detect(image, m_keypoints);
+    m_descriptor.release();
+    siftPtr->detectAndCompute(image, cv::Mat(), m_keypoints, m_descriptor);
     m_lastImageWithKeypoints.release();
     cv::drawKeypoints(image, m_keypoints, m_lastImageWithKeypoints);
-    m_descriptor.release();
-    siftPtr->compute(image, m_keypoints, m_descriptor);
 }
 
 void
 FeatureDetector::ApplySURF(cv::Mat image, double hessianThreshold, int nOctaves, int nOctaveLayers, bool extended, bool upright) {
-    cv::Ptr<cv::xfeatures2d::SURF> surfPtr = cv::xfeatures2d::SURF::create(hessianThreshold, nOctaves, nOctaveLayers, extended, upright);
+    auto surfPtr = cv::xfeatures2d::SURF::create(hessianThreshold, nOctaves, nOctaveLayers, extended, upright);
     m_keypoints.clear();
-    surfPtr->detect(image, m_keypoints);
+    m_descriptor.release();
+    surfPtr->detectAndCompute(image, cv::Mat(), m_keypoints, m_descriptor);
     m_lastImageWithKeypoints.release();
     cv::drawKeypoints(image, m_keypoints, m_lastImageWithKeypoints);
-    m_descriptor.release();
-    surfPtr->compute(image, m_keypoints, m_descriptor);
 }
 
 void 
 FeatureDetector::ApplyFAST(cv::Mat image, int threshold, bool nonmaxSupression) {
-    cv::Ptr<cv::FastFeatureDetector> fastPtr = cv::FastFeatureDetector::create(threshold, false);
-    cv::Ptr<cv::BRISK> briskPtr = cv::BRISK::create(); // only for computing descriptor
+    auto fastPtr = cv::FastFeatureDetector::create(threshold, false);
+    auto briskPtr = cv::BRISK::create(); // only for computing descriptor
     m_keypoints.clear();
     fastPtr->detect(image, m_keypoints);
     m_lastImageWithKeypoints.release();
     cv::drawKeypoints(image, m_keypoints, m_lastImageWithKeypoints);
     m_descriptor.release();
     briskPtr->compute(image, m_keypoints, m_descriptor);
+}
+
+void 
+FeatureDetector::ApplyBRIEF(cv::Mat image, int bytes, bool useOrientation) {
+    auto briefPtr = cv::xfeatures2d::BriefDescriptorExtractor::create(bytes, useOrientation);
+    m_keypoints.clear();
+    m_siftKeypointDetector->detect(image, m_keypoints);
+    if (m_keypoints.size() <= 2000) {
+        m_descriptor.release();
+        briefPtr->compute(image, m_keypoints, m_descriptor);
+    }
+    m_lastImageWithKeypoints.release();
+    cv::drawKeypoints(image, m_keypoints, m_lastImageWithKeypoints);
+}
+
+void 
+FeatureDetector::ApplyORB(cv::Mat image, int nFeatures, float scaleFactor, int nLevels, int edgeThreshold, int firstLevel, 
+    int WTA_K, cv::ORB::ScoreType st, int patchSize, int fastThreshold) {
+    auto orbPtr = cv::ORB::create(nFeatures, scaleFactor, nLevels, edgeThreshold, firstLevel, WTA_K, st, patchSize, fastThreshold);
+    m_keypoints.clear();
+    m_descriptor.release();
+    orbPtr->detectAndCompute(image, cv::Mat(), m_keypoints, m_descriptor);
+    m_lastImageWithKeypoints.release();
+    cv::drawKeypoints(image, m_keypoints, m_lastImageWithKeypoints);
 }
 
 }

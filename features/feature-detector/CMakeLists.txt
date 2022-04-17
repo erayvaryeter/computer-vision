@@ -8,18 +8,14 @@ set(source_files
 	src/feature-detector.cpp
 )
 
-set(test_files
-    test/main.cpp
-	test/feature-detector-test.cpp
-	test/Fixture.h
-)
-
 set(cli-files
 	src/cli/HarrisCornerDetector.h
 	src/cli/ShiTomasiCornerDetector.h
 	src/cli/SIFT.h
 	src/cli/SURF.h
 	src/cli/FAST.h
+	src/cli/BRIEF.h
+	src/cli/ORB.h
 	src/cli/main.cpp
 )
 
@@ -38,17 +34,6 @@ target_link_libraries(${project_name} CONAN_PKG::cxxopts)
 file(GLOB_RECURSE lib_files "${PROJECT_BINARY_DIR}/lib/*")
 install(TARGETS ${project_name} RUNTIME DESTINATION bin)
 install(FILES ${lib_files} DESTINATION lib)
-
-enable_testing()
-add_executable(${project_name}-test ${test_files})
-target_link_libraries(${project_name}-test ${project_name})
-target_link_libraries(${project_name}-test CONAN_PKG::catch2)
-
-if(MSVC)
-  target_compile_options(${project_name}-test PRIVATE)
-else()
-  target_compile_options(${project_name}-test PRIVATE)
-endif()
 
 add_executable(${project_name}-cli ${cli-files})
 target_link_libraries(${project_name}-cli ${project_name})

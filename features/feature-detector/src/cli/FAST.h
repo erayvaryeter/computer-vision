@@ -30,7 +30,7 @@ public:
 		std::mutex mtx;
 		cv::Mat outputImage;
 		void Run() {
-			featureDetector->ApplyFAST(image);
+			featureDetector->ApplyFAST(image, threshold, nonmaxSupression);
 			featureDetector->GetImageWithKeypoints().copyTo(outputImage);
 		}
 	};
@@ -45,7 +45,7 @@ public:
 
 		auto OnNonmaxSupressionTrackbar = [](int val, void* ptr) {
 			auto obj = static_cast<FASTDetectorAlgOptions*>(ptr);
-			val == 0 ? obj->nonmaxSupression = true : obj->nonmaxSupression = false;
+			val == 0 ? obj->nonmaxSupression = false : obj->nonmaxSupression = true;
 			obj->Run();
 		};
 

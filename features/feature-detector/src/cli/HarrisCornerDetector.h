@@ -37,10 +37,12 @@ public:
 
 	void Run() {
 		auto OnBlockSizeTrackbar = [](int val, void* ptr) {
-			auto obj = static_cast<HarrisCornerAlgOptions*>(ptr);
-			obj->blockSize = val;
-			obj->featureDetector->ApplyHarrisCornerDetection(obj->image, obj->blockSize, obj->apertureSize, obj->k, obj->thresh);
-			obj->featureDetector->GetImageWithKeypoints().copyTo(obj->outputImage);
+			if (val > 0) {
+				auto obj = static_cast<HarrisCornerAlgOptions*>(ptr);
+				obj->blockSize = val;
+				obj->featureDetector->ApplyHarrisCornerDetection(obj->image, obj->blockSize, obj->apertureSize, obj->k, obj->thresh);
+				obj->featureDetector->GetImageWithKeypoints().copyTo(obj->outputImage);
+			}
 		};
 
 		auto OnApertureSizeTrackbar = [](int val, void* ptr) {
@@ -71,6 +73,8 @@ public:
 		cv::createTrackbar("Aperture Size", "Harris Corner Detector", &uiOptions.apertureSize, 15, OnApertureSizeTrackbar, &algOptions);
 		cv::createTrackbar("K", "Harris Corner Detector", &uiOptions.k, 100, OnKTrackbar, &algOptions);
 		cv::createTrackbar("Threshold", "Harris Corner Detector", &uiOptions.thresh, 255, OnThresholdTrackbar, &algOptions);
+
+		OnBlockSizeTrackbar(4, &algOptions);
 
 		while (1) {
 			std::lock_guard<std::mutex> lock(algOptions.mtx);

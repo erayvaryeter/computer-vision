@@ -36,7 +36,7 @@ public:
 		std::mutex mtx;
 		cv::Mat outputImage;
 		void Run() {
-			featureDetector->ApplySURF(image);
+			featureDetector->ApplySURF(image, hessianThreshold, nOctaves, nOctaveLayers, extended, upright);
 			featureDetector->GetImageWithKeypoints().copyTo(outputImage);
 		}
 	};
@@ -50,15 +50,19 @@ public:
 		};
 
 		auto OnNOctavesTrackbar = [](int val, void* ptr) {
-			auto obj = static_cast<SURFDetectorAlgOptions*>(ptr);
-			obj->nOctaves = val;
-			obj->Run();
+			if (val > 0) {
+				auto obj = static_cast<SURFDetectorAlgOptions*>(ptr);
+				obj->nOctaves = val;
+				obj->Run();
+			}
 		};
 
 		auto OnNOctaveLayersTrackbar = [](int val, void* ptr) {
-			auto obj = static_cast<SURFDetectorAlgOptions*>(ptr);
-			obj->nOctaveLayers = val;
-			obj->Run();
+			if (val > 0) {
+				auto obj = static_cast<SURFDetectorAlgOptions*>(ptr);
+				obj->nOctaveLayers = val;
+				obj->Run();
+			}
 		};
 
 		auto OnExtendedTrackbar = [](int val, void* ptr) {
