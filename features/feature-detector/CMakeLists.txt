@@ -16,6 +16,7 @@ set(cli-files
 	src/cli/FAST.h
 	src/cli/BRIEF.h
 	src/cli/ORB.h
+	src/cli/BRISK.h
 	src/cli/main.cpp
 )
 

@@ -137,4 +137,14 @@ FeatureDetector::ApplyORB(cv::Mat image, int nFeatures, float scaleFactor, int n
     cv::drawKeypoints(image, m_keypoints, m_lastImageWithKeypoints);
 }
 
+void 
+FeatureDetector::ApplyBRISK(cv::Mat image, int thresh, int octaves, float patternScale) {
+    auto briskPtr = cv::BRISK::create(thresh, octaves, patternScale);
+    m_keypoints.clear();
+    m_descriptor.release();
+    briskPtr->detectAndCompute(image, cv::Mat(), m_keypoints, m_descriptor);
+    m_lastImageWithKeypoints.release();
+    cv::drawKeypoints(image, m_keypoints, m_lastImageWithKeypoints);
+}
+
 }

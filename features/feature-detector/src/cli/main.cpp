@@ -5,6 +5,7 @@
 #include "FAST.h"
 #include "BRIEF.h"
 #include "ORB.h"
+#include "BRISK.h"
 
 enum class DetectorType {
 	HARRIS_CORNER_DETECTOR = 0,
@@ -13,7 +14,8 @@ enum class DetectorType {
 	SURF = 3,
 	FAST = 4,
 	BRIEF = 5,
-	ORB = 6
+	ORB = 6,
+	BRISK = 7
 };
 
 DetectorType
@@ -38,6 +40,9 @@ ConvertDetectorType(std::string detectorType) {
 	}
 	else if (detectorType == "ORB") {
 		return DetectorType::ORB;
+	}
+	else if (detectorType == "BRISK") {
+		return DetectorType::BRISK;
 	}
 	else {
 		std::cout << "Given detector type string is invalid, exitting" << std::endl;
@@ -118,6 +123,12 @@ int main(int argc, char** argv) {
 	case DetectorType::ORB:
 	{
 		auto detector = std::make_shared<ORBDetector>(imagePath);
+		detector->Run();
+		break;
+	}
+	case DetectorType::BRISK:
+	{
+		auto detector = std::make_shared<BRISKDetector>(imagePath);
 		detector->Run();
 		break;
 	}
