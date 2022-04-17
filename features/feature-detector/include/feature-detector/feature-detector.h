@@ -25,6 +25,7 @@ public:
 		double sigma = 1.60);
 	void ApplySURF(cv::Mat image, double hessianThreshold = 100, int nOctaves = 4, int nOctaveLayers = 3, bool extended = false, 
 		bool upright = false);
+	void ApplyFAST(cv::Mat image, int threshold = 10, bool nonmaxSupression = true);
 
 private:
 	std::vector<cv::KeyPoint> m_keypoints;

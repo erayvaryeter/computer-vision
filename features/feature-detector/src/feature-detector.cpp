@@ -95,4 +95,16 @@ FeatureDetector::ApplySURF(cv::Mat image, double hessianThreshold, int nOctaves,
     surfPtr->compute(image, m_keypoints, m_descriptor);
 }
 
+void 
+FeatureDetector::ApplyFAST(cv::Mat image, int threshold, bool nonmaxSupression) {
+    cv::Ptr<cv::FastFeatureDetector> fastPtr = cv::FastFeatureDetector::create(threshold, false);
+    cv::Ptr<cv::BRISK> briskPtr = cv::BRISK::create(); // only for computing descriptor
+    m_keypoints.clear();
+    fastPtr->detect(image, m_keypoints);
+    m_lastImageWithKeypoints.release();
+    cv::drawKeypoints(image, m_keypoints, m_lastImageWithKeypoints);
+    m_descriptor.release();
+    briskPtr->compute(image, m_keypoints, m_descriptor);
+}
+
 }

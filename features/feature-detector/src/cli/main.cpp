@@ -2,12 +2,14 @@
 #include "ShiTomasiCornerDetector.h"
 #include "SIFT.h"
 #include "SURF.h"
+#include "FAST.h"
 
 enum class DetectorType {
 	HARRIS_CORNER_DETECTOR = 0,
 	SHI_TOMASI_CORNER_DETECTION = 1,
 	SIFT = 2,
-	SURF = 3
+	SURF = 3,
+	FAST = 4
 };
 
 DetectorType
@@ -23,6 +25,9 @@ ConvertDetectorType(std::string detectorType) {
 	}
 	else if (detectorType == "SURF") {
 		return DetectorType::SURF;
+	}
+	else if (detectorType == "FAST") {
+		return DetectorType::FAST;
 	}
 	else {
 		std::cout << "Given detector type string is invalid, exitting" << std::endl;
@@ -85,6 +90,12 @@ int main(int argc, char** argv) {
 	case DetectorType::SURF:
 	{
 		auto detector = std::make_shared<SURFDetector>(imagePath);
+		detector->Run();
+		break;
+	}
+	case DetectorType::FAST:
+	{
+		auto detector = std::make_shared<FASTDetector>(imagePath);
 		detector->Run();
 		break;
 	}

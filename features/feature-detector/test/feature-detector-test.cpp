@@ -9,6 +9,7 @@ auto filestorageLogger = std::make_shared<base::Logger>();
 //#define DUMP_SHI_TOMASI_FEATURES
 //#define DUMP_SIFT_FEATURES
 //#define DUMP_SURF_FEATURES
+//#define DUMP_FAST_FEATURES
 
 void
 DumpFeatures(std::vector<cv::KeyPoint>& features, const char* filename) {
@@ -104,6 +105,21 @@ TEST_CASE_METHOD(Fixture, "SURF") {
 
 	std::string fileName = "../../../../features/feature-detector/resource/SURF.features";
 #ifdef DUMP_SURF_FEATURES
+	DumpFeatures(features, fileName.c_str());
+#else
+	// CompareFeatures(features, fileName.c_str());
+#endif
+}
+
+TEST_CASE_METHOD(Fixture, "FAST") {
+	cv::Mat img = cv::imread("../../../../features/feature-detector/resource/Chessboard.jpg");
+	auto detector = std::make_shared<features::FeatureDetector>();
+	detector->ApplyFAST(img, 10, true);
+	auto features = detector->GetKeypoints();
+	std::sort(features.begin(), features.end(), CompareKeypoints);
+
+	std::string fileName = "../../../../features/feature-detector/resource/FAST.features";
+#ifdef DUMP_FAST_FEATURES
 	DumpFeatures(features, fileName.c_str());
 #else
 	// CompareFeatures(features, fileName.c_str());

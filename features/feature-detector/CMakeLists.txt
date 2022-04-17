@@ -19,6 +19,7 @@ set(cli-files
 	src/cli/ShiTomasiCornerDetector.h
 	src/cli/SIFT.h
 	src/cli/SURF.h
+	src/cli/FAST.h
 	src/cli/main.cpp
 )
 
