@@ -9,6 +9,9 @@ set(source_files
 )
 
 set(cli-files
+	src/cli/REGULAR.h
+	src/cli/KNN.h
+	src/cli/RADIUS.h
 	src/cli/main.cpp
 )
 
@@ -29,5 +32,5 @@ file(GLOB_RECURSE lib_files "${PROJECT_BINARY_DIR}/lib/*")
 install(TARGETS ${project_name} RUNTIME DESTINATION bin)
 install(FILES ${lib_files} DESTINATION lib)
 
-#add_executable(${project_name}-cli ${cli-files})
-#target_link_libraries(${project_name}-cli ${project_name})
+add_executable(${project_name}-cli ${cli-files})
+target_link_libraries(${project_name}-cli ${project_name})

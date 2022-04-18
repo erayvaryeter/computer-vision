@@ -1,51 +1,26 @@
-#include "HarrisCornerDetector.h"
-#include "ShiTomasiCornerDetector.h"
-#include "SIFT.h"
-#include "SURF.h"
-#include "FAST.h"
-#include "BRIEF.h"
-#include "ORB.h"
-#include "BRISK.h"
+#include "REGULAR.h"
+#include "KNN.h"
+#include "RADIUS.h"
 
-enum class DetectorType {
-	HARRIS_CORNER_DETECTOR = 0,
-	SHI_TOMASI_CORNER_DETECTION = 1,
-	SIFT = 2,
-	SURF = 3,
-	FAST = 4,
-	BRIEF = 5,
-	ORB = 6,
-	BRISK = 7
+enum class MatchingType {
+	REGULAR_MATCHING = 0,
+	KNN_MATCHING = 1,
+	RADIUS_MATCHING = 2
 };
 
-DetectorType
-ConvertDetectorType(std::string detectorType) {
-	if (detectorType == "HarrisCorner") {
-		return DetectorType::HARRIS_CORNER_DETECTOR;
+MatchingType
+ConvertMatchingType(std::string matchingType) {
+	if (matchingType == "Regular") {
+		return MatchingType::REGULAR_MATCHING;
 	}
-	else if (detectorType == "ShiTomasi") {
-		return DetectorType::SHI_TOMASI_CORNER_DETECTION;
+	else if (matchingType == "Knn") {
+		return MatchingType::KNN_MATCHING;
 	}
-	else if (detectorType == "SIFT") {
-		return DetectorType::SIFT;
-	}
-	else if (detectorType == "SURF") {
-		return DetectorType::SURF;
-	}
-	else if (detectorType == "FAST") {
-		return DetectorType::FAST;
-	}
-	else if (detectorType == "BRIEF") {
-		return DetectorType::BRIEF;
-	}
-	else if (detectorType == "ORB") {
-		return DetectorType::ORB;
-	}
-	else if (detectorType == "BRISK") {
-		return DetectorType::BRISK;
+	else if (matchingType == "Radius") {
+		return MatchingType::RADIUS_MATCHING;
 	}
 	else {
-		std::cout << "Given detector type string is invalid, exitting" << std::endl;
+		std::cout << "Given matching type string is invalid, exitting" << std::endl;
 		exit(0);
 	}
 }
@@ -53,8 +28,9 @@ ConvertDetectorType(std::string detectorType) {
 int main(int argc, char** argv) {
 	cxxopts::Options options("Feature Detector");
 	options.add_options()
-		("i,image", "Input image path", cxxopts::value<std::string>()->default_value("../../../../features/feature-detector/resource/Chessboard.jpg"))
-		("d,detector-type", "Types: HarrisCorner - ShiTomasi - SIFT - SURF - FAST - BRIEF - ORB", cxxopts::value<std::string>()->default_value("HarrisCorner"))
+		("image1", "First image path", cxxopts::value<std::string>()->default_value("../../../../features/feature-matcher/resource/1.jpg"))
+		("image2", "Second image path", cxxopts::value<std::string>()->default_value("../../../../features/feature-matcher/resource/2.jpg"))
+		("matching-type", "Types: Regular - Knn - Radius", cxxopts::value<std::string>()->default_value("Regular"))
 		("h,help", "Print usage");
 
 	auto result = options.parse(argc, argv);
@@ -63,73 +39,60 @@ int main(int argc, char** argv) {
 		exit(0);
 	}
 
-	std::string imagePath;
-	if (result.count("image")) {
-		imagePath = result["image"].as<std::string>();
-		if (!base::File::FileExists(imagePath)) {
+	std::string image1Path, image2Path;
+
+	if (result.count("image1")) {
+		image1Path = result["image1"].as<std::string>();
+		if (!base::File::FileExists(image1Path)) {
 			std::cout << "Image with given path does not exist" << std::endl;
 			exit(0);
 		}
-		auto ext = base::File::GetFileExtension(imagePath);
+		auto ext = base::File::GetFileExtension(image1Path);
 		if (ext != ".jpg" && ext != ".jpeg" && ext != ".png" && ext != ".bmp") {
 			std::cout << "Given image path extension is not valid" << std::endl;
 			exit(0);
 		}
 	}
 	else {
-		imagePath = result["image"].as<std::string>();
+		image1Path = result["image1"].as<std::string>();
 	}
 
-	DetectorType dt;
-	dt = ConvertDetectorType(result["detector-type"].as<std::string>());
+	if (result.count("image2")) {
+		image2Path = result["image2"].as<std::string>();
+		if (!base::File::FileExists(image2Path)) {
+			std::cout << "Image with given path does not exist" << std::endl;
+			exit(0);
+		}
+		auto ext = base::File::GetFileExtension(image2Path);
+		if (ext != ".jpg" && ext != ".jpeg" && ext != ".png" && ext != ".bmp") {
+			std::cout << "Given image path extension is not valid" << std::endl;
+			exit(0);
+		}
+	}
+	else {
+		image2Path = result["image2"].as<std::string>();
+	}
 
-	switch (dt) {
-	case DetectorType::HARRIS_CORNER_DETECTOR: 
+	MatchingType mt;
+	mt = ConvertMatchingType(result["matching-type"].as<std::string>());
+
+	switch (mt) {
+	case MatchingType::REGULAR_MATCHING:
 	{
-		auto detector = std::make_shared<HarrisCornerDetector>(imagePath);
-		detector->Run();
+		auto matcher = std::make_shared<RegularMatching>(image1Path, image2Path);
+		matcher->Run();
 		break;
 	}
-	case DetectorType::SHI_TOMASI_CORNER_DETECTION:
+	case MatchingType::KNN_MATCHING:
 	{
-		auto detector = std::make_shared<ShiTomasiCornerDetector>(imagePath);
-		detector->Run();
+		auto matcher = std::make_shared<KnnMatching>(image1Path, image2Path);
+		matcher->Run();
 		break;
 	}
-	case DetectorType::SIFT:
+	case MatchingType::RADIUS_MATCHING:
 	{
-		auto detector = std::make_shared<SIFTDetector>(imagePath);
-		detector->Run();
-		break;
-	}
-	case DetectorType::SURF:
-	{
-		auto detector = std::make_shared<SURFDetector>(imagePath);
-		detector->Run();
-		break;
-	}
-	case DetectorType::FAST:
-	{
-		auto detector = std::make_shared<FASTDetector>(imagePath);
-		detector->Run();
-		break;
-	}
-	case DetectorType::BRIEF:
-	{
-		auto detector = std::make_shared<BRIEFDetector>(imagePath);
-		detector->Run();
-		break;
-	}
-	case DetectorType::ORB:
-	{
-		auto detector = std::make_shared<ORBDetector>(imagePath);
-		detector->Run();
-		break;
-	}
-	case DetectorType::BRISK:
-	{
-		auto detector = std::make_shared<BRISKDetector>(imagePath);
-		detector->Run();
+		auto matcher = std::make_shared<RadiusMatching>(image1Path, image2Path);
+		matcher->Run();
 		break;
 	}
 	default: break;

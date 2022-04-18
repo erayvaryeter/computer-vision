@@ -18,9 +18,7 @@ public:
 		m_matcher = cv::DescriptorMatcher::create(m_matcherType);
 	}
 
-	~FeatureMatcher() {
-		
-	}
+	~FeatureMatcher() {}
 
 	void ApplyMatching(cv::Mat queryDescriptors, cv::Mat trainDescriptors);
 	/// <summary>
@@ -39,6 +37,9 @@ public:
 	/// <param name="maxHammingDistance">-1 default means it will be automatically determined</param>
 	/// <param name="ratioThreshold">threshold for filtering out best matches</param>
 	void ApplyRadiusMatching(cv::Mat queryDescriptors, cv::Mat trainDescriptors, float maxHammingDistance = -1.0f, float ratioThreshold = 0.7f);
+
+	void SortMatches();
+	std::vector<cv::DMatch> GetMatches() { return m_matches; }
 
 private:
 	cv::Ptr<cv::DescriptorMatcher> m_matcher;
