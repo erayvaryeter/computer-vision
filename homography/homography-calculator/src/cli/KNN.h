@@ -1,7 +1,6 @@
 #pragma once
 
-#include <feature-detector/feature-detector.h>
-#include <feature-matcher/feature-matcher.h>
+#include <homography-calculator/homography-calculator.h>
 #include <opencv2/core/mat.hpp>
 #include <opencv2/core.hpp>
 #include <opencv2/imgcodecs.hpp>
@@ -18,26 +17,28 @@ public:
 		algOptions.image2 = cv::imread(imagePath2.c_str());
 		algOptions.featureDetector = std::make_shared<features::FeatureDetector>();
 		algOptions.featureMatcher = std::make_shared<features::FeatureMatcher>(cv::DescriptorMatcher::MatcherType::BRUTEFORCE_HAMMING);
+		algOptions.homographyCalculator = std::make_shared<homography::HomographyCalculator>();
 	}
 
 	struct KnnDetectorUiOptions {
-		int thresh = 30;
-		int octaves = 3;
-		int patternScale = 10;
+		int thresh = 57;
+		int octaves = 9;
+		int patternScale = 16;
 		int k = 5;
 		int ratioThreshold = 70;
 	};
 
 	struct KnnDetectorAlgOptions {
-		int thresh = 30;
-		int octaves = 3;
-		float patternScale = 1.0f;
+		int thresh = 57;
+		int octaves = 9;
+		float patternScale = 1.6f;
 		int k = 5;
 		float ratioThreshold = 0.7f;
 		cv::Mat image1;
 		cv::Mat image2;
 		std::shared_ptr<features::FeatureDetector> featureDetector;
 		std::shared_ptr<features::FeatureMatcher> featureMatcher;
+		std::shared_ptr<homography::HomographyCalculator> homographyCalculator;
 		std::mutex mtx;
 		cv::Mat outputImage;
 		void Run() {
@@ -49,8 +50,11 @@ public:
 			auto descriptors2 = featureDetector->GetDescriptors();
 			featureMatcher->ApplyKnnMatching(descriptors1, descriptors2, k, ratioThreshold);
 			auto matches = featureMatcher->GetMatches();
-			cv::drawMatches(image1, keypoints1, image2, keypoints2, matches, outputImage, cv::Scalar::all(-1),
-				cv::Scalar::all(-1), std::vector<char>(), cv::DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
+			homographyCalculator->AddPoints(keypoints1, keypoints2, matches);
+			auto warped = homographyCalculator->FindHomography(image1, image2);
+			cv::Mat weighted;
+			cv::addWeighted(warped, 0.5, image2, 0.5, 0, weighted);
+			weighted.copyTo(outputImage);
 		}
 	};
 
