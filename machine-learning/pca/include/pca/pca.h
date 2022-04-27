@@ -19,14 +19,14 @@ public:
 
 	void AppendImage(cv::Mat image);
 	void ClearImages();
-	cv::Mat ConvertToRowMatrix(std::vector<cv::Mat>& src, int rtype, double alpha = 1, double beta = 0);
 	cv::Mat Normalize(cv::Mat& src);
+	cv::Mat FormatImagesForPCA(const std::vector<cv::Mat>& data);
 	void ApplyPCA(int numComponents);
 
 private:
 	std::vector<cv::Mat> m_inputImages;
 	std::vector<cv::Mat> m_grayscaleImages;
-	cv::Mat m_rowMatrix;
+	cv::Mat m_dataMatrix;
 	cv::Mat m_transformationMatrix;
 	static std::shared_ptr<base::Logger> m_logger;
 };

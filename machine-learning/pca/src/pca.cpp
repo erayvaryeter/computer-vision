@@ -22,43 +22,29 @@ PCA::ClearImages() {
 }
 
 cv::Mat
-PCA::ConvertToRowMatrix(std::vector<cv::Mat>& src, int rtype, double alpha, double beta) {
-    size_t n = src.size();
-    if (n == 0)
-        return cv::Mat();
-    size_t d = src[0].total();
-    cv::Mat data(n, d, rtype);
-    for (int i = 0; i < n; i++) {
-        if (src[i].empty()) {
-            std::string errorMessage = cv::format("Image number %d was empty, please check your input data.", i);
-            ASSERT(true, errorMessage.c_str(), base::Logger::Severity::Error);
-        }
-        if (src[i].total() != d) {
-            std::string errorMessage = cv::format("Wrong number of elements in matrix #%d! Expected %d was %d.", i, d, src[i].total());
-            ASSERT(true, errorMessage.c_str(), base::Logger::Severity::Error);
-        }
-        cv::Mat xi = data.row(i);
-        if (src[i].isContinuous())
-            src[i].reshape(1, 1).convertTo(xi, rtype, alpha, beta);
-        else
-            src[i].clone().reshape(1, 1).convertTo(xi, rtype, alpha, beta);
-     }
-    return data;
-}
-
-cv::Mat
 PCA::Normalize(cv::Mat& src) {
     cv::Mat dst;
     switch (src.channels()) {
     case 1:
-        cv::normalize(src, dst, 0, 255, cv::NORM_MINMAX, CV_8UC1);
+        cv::normalize(src, dst, -1, 1, cv::NORM_MINMAX);
         break;
     case 3:
-        cv::normalize(src, dst, 0, 255, cv::NORM_MINMAX, CV_8UC3);
+        cv::normalize(src, dst, -1, 1, cv::NORM_MINMAX);
         break;
     default:
         src.copyTo(dst);
         break;
+    }
+    return dst;
+}
+
+cv::Mat
+PCA::FormatImagesForPCA(const std::vector<cv::Mat>& data) {
+    cv::Mat dst(static_cast<int>(data.size()), data[0].rows * data[0].cols, CV_32F);
+    for (unsigned int i = 0; i < data.size(); i++) {
+        cv::Mat imageRow = data[i].clone().reshape(1, 1);
+        cv::Mat row = dst.row(i);
+        imageRow.convertTo(row, CV_32F);
     }
     return dst;
 }
@@ -77,26 +63,24 @@ PCA::ApplyPCA(int numComponents) {
             m_grayscaleImages.emplace_back(std::move(grayscale));
         }
     }
-    // Get data as row
-    m_rowMatrix.release();
-    m_rowMatrix = ConvertToRowMatrix(m_grayscaleImages, CV_32FC1);
-    // Perform a PCA:
-    cv::PCA pca(m_rowMatrix, cv::Mat(), CV_PCA_DATA_AS_ROW, numComponents);
+    
+    m_dataMatrix = FormatImagesForPCA(m_grayscaleImages).t();
+    cv::PCA pca(m_dataMatrix, cv::Mat(), CV_PCA_DATA_AS_COL, numComponents);
 
     // And copy the PCA results:
     cv::Mat mean = pca.mean.clone();
     cv::Mat eigenvalues = pca.eigenvalues.clone();
     cv::Mat eigenvectors = pca.eigenvectors.clone();
-    m_transformationMatrix.release();
-    cv::transpose(eigenvectors, m_transformationMatrix);
+    eigenvectors.copyTo(m_transformationMatrix);
 }
 
 std::vector<cv::Mat>
 PCA::GetPrincipalComponents() {
     std::vector<cv::Mat> principalComponents;
-    for (size_t i = 0; i < m_rowMatrix.size().height; ++i) {
-        cv::Mat data = m_rowMatrix.row(i);
-        cv::Mat y = data * m_transformationMatrix;
+    for (size_t i = 0; i < m_dataMatrix.size().width; ++i) {
+        cv::Mat data = m_dataMatrix.col(i);
+        cv::Mat y = m_transformationMatrix * data;
+        y = Normalize(y);
         principalComponents.emplace_back(std::move(y));
     }
     return principalComponents;

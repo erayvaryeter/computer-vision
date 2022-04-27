@@ -63,23 +63,26 @@ int main(int argc, char** argv) {
 
 	auto AddDataVector = [](cv::Mat& data, cv::Mat& labels, std::vector<cv::Mat>& components, int label) {
 		for (auto component : components) {
-			data.push_back(component);
+			data.push_back(component.t());
 			labels.push_back(label);
 		}
 	};
 
+	int numberOfComponents = 50;
+	int k = 7;
+
 	cv::Mat train_data, train_labels;
 	// principal components for train images
-	auto train0 = GetComponents(trainImages_0, 20);
-	auto train1 = GetComponents(trainImages_1, 20);
-	auto train2 = GetComponents(trainImages_2, 20);
-	auto train3 = GetComponents(trainImages_3, 20);
-	auto train4 = GetComponents(trainImages_4, 20);
-	auto train5 = GetComponents(trainImages_5, 20);
-	auto train6 = GetComponents(trainImages_6, 20);
-	auto train7 = GetComponents(trainImages_7, 20);
-	auto train8 = GetComponents(trainImages_8, 20);
-	auto train9 = GetComponents(trainImages_9, 20);
+	auto train0 = GetComponents(trainImages_0, numberOfComponents);
+	auto train1 = GetComponents(trainImages_1, numberOfComponents);
+	auto train2 = GetComponents(trainImages_2, numberOfComponents);
+	auto train3 = GetComponents(trainImages_3, numberOfComponents);
+	auto train4 = GetComponents(trainImages_4, numberOfComponents);
+	auto train5 = GetComponents(trainImages_5, numberOfComponents);
+	auto train6 = GetComponents(trainImages_6, numberOfComponents);
+	auto train7 = GetComponents(trainImages_7, numberOfComponents);
+	auto train8 = GetComponents(trainImages_8, numberOfComponents);
+	auto train9 = GetComponents(trainImages_9, numberOfComponents);
 
 	AddDataVector(train_data, train_labels, train0, 0);
 	AddDataVector(train_data, train_labels, train1, 1);
@@ -94,16 +97,16 @@ int main(int argc, char** argv) {
 
 	cv::Mat test_data, test_labels;
 	// principal components for test images
-	auto test0 = GetComponents(testImages_0, 20); 
-	auto test1 = GetComponents(testImages_1, 20); 
-	auto test2 = GetComponents(testImages_2, 20); 
-	auto test3 = GetComponents(testImages_3, 20); 
-	auto test4 = GetComponents(testImages_4, 20); 
-	auto test5 = GetComponents(testImages_5, 20); 
-	auto test6 = GetComponents(testImages_6, 20); 
-	auto test7 = GetComponents(testImages_7, 20); 
-	auto test8 = GetComponents(testImages_8, 20); 
-	auto test9 = GetComponents(testImages_9, 20); 
+	auto test0 = GetComponents(testImages_0, numberOfComponents); 
+	auto test1 = GetComponents(testImages_1, numberOfComponents); 
+	auto test2 = GetComponents(testImages_2, numberOfComponents); 
+	auto test3 = GetComponents(testImages_3, numberOfComponents); 
+	auto test4 = GetComponents(testImages_4, numberOfComponents); 
+	auto test5 = GetComponents(testImages_5, numberOfComponents); 
+	auto test6 = GetComponents(testImages_6, numberOfComponents); 
+	auto test7 = GetComponents(testImages_7, numberOfComponents); 
+	auto test8 = GetComponents(testImages_8, numberOfComponents); 
+	auto test9 = GetComponents(testImages_9, numberOfComponents); 
 
 	AddDataVector(test_data, test_labels, test0, 0);
 	AddDataVector(test_data, test_labels, test1, 1);
@@ -119,14 +122,29 @@ int main(int argc, char** argv) {
 	cv::Ptr<cv::ml::KNearest> knnPtr = cv::ml::KNearest::create();
 	knnPtr->train(train_data, cv::ml::ROW_SAMPLE, train_labels);
 
+	int correctClassify = 0;
+	int wrongClassify = 0;
+
 	for (int i = 0; i < test_data.rows; i++) {
-		cv::Mat res;
-		// predict on majority of k(5) neighbours:
-		knnPtr->findNearest(test_data.row(i), 5, res);
-		int e = test_labels.at<int>(i);
-		float p = res.at<float>(0);
-		std::cout << e << " : " << p << " " << std::endl;
+		cv::Mat result;
+		cv::Mat neighbors;
+		knnPtr->findNearest(test_data.row(i), k, result, neighbors);
+		int expected = test_labels.at<int>(i);
+		int predicted = (int)result.at<float>(0);
+		if (expected == predicted)
+			correctClassify++;
+		else
+			wrongClassify++;
+		std::cout << "Expected: " << expected << " - Predicted: " << predicted << " Neighbors: " << neighbors << std::endl;
 	}
+
+	std::cout << "-------------------------------------------------------------------------------" << std::endl;
+
+	std::cout << "Correctly classified % " << static_cast<float>(correctClassify) / static_cast<float>(correctClassify + wrongClassify) 
+		* 100 << std::endl;
+
+	std::cout << "Wrongly classified % " << static_cast<float>(wrongClassify) / static_cast<float>(correctClassify + wrongClassify)
+		* 100 << std::endl;
 
 	return 0;
 }
