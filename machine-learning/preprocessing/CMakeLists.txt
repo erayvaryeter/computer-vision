@@ -1,11 +1,11 @@
-﻿set(project_name pca)
+﻿set(project_name preprocessing)
 
 set(include_files
-	include/pca/pca.h
+	include/preprocessing/preprocessing.h
 )
 
 set(source_files
-	src/pca.cpp
+	src/preprocessing.cpp
 )
 
 set(cli-files
@@ -22,6 +22,7 @@ target_link_libraries(${project_name} string)
 target_link_libraries(${project_name} assertion)
 target_link_libraries(${project_name} file)
 target_link_libraries(${project_name} feature-matcher)
+target_link_libraries(${project_name} pca)
 target_link_libraries(${project_name} CONAN_PKG::opencv)
 target_link_libraries(${project_name} CONAN_PKG::cxxopts)
 

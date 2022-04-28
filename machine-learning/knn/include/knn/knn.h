@@ -2,6 +2,7 @@
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/ml.hpp>
+#include <preprocessing/preprocessing.h>
 
 namespace base {
 	class Logger;
@@ -9,50 +10,47 @@ namespace base {
 
 namespace ml {
 
-enum class DataExtractionMethod {
-	PCA = 0,
-	HARRIS_CORNERS = 1,
-	SHI_TOMASI_CORNERS = 2,
-	SIFT = 3,
-	SURF = 4,
-	FAST = 5,
-	BRIEF = 6,
-	ORB = 7,
-	BRISK = 8
-};
-
 class KNN {
 public:
 	KNN(int k, int numberOfComponents, DataExtractionMethod method)
 		: m_k(k),
-		m_numberOfComponents(numberOfComponents),
-		m_dataExtractionMethod(method)
+		m_numberOfComponents(numberOfComponents)
 	{
 		m_knnPtr = cv::ml::KNearest::create();
+		m_preprocessor = std::make_shared<Preprocessing>(m_k, m_numberOfComponents, method);
 	}
 	
 	~KNN() {}
 
-	void ClearTrainImages() { m_trainImagesWithLabels.clear(); }
-	void ClearTestImages() { m_testImagesWithLabels.clear(); }
+	void ClearTrainData() { 
+		m_trainImageDirectories.clear();
+		m_trainLabels.clear();
+		m_trainExtensions.clear();
+	}
 
-	void AppendTrainImagesWithLabels(std::string imageDirectory, int label, std::string imageExtension = ".jpg");
-	void AppendTestImagesWithLabels(std::string imageDirectory, int label, std::string imageExtension = ".jpg");
+	void ClearTestData() {
+		m_testImageDirectories.clear();
+		m_testLabels.clear();
+		m_testExtensions.clear();
+	}
+
+	void AppendTrainData(std::string imageDirectory, int label, std::string imageExtension = ".jpg");
+	void AppendTestData(std::string imageDirectory, int label, std::string imageExtension = ".jpg");
 
 	void Train();
 	void Test();
 
 private:
-	cv::Mat m_trainData;
-	cv::Mat m_trainLabels;
-	cv::Mat m_testData;
-	cv::Mat m_testLabels;
 	int m_numberOfComponents;
 	int m_k;
-	std::map<int, std::vector<cv::Mat>> m_trainImagesWithLabels;
-	std::map<int, std::vector<cv::Mat>> m_testImagesWithLabels;
+	std::vector<std::string> m_trainImageDirectories;
+	std::vector<std::string> m_testImageDirectories;
+	std::vector<int> m_trainLabels;
+	std::vector<int> m_testLabels;
+	std::vector<std::string> m_trainExtensions;
+	std::vector<std::string> m_testExtensions;
 	cv::Ptr<cv::ml::KNearest> m_knnPtr;
-	DataExtractionMethod m_dataExtractionMethod;
+	std::shared_ptr<Preprocessing> m_preprocessor;
 	static std::shared_ptr<base::Logger> m_logger;
 };
 
