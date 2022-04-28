@@ -2,6 +2,7 @@
 
 set(include_files
 	include/knn/knn.h
+	include/knn/parameters.h
 )
 
 set(source_files

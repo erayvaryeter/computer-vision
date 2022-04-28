@@ -32,7 +32,21 @@ KNN::Train() {
 	m_preprocessor->ClearTrainImages();
 	for (size_t i = 0; i < m_trainImageDirectories.size(); ++i)
 		m_preprocessor->AppendTrainImagesWithLabels(m_trainImageDirectories[i], m_trainLabels[i], m_trainExtensions[i]);
-	m_preprocessor->ApplyPcaTrain(m_numberOfComponents);
+	
+	switch (m_method) {
+	case DataExtractionMethod::PCA:
+	{
+		m_preprocessor->ApplyPcaTrain(m_numberOfComponents);
+		break;
+	}
+	case DataExtractionMethod::HARRIS_CORNERS:
+	{
+		m_preprocessor->ApplyHarrisCornersTrain(m_numberOfComponents, m_harrisCornerParams.blockSize, m_harrisCornerParams.apertureSize, m_harrisCornerParams.k);
+		break;
+	}
+	default: break;
+	}
+
 	auto trainData = m_preprocessor->GetTrainData();
 	auto trainLabels = m_preprocessor->GetTrainLabels();
 	m_knnPtr->train(trainData, cv::ml::ROW_SAMPLE, trainLabels);
@@ -45,7 +59,21 @@ KNN::Test() {
 	m_preprocessor->ClearTestImages();
 	for (size_t i = 0; i < m_testImageDirectories.size(); ++i)
 		m_preprocessor->AppendTestImagesWithLabels(m_testImageDirectories[i], m_testLabels[i], m_testExtensions[i]);
-	m_preprocessor->ApplyPcaTest(m_numberOfComponents);
+	
+	switch (m_method) {
+	case DataExtractionMethod::PCA:
+	{
+		m_preprocessor->ApplyPcaTest(m_numberOfComponents);
+		break;
+	}
+	case DataExtractionMethod::HARRIS_CORNERS:
+	{
+		m_preprocessor->ApplyHarrisCornersTest(m_numberOfComponents, m_harrisCornerParams.blockSize, m_harrisCornerParams.apertureSize, m_harrisCornerParams.k);
+		break;
+	}
+	default: break;
+	}
+
 	auto testData = m_preprocessor->GetTestData();
 	auto testLabels = m_preprocessor->GetTestLabels();
 

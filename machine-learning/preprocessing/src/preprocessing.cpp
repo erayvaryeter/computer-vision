@@ -4,6 +4,7 @@
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 #include <pca/pca.h>
+#include <feature-detector/feature-detector.h>
 
 #include "preprocessing/preprocessing.h"
 
@@ -40,17 +41,17 @@ Preprocessing::AppendTestImagesWithLabels(std::string imageDirectory, int label,
 }
 
 std::map<int, std::vector<cv::Mat>>
-ApplyPCA(std::map<int, std::vector<cv::Mat>> trainImagesWithLabels, int numComponents) {
+ApplyPCA(std::map<int, std::vector<cv::Mat>> imagesWithLabels, int numComponents) {
 	auto pcaPtr = std::make_shared<ml::PCA>();
 	std::map<int, std::vector<cv::Mat>> retVal;
-	for (auto trainData : trainImagesWithLabels) {
+	for (auto data : imagesWithLabels) {
 		pcaPtr->ClearImages();
-		for (auto image : trainData.second) {
+		for (auto image : data.second) {
 			pcaPtr->AppendImage(image);
 		}
 		pcaPtr->ApplyPCA(numComponents);
 		auto principalComponents = pcaPtr->GetPrincipalComponents();
-		auto pair = std::make_pair(trainData.first, principalComponents);
+		auto pair = std::make_pair(data.first, principalComponents);
 		retVal.insert(retVal.end(), std::move(pair));
 	}
 	return retVal;
@@ -75,6 +76,49 @@ Preprocessing::ApplyPcaTest(int numComponents) {
 	m_testLabels.release();
 	auto pcaResult = ApplyPCA(m_testImagesWithLabels, numComponents);
 	for (auto components : pcaResult) {
+		for (auto component : components.second) {
+			m_testData.push_back(component.t());
+			m_testLabels.push_back(components.first);
+		}
+	}
+}
+
+std::map<int, std::vector<cv::Mat>>
+ApplyHarrisCorners(std::map<int, std::vector<cv::Mat>> imagesWithLabels, int numComponents, int blockSize, int apertureSize, double k) {
+	auto featureDetector = std::make_shared<features::FeatureDetector>();
+	std::map<int, std::vector<cv::Mat>> retVal;
+	for (auto data : imagesWithLabels) {
+		std::vector<cv::Mat> principalComponents;
+		for (auto image : data.second) {
+			featureDetector->ApplyHarrisCornerDetection(image, blockSize, apertureSize, k);
+			auto keypoints = featureDetector->GetDescriptors();
+			cv::Mat keypointMat;
+		}
+		auto pair = std::make_pair(data.first, principalComponents);
+		retVal.insert(retVal.end(), std::move(pair));
+	}
+	return retVal;
+}
+
+void
+Preprocessing::ApplyHarrisCornersTrain(int numComponents, int blockSize, int apertureSize, double k) {
+	m_trainData.release();
+	m_trainLabels.release();
+	auto harrisResult = ApplyHarrisCorners(m_trainImagesWithLabels, numComponents, blockSize, apertureSize, k);
+	for (auto components : harrisResult) {
+		for (auto component : components.second) {
+			m_trainData.push_back(component.t());
+			m_trainLabels.push_back(components.first);
+		}
+	}
+}
+
+void
+Preprocessing::ApplyHarrisCornersTest(int numComponents, int blockSize, int apertureSize, double k) {
+	m_testData.release();
+	m_testLabels.release();
+	auto harrisResult = ApplyHarrisCorners(m_testImagesWithLabels, numComponents, blockSize, apertureSize, k);
+	for (auto components : harrisResult) {
 		for (auto component : components.second) {
 			m_testData.push_back(component.t());
 			m_testLabels.push_back(components.first);

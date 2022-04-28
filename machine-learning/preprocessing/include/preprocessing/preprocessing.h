@@ -43,6 +43,10 @@ public:
 	void ApplyPcaTrain(int numComponents);
 	void ApplyPcaTest(int numComponents);
 
+	// Harris Corners
+	void ApplyHarrisCornersTrain(int numComponents, int blockSize = 2, int apertureSize = 3, double k = 0.04);
+	void ApplyHarrisCornersTest(int numComponents, int blockSize = 2, int apertureSize = 3, double k = 0.04);
+
 private:
 	cv::Mat m_trainData;
 	cv::Mat m_trainLabels;

@@ -27,7 +27,8 @@ int main(int argc, char** argv) {
 	std::string testDir_8 = testDir + "8";
 	std::string testDir_9 = testDir + "9";
 
-	auto knnPtr = std::make_shared<ml::KNN>(7, 50, ml::DataExtractionMethod::PCA);
+	auto knnPtr = std::make_shared<ml::KNN>(7, 50, ml::DataExtractionMethod::HARRIS_CORNERS);
+	knnPtr->SetHarrisCornerParams(1, 1, 0.005);
 
 	knnPtr->ClearTrainData();
 	knnPtr->ClearTestData();
