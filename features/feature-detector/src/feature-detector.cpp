@@ -4,6 +4,8 @@
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
+#include <opencv2/core/core_c.h>
+
 #include "feature-detector/feature-detector.h"
 
 std::shared_ptr<base::Logger> features::FeatureDetector::m_logger = std::make_shared<base::Logger>();
@@ -32,13 +34,15 @@ FeatureDetector::ApplyHarrisCornerDetection(cv::Mat image, int blockSize, int ap
         }
     }
 
-    if (m_keypoints.size() <= 2000) {
+    if (m_keypoints.size() <= 2000 && m_keypoints.size() >= 3) {
         m_descriptor.release();
+        m_principalComponents.release();
         m_briskDescriptorExtractor->compute(image, m_keypoints, m_descriptor);
+        if (!m_descriptor.empty())
+            cv::reduce(m_descriptor, m_principalComponents, 0, CV_REDUCE_AVG, CV_32F);
+        m_lastImageWithKeypoints.release();
+        cv::drawKeypoints(image, m_keypoints, m_lastImageWithKeypoints);
     }
-
-    m_lastImageWithKeypoints.release();
-    cv::drawKeypoints(image, m_keypoints, m_lastImageWithKeypoints);
 }
 
 void 
@@ -72,13 +76,16 @@ FeatureDetector::ApplyShiTomasiCornerDetection(cv::Mat image, int maxCorners, do
         m_keypoints.emplace_back(std::move(feature));
     }
 
-    if (m_keypoints.size() <= 2000) {
+    if (m_keypoints.size() <= 2000 && m_keypoints.size() >= 3) {
         m_descriptor.release();
+        m_principalComponents.release();
         m_briskDescriptorExtractor->compute(image, m_keypoints, m_descriptor);
+        if (!m_descriptor.empty())
+            cv::reduce(m_descriptor, m_principalComponents, 0, CV_REDUCE_AVG, CV_32F);
+        m_lastImageWithKeypoints.release();
+        cv::drawKeypoints(image, m_keypoints, m_lastImageWithKeypoints);
     }
 
-    m_lastImageWithKeypoints.release();
-    cv::drawKeypoints(image, m_keypoints, m_lastImageWithKeypoints);
 }
 
 void

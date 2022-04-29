@@ -23,6 +23,7 @@ public:
 
 	std::vector<cv::KeyPoint> GetKeypoints() { return m_keypoints; }
 	cv::Mat GetDescriptors() { return m_descriptor; }
+	cv::Mat GetPrincipalComponents() { return m_principalComponents; }
 	cv::Mat GetImageWithKeypoints() { return m_lastImageWithKeypoints; }
 
 	void ApplyHarrisCornerDetection(cv::Mat image, int blockSize = 2, int apertureSize = 3, double k = 0.04, float thresh = 200.f);
@@ -44,6 +45,7 @@ private:
 
 	std::vector<cv::KeyPoint> m_keypoints;
 	cv::Mat m_descriptor;
+	cv::Mat m_principalComponents;
 	cv::Mat m_lastImageWithKeypoints;
 	static std::shared_ptr<base::Logger> m_logger;
 };

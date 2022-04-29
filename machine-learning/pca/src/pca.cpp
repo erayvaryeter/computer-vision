@@ -71,6 +71,7 @@ PCA::ApplyPCA(int numComponents) {
     cv::Mat mean = pca.mean.clone();
     cv::Mat eigenvalues = pca.eigenvalues.clone();
     cv::Mat eigenvectors = pca.eigenvectors.clone();
+    auto dst = pca.project(m_dataMatrix);
     eigenvectors.copyTo(m_transformationMatrix);
 }
 
@@ -80,6 +81,11 @@ PCA::GetPrincipalComponents() {
     for (size_t i = 0; i < m_dataMatrix.size().width; ++i) {
         cv::Mat data = m_dataMatrix.col(i);
         cv::Mat y = m_transformationMatrix * data;
+        cv::Mat rowSum, colSum;
+        cv::reduce(m_grayscaleImages[i], rowSum, 0, CV_REDUCE_SUM, CV_32F);
+        cv::reduce(m_grayscaleImages[i], colSum, 1, CV_REDUCE_SUM, CV_32F);
+        y.push_back(rowSum.t());
+        y.push_back(colSum);
         y = Normalize(y);
         principalComponents.emplace_back(std::move(y));
     }

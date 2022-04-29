@@ -47,6 +47,10 @@ public:
 	void ApplyHarrisCornersTrain(int numComponents, int blockSize = 2, int apertureSize = 3, double k = 0.04);
 	void ApplyHarrisCornersTest(int numComponents, int blockSize = 2, int apertureSize = 3, double k = 0.04);
 
+	// Shi Tomasi Corners
+	void ApplyShiTomasiCornersTrain(int numComponents, int blockSize = 2, int apertureSize = 3, double k = 0.04);
+	void ApplyShiTomasiCornersTest(int numComponents, int blockSize = 2, int apertureSize = 3, double k = 0.04);
+
 private:
 	cv::Mat m_trainData;
 	cv::Mat m_trainLabels;

@@ -91,8 +91,12 @@ ApplyHarrisCorners(std::map<int, std::vector<cv::Mat>> imagesWithLabels, int num
 		std::vector<cv::Mat> principalComponents;
 		for (auto image : data.second) {
 			featureDetector->ApplyHarrisCornerDetection(image, blockSize, apertureSize, k);
-			auto keypoints = featureDetector->GetDescriptors();
-			cv::Mat keypointMat;
+			auto component = featureDetector->GetPrincipalComponents();
+			if (component.rows != 0 && component.cols != 0) {
+				auto rectangleSize = numComponents <= component.cols ? numComponents : component.cols;
+				component = component(cv::Rect(0, 0, rectangleSize, 1));
+				principalComponents.emplace_back(std::move(component.t()));
+			}
 		}
 		auto pair = std::make_pair(data.first, principalComponents);
 		retVal.insert(retVal.end(), std::move(pair));
@@ -124,6 +128,15 @@ Preprocessing::ApplyHarrisCornersTest(int numComponents, int blockSize, int aper
 			m_testLabels.push_back(components.first);
 		}
 	}
+}
+
+void
+Preprocessing::ApplyShiTomasiCornersTrain(int numComponents, int blockSize, int apertureSize, double k) {
+
+}
+void
+Preprocessing::ApplyShiTomasiCornersTest(int numComponents, int blockSize, int apertureSize, double k) {
+
 }
 
 }

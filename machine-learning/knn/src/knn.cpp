@@ -44,6 +44,11 @@ KNN::Train() {
 		m_preprocessor->ApplyHarrisCornersTrain(m_numberOfComponents, m_harrisCornerParams.blockSize, m_harrisCornerParams.apertureSize, m_harrisCornerParams.k);
 		break;
 	}
+	case DataExtractionMethod::SHI_TOMASI_CORNERS:
+	{
+		m_preprocessor->ApplyShiTomasiCornersTrain(m_numberOfComponents, m_harrisCornerParams.blockSize, m_harrisCornerParams.apertureSize, m_harrisCornerParams.k);
+		break;
+	}
 	default: break;
 	}
 
@@ -67,6 +72,11 @@ KNN::Test() {
 		break;
 	}
 	case DataExtractionMethod::HARRIS_CORNERS:
+	{
+		m_preprocessor->ApplyHarrisCornersTest(m_numberOfComponents, m_harrisCornerParams.blockSize, m_harrisCornerParams.apertureSize, m_harrisCornerParams.k);
+		break;
+	}
+	case DataExtractionMethod::SHI_TOMASI_CORNERS:
 	{
 		m_preprocessor->ApplyHarrisCornersTest(m_numberOfComponents, m_harrisCornerParams.blockSize, m_harrisCornerParams.apertureSize, m_harrisCornerParams.k);
 		break;

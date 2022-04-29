@@ -1,6 +1,10 @@
 #include <knn/knn.h>
 #include <file/file.h>
 
+// #define METHOD_PCA
+#define METHOD_HARRIS_CORNERS
+// #define METHOD_SHI_TOMASI_CORNERS
+
 int main(int argc, char** argv) {
 	std::string trainDir = "../../../../machine-learning/resource/train/";
 	std::string testDir = "../../../../machine-learning/resource/test/";
@@ -27,8 +31,16 @@ int main(int argc, char** argv) {
 	std::string testDir_8 = testDir + "8";
 	std::string testDir_9 = testDir + "9";
 
-	auto knnPtr = std::make_shared<ml::KNN>(7, 50, ml::DataExtractionMethod::HARRIS_CORNERS);
+	#ifdef METHOD_PCA
+	auto knnPtr = std::make_shared<ml::KNN>(5, 20, ml::DataExtractionMethod::PCA);
+	#endif 
+	#ifdef METHOD_HARRIS_CORNERS
+	auto knnPtr = std::make_shared<ml::KNN>(5, 50, ml::DataExtractionMethod::HARRIS_CORNERS);
 	knnPtr->SetHarrisCornerParams(1, 1, 0.005);
+	#endif
+	#ifdef METHOD_SHI_TOMASI_CORNERS
+	auto knnPtr = std::make_shared<ml::KNN>(5, 20, ml::DataExtractionMethod::SHI_TOMASI_CORNERS);
+	#endif
 
 	knnPtr->ClearTrainData();
 	knnPtr->ClearTestData();
