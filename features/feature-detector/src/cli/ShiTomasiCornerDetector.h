@@ -113,6 +113,8 @@ public:
 		cv::createTrackbar("K", "Shi Tomasi Corner Detector", &uiOptions.k, 100, OnKTrackbar, &algOptions);
 		cv::createTrackbar("Use Harris", "Shi Tomasi Corner Detector", &uiOptions.useHarris, 1, OnUseHarrisTrackbar, &algOptions);
 
+		OnMaxCornersTrackbar(100, &algOptions);
+
 		while (1) {
 			std::lock_guard<std::mutex> lock(algOptions.mtx);
 			cv::imshow("Shi Tomasi Corner Detector", algOptions.outputImage);

@@ -34,15 +34,16 @@ FeatureDetector::ApplyHarrisCornerDetection(cv::Mat image, int blockSize, int ap
         }
     }
 
-    if (m_keypoints.size() <= 2000 && m_keypoints.size() >= 3) {
+    if (m_keypoints.size() <= 2000 && m_keypoints.size() >= 1) {
         m_descriptor.release();
         m_principalComponents.release();
         m_briskDescriptorExtractor->compute(image, m_keypoints, m_descriptor);
         if (!m_descriptor.empty())
             cv::reduce(m_descriptor, m_principalComponents, 0, CV_REDUCE_AVG, CV_32F);
-        m_lastImageWithKeypoints.release();
-        cv::drawKeypoints(image, m_keypoints, m_lastImageWithKeypoints);
     }
+
+    m_lastImageWithKeypoints.release();
+    cv::drawKeypoints(image, m_keypoints, m_lastImageWithKeypoints);
 }
 
 void 
@@ -76,16 +77,16 @@ FeatureDetector::ApplyShiTomasiCornerDetection(cv::Mat image, int maxCorners, do
         m_keypoints.emplace_back(std::move(feature));
     }
 
-    if (m_keypoints.size() <= 2000 && m_keypoints.size() >= 3) {
+    if (m_keypoints.size() <= 2000 && m_keypoints.size() >= 1) {
         m_descriptor.release();
         m_principalComponents.release();
         m_briskDescriptorExtractor->compute(image, m_keypoints, m_descriptor);
         if (!m_descriptor.empty())
             cv::reduce(m_descriptor, m_principalComponents, 0, CV_REDUCE_AVG, CV_32F);
-        m_lastImageWithKeypoints.release();
-        cv::drawKeypoints(image, m_keypoints, m_lastImageWithKeypoints);
     }
 
+    m_lastImageWithKeypoints.release();
+    cv::drawKeypoints(image, m_keypoints, m_lastImageWithKeypoints);
 }
 
 void
@@ -93,7 +94,10 @@ FeatureDetector::ApplySIFT(cv::Mat image, int nFeatures, int nOctaveLayers, doub
     auto siftPtr = cv::SIFT::create(nFeatures, nOctaveLayers, contrastThreshold, edgeThreshold, sigma);
     m_keypoints.clear();
     m_descriptor.release();
+    m_principalComponents.release();
     siftPtr->detectAndCompute(image, cv::Mat(), m_keypoints, m_descriptor);
+    if (!m_descriptor.empty())
+        cv::reduce(m_descriptor, m_principalComponents, 0, CV_REDUCE_AVG, CV_32F);
     m_lastImageWithKeypoints.release();
     cv::drawKeypoints(image, m_keypoints, m_lastImageWithKeypoints);
 }

@@ -130,13 +130,102 @@ Preprocessing::ApplyHarrisCornersTest(int numComponents, int blockSize, int aper
 	}
 }
 
-void
-Preprocessing::ApplyShiTomasiCornersTrain(int numComponents, int blockSize, int apertureSize, double k) {
+std::map<int, std::vector<cv::Mat>>
+ApplyShiTomasiCorners(std::map<int, std::vector<cv::Mat>> imagesWithLabels, int numComponents, int maxCorners, double qualityLevel, double minDistance, 
+	int blockSize, int gradientSize, bool useHarris, double k) {
+	auto featureDetector = std::make_shared<features::FeatureDetector>();
+	std::map<int, std::vector<cv::Mat>> retVal;
+	for (auto data : imagesWithLabels) {
+		std::vector<cv::Mat> principalComponents;
+		for (auto image : data.second) {
+			featureDetector->ApplyShiTomasiCornerDetection(image, maxCorners, qualityLevel, minDistance, blockSize, gradientSize, useHarris, k);
+			auto component = featureDetector->GetPrincipalComponents();
+			if (component.rows != 0 && component.cols != 0) {
+				auto rectangleSize = numComponents <= component.cols ? numComponents : component.cols;
+				component = component(cv::Rect(0, 0, rectangleSize, 1));
+				principalComponents.emplace_back(std::move(component.t()));
+			}
+		}
+		auto pair = std::make_pair(data.first, principalComponents);
+		retVal.insert(retVal.end(), std::move(pair));
+	}
+	return retVal;
+}
 
+void
+Preprocessing::ApplyShiTomasiCornersTrain(int numComponents, int maxCorners, double qualityLevel, double minDistance, int blockSize, int gradientSize, 
+	bool useHarris, double k) {
+	m_trainData.release();
+	m_trainLabels.release();
+	auto shiTomasiResult = ApplyShiTomasiCorners(m_trainImagesWithLabels, numComponents, maxCorners, qualityLevel, minDistance, blockSize, gradientSize, 
+		useHarris, k);
+	for (auto components : shiTomasiResult) {
+		for (auto component : components.second) {
+			m_trainData.push_back(component.t());
+			m_trainLabels.push_back(components.first);
+		}
+	}
 }
 void
-Preprocessing::ApplyShiTomasiCornersTest(int numComponents, int blockSize, int apertureSize, double k) {
+Preprocessing::ApplyShiTomasiCornersTest(int numComponents, int maxCorners, double qualityLevel, double minDistance, int blockSize, int gradientSize,
+	bool useHarris, double k) {
+	m_testData.release();
+	m_testLabels.release();
+	auto shiTomasiResult = ApplyShiTomasiCorners(m_testImagesWithLabels, numComponents, maxCorners, qualityLevel, minDistance, blockSize, gradientSize,
+		useHarris, k);
+	for (auto components : shiTomasiResult) {
+		for (auto component : components.second) {
+			m_testData.push_back(component.t());
+			m_testLabels.push_back(components.first);
+		}
+	}
+}
 
+std::map<int, std::vector<cv::Mat>>
+ApplySift(std::map<int, std::vector<cv::Mat>> imagesWithLabels, int numComponents, int nFeatures, int nOctaveLayers, double contrastThreshold, 
+	double edgeThreshold, double sigma) {
+	auto featureDetector = std::make_shared<features::FeatureDetector>();
+	std::map<int, std::vector<cv::Mat>> retVal;
+	for (auto data : imagesWithLabels) {
+		std::vector<cv::Mat> principalComponents;
+		for (auto image : data.second) {
+			featureDetector->ApplySIFT(image, nFeatures, nOctaveLayers, contrastThreshold, edgeThreshold, sigma);
+			auto component = featureDetector->GetPrincipalComponents();
+			if (component.rows != 0 && component.cols != 0) {
+				auto rectangleSize = numComponents <= component.cols ? numComponents : component.cols;
+				component = component(cv::Rect(0, 0, rectangleSize, 1));
+				principalComponents.emplace_back(std::move(component.t()));
+			}
+		}
+		auto pair = std::make_pair(data.first, principalComponents);
+		retVal.insert(retVal.end(), std::move(pair));
+	}
+	return retVal;
+}
+
+void
+Preprocessing::ApplySiftTrain(int numComponents, int nFeatures, int nOctaveLayers, double contrastThreshold, double edgeThreshold, double sigma) {
+	m_trainData.release();
+	m_trainLabels.release();
+	auto siftResult = ApplySift(m_trainImagesWithLabels, numComponents, nFeatures, nOctaveLayers, contrastThreshold, edgeThreshold, sigma);
+	for (auto components : siftResult) {
+		for (auto component : components.second) {
+			m_trainData.push_back(component.t());
+			m_trainLabels.push_back(components.first);
+		}
+	}
+}
+void
+Preprocessing::ApplySiftTest(int numComponents, int nFeatures, int nOctaveLayers, double contrastThreshold, double edgeThreshold, double sigma) {
+	m_testData.release();
+	m_testLabels.release();
+	auto siftResult = ApplySift(m_testImagesWithLabels, numComponents, nFeatures, nOctaveLayers, contrastThreshold, edgeThreshold, sigma);
+	for (auto components : siftResult) {
+		for (auto component : components.second) {
+			m_testData.push_back(component.t());
+			m_testLabels.push_back(components.first);
+		}
+	}
 }
 
 }

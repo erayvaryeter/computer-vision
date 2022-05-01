@@ -32,6 +32,25 @@ public:
 		m_harrisCornerParams.k = k;
 	}
 
+	void SetShiTomasiCornerParams(int maxCorners = 25, double qualityLevel = 0.01, double minDistance = 10, int blockSize = 3,
+		int gradientSize = 3, bool useHarris = false, double k = 0.04) {
+		m_shiTomasiCornerParams.maxCorners = maxCorners;
+		m_shiTomasiCornerParams.qualityLevel = qualityLevel;
+		m_shiTomasiCornerParams.minDistance = minDistance;
+		m_shiTomasiCornerParams.blockSize = blockSize;
+		m_shiTomasiCornerParams.gradientSize = gradientSize;
+		m_shiTomasiCornerParams.useHarris = useHarris;
+		m_shiTomasiCornerParams.k = k;
+	}
+
+	void SetSiftParams(int nFeatures = 0, int nOctaveLayers = 3, double contrastThreshold = 0.04, double edgeThreshold = 10.0, double sigma = 1.60) {
+		m_siftParams.nFeatures = nFeatures;
+		m_siftParams.nOctaveLayers = nOctaveLayers;
+		m_siftParams.contrastThreshold = contrastThreshold;
+		m_siftParams.edgeThreshold = edgeThreshold;
+		m_siftParams.sigma = sigma;
+	}
+
 	void ClearTrainData() { 
 		m_trainImageDirectories.clear();
 		m_trainLabels.clear();
@@ -65,6 +84,8 @@ private:
 	static std::shared_ptr<base::Logger> m_logger;
 
 	HarrisCornerParams m_harrisCornerParams;
+	ShiTomasiCornerParams m_shiTomasiCornerParams;
+	SiftParams m_siftParams;
 };
 
 }

@@ -48,8 +48,16 @@ public:
 	void ApplyHarrisCornersTest(int numComponents, int blockSize = 2, int apertureSize = 3, double k = 0.04);
 
 	// Shi Tomasi Corners
-	void ApplyShiTomasiCornersTrain(int numComponents, int blockSize = 2, int apertureSize = 3, double k = 0.04);
-	void ApplyShiTomasiCornersTest(int numComponents, int blockSize = 2, int apertureSize = 3, double k = 0.04);
+	void ApplyShiTomasiCornersTrain(int numComponents, int maxCorners = 25, double qualityLevel = 0.01, double minDistance = 10, int blockSize = 3,
+		int gradientSize = 3, bool useHarris = false, double k = 0.04);
+	void ApplyShiTomasiCornersTest(int numComponents, int maxCorners = 25, double qualityLevel = 0.01, double minDistance = 10, int blockSize = 3,
+		int gradientSize = 3, bool useHarris = false, double k = 0.04);
+
+	// SIFT
+	void ApplySiftTrain(int numComponents, int nFeatures = 0, int nOctaveLayers = 3, double contrastThreshold = 0.04, double edgeThreshold = 10.0,
+		double sigma = 1.60);
+	void ApplySiftTest(int numComponents, int nFeatures = 0, int nOctaveLayers = 3, double contrastThreshold = 0.04, double edgeThreshold = 10.0,
+		double sigma = 1.60);
 
 private:
 	cv::Mat m_trainData;

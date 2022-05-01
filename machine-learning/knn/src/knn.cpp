@@ -46,8 +46,15 @@ KNN::Train() {
 	}
 	case DataExtractionMethod::SHI_TOMASI_CORNERS:
 	{
-		m_preprocessor->ApplyShiTomasiCornersTrain(m_numberOfComponents, m_harrisCornerParams.blockSize, m_harrisCornerParams.apertureSize, m_harrisCornerParams.k);
+		m_preprocessor->ApplyShiTomasiCornersTrain(m_numberOfComponents, m_shiTomasiCornerParams.maxCorners, m_shiTomasiCornerParams.qualityLevel,
+			m_shiTomasiCornerParams.minDistance, m_shiTomasiCornerParams.blockSize, m_shiTomasiCornerParams.gradientSize, m_shiTomasiCornerParams.useHarris,
+			m_shiTomasiCornerParams.k);
 		break;
+	}
+	case DataExtractionMethod::SIFT:
+	{
+		m_preprocessor->ApplySiftTrain(m_numberOfComponents, m_siftParams.nFeatures, m_siftParams.nOctaveLayers, m_siftParams.contrastThreshold,
+			m_siftParams.edgeThreshold, m_siftParams.sigma);
 	}
 	default: break;
 	}
@@ -78,8 +85,15 @@ KNN::Test() {
 	}
 	case DataExtractionMethod::SHI_TOMASI_CORNERS:
 	{
-		m_preprocessor->ApplyHarrisCornersTest(m_numberOfComponents, m_harrisCornerParams.blockSize, m_harrisCornerParams.apertureSize, m_harrisCornerParams.k);
+		m_preprocessor->ApplyShiTomasiCornersTest(m_numberOfComponents, m_shiTomasiCornerParams.maxCorners, m_shiTomasiCornerParams.qualityLevel, 
+			m_shiTomasiCornerParams.minDistance, m_shiTomasiCornerParams.blockSize, m_shiTomasiCornerParams.gradientSize, m_shiTomasiCornerParams.useHarris,
+			m_shiTomasiCornerParams.k);
 		break;
+	}
+	case DataExtractionMethod::SIFT:
+	{
+		m_preprocessor->ApplySiftTest(m_numberOfComponents, m_siftParams.nFeatures, m_siftParams.nOctaveLayers, m_siftParams.contrastThreshold,
+			m_siftParams.edgeThreshold, m_siftParams.sigma);
 	}
 	default: break;
 	}

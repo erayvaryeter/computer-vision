@@ -2,8 +2,9 @@
 #include <file/file.h>
 
 // #define METHOD_PCA
-#define METHOD_HARRIS_CORNERS
+// #define METHOD_HARRIS_CORNERS
 // #define METHOD_SHI_TOMASI_CORNERS
+#define METHOD_SIFT
 
 int main(int argc, char** argv) {
 	std::string trainDir = "../../../../machine-learning/resource/train/";
@@ -39,7 +40,12 @@ int main(int argc, char** argv) {
 	knnPtr->SetHarrisCornerParams(1, 1, 0.005);
 	#endif
 	#ifdef METHOD_SHI_TOMASI_CORNERS
-	auto knnPtr = std::make_shared<ml::KNN>(5, 20, ml::DataExtractionMethod::SHI_TOMASI_CORNERS);
+	auto knnPtr = std::make_shared<ml::KNN>(3, 40, ml::DataExtractionMethod::SHI_TOMASI_CORNERS);
+	knnPtr->SetShiTomasiCornerParams(25, 0.01, 1.0, 3, 3, false, 0.01);
+	#endif
+	#ifdef METHOD_SIFT
+	auto knnPtr = std::make_shared<ml::KNN>(3, 50, ml::DataExtractionMethod::SIFT);
+	knnPtr->SetSiftParams(0, 3, 0.04, 5.0, 2.8);
 	#endif
 
 	knnPtr->ClearTrainData();
