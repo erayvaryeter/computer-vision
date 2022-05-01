@@ -23,3 +23,11 @@ struct SiftParams {
 	double edgeThreshold = 10.0;
 	double sigma = 1.60;
 };
+
+struct SurfParams {
+	double hessianThreshold = 100;
+	int nOctaves = 4;
+	int nOctaveLayers = 3;
+	bool extended = false;
+	bool upright = false;
+};

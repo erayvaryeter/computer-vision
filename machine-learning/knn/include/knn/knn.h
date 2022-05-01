@@ -51,6 +51,14 @@ public:
 		m_siftParams.sigma = sigma;
 	}
 
+	void SetSurfParams(double hessianThreshold = 100, int nOctaves = 4, int nOctaveLayers = 3, bool extended = false, bool upright = false) {
+		m_surfParams.hessianThreshold = hessianThreshold;
+		m_surfParams.nOctaves = nOctaves;
+		m_surfParams.nOctaveLayers = nOctaveLayers;
+		m_surfParams.extended = extended;
+		m_surfParams.upright = upright;
+	}
+
 	void ClearTrainData() { 
 		m_trainImageDirectories.clear();
 		m_trainLabels.clear();
@@ -86,6 +94,7 @@ private:
 	HarrisCornerParams m_harrisCornerParams;
 	ShiTomasiCornerParams m_shiTomasiCornerParams;
 	SiftParams m_siftParams;
+	SurfParams m_surfParams;
 };
 
 }

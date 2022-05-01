@@ -215,11 +215,59 @@ Preprocessing::ApplySiftTrain(int numComponents, int nFeatures, int nOctaveLayer
 		}
 	}
 }
+
 void
 Preprocessing::ApplySiftTest(int numComponents, int nFeatures, int nOctaveLayers, double contrastThreshold, double edgeThreshold, double sigma) {
 	m_testData.release();
 	m_testLabels.release();
 	auto siftResult = ApplySift(m_testImagesWithLabels, numComponents, nFeatures, nOctaveLayers, contrastThreshold, edgeThreshold, sigma);
+	for (auto components : siftResult) {
+		for (auto component : components.second) {
+			m_testData.push_back(component.t());
+			m_testLabels.push_back(components.first);
+		}
+	}
+}
+
+std::map<int, std::vector<cv::Mat>>
+ApplySurf(std::map<int, std::vector<cv::Mat>> imagesWithLabels, int numComponents, double hessianThreshold, int nOctaves, int nOctaveLayers, bool extended, 
+	bool upright) {
+	auto featureDetector = std::make_shared<features::FeatureDetector>();
+	std::map<int, std::vector<cv::Mat>> retVal;
+	for (auto data : imagesWithLabels) {
+		std::vector<cv::Mat> principalComponents;
+		for (auto image : data.second) {
+			featureDetector->ApplySURF(image, hessianThreshold, nOctaves, nOctaveLayers, extended, upright);
+			auto component = featureDetector->GetPrincipalComponents();
+			if (component.rows != 0 && component.cols != 0) {
+				auto rectangleSize = numComponents <= component.cols ? numComponents : component.cols;
+				component = component(cv::Rect(0, 0, rectangleSize, 1));
+				principalComponents.emplace_back(std::move(component.t()));
+			}
+		}
+		auto pair = std::make_pair(data.first, principalComponents);
+		retVal.insert(retVal.end(), std::move(pair));
+	}
+	return retVal;
+}
+
+void
+Preprocessing::ApplySurfTrain(int numComponents, double hessianThreshold, int nOctaves, int nOctaveLayers, bool extended, bool upright) {
+	m_trainData.release();
+	m_trainLabels.release();
+	auto siftResult = ApplySurf(m_trainImagesWithLabels, numComponents, hessianThreshold, nOctaves, nOctaveLayers, extended, upright);
+	for (auto components : siftResult) {
+		for (auto component : components.second) {
+			m_trainData.push_back(component.t());
+			m_trainLabels.push_back(components.first);
+		}
+	}
+}
+void
+Preprocessing::ApplySurfTest(int numComponents, double hessianThreshold, int nOctaves, int nOctaveLayers, bool extended, bool upright) {
+	m_testData.release();
+	m_testLabels.release();
+	auto siftResult = ApplySurf(m_testImagesWithLabels, numComponents, hessianThreshold, nOctaves, nOctaveLayers, extended, upright);
 	for (auto components : siftResult) {
 		for (auto component : components.second) {
 			m_testData.push_back(component.t());

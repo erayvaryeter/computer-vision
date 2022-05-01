@@ -59,6 +59,12 @@ public:
 	void ApplySiftTest(int numComponents, int nFeatures = 0, int nOctaveLayers = 3, double contrastThreshold = 0.04, double edgeThreshold = 10.0,
 		double sigma = 1.60);
 
+	// SURF
+	void ApplySurfTrain(int numComponents, double hessianThreshold = 100, int nOctaves = 4, int nOctaveLayers = 3, bool extended = false,
+		bool upright = false);
+	void ApplySurfTest(int numComponents, double hessianThreshold = 100, int nOctaves = 4, int nOctaveLayers = 3, bool extended = false,
+		bool upright = false);
+
 private:
 	cv::Mat m_trainData;
 	cv::Mat m_trainLabels;

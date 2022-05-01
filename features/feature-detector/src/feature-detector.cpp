@@ -107,7 +107,10 @@ FeatureDetector::ApplySURF(cv::Mat image, double hessianThreshold, int nOctaves,
     auto surfPtr = cv::xfeatures2d::SURF::create(hessianThreshold, nOctaves, nOctaveLayers, extended, upright);
     m_keypoints.clear();
     m_descriptor.release();
+    m_principalComponents.release();
     surfPtr->detectAndCompute(image, cv::Mat(), m_keypoints, m_descriptor);
+    if (!m_descriptor.empty())
+        cv::reduce(m_descriptor, m_principalComponents, 0, CV_REDUCE_AVG, CV_32F);
     m_lastImageWithKeypoints.release();
     cv::drawKeypoints(image, m_keypoints, m_lastImageWithKeypoints);
 }

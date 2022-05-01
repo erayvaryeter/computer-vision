@@ -56,6 +56,11 @@ KNN::Train() {
 		m_preprocessor->ApplySiftTrain(m_numberOfComponents, m_siftParams.nFeatures, m_siftParams.nOctaveLayers, m_siftParams.contrastThreshold,
 			m_siftParams.edgeThreshold, m_siftParams.sigma);
 	}
+	case DataExtractionMethod::SURF:
+	{
+		m_preprocessor->ApplySiftTrain(m_numberOfComponents, m_siftParams.nFeatures, m_siftParams.nOctaveLayers, m_siftParams.contrastThreshold,
+			m_siftParams.edgeThreshold, m_siftParams.sigma);
+	}
 	default: break;
 	}
 
@@ -91,6 +96,11 @@ KNN::Test() {
 		break;
 	}
 	case DataExtractionMethod::SIFT:
+	{
+		m_preprocessor->ApplySiftTest(m_numberOfComponents, m_siftParams.nFeatures, m_siftParams.nOctaveLayers, m_siftParams.contrastThreshold,
+			m_siftParams.edgeThreshold, m_siftParams.sigma);
+	}
+	case DataExtractionMethod::SURF:
 	{
 		m_preprocessor->ApplySiftTest(m_numberOfComponents, m_siftParams.nFeatures, m_siftParams.nOctaveLayers, m_siftParams.contrastThreshold,
 			m_siftParams.edgeThreshold, m_siftParams.sigma);
