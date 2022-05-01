@@ -58,8 +58,8 @@ KNN::Train() {
 	}
 	case DataExtractionMethod::SURF:
 	{
-		m_preprocessor->ApplySiftTrain(m_numberOfComponents, m_siftParams.nFeatures, m_siftParams.nOctaveLayers, m_siftParams.contrastThreshold,
-			m_siftParams.edgeThreshold, m_siftParams.sigma);
+		m_preprocessor->ApplySurfTrain(m_numberOfComponents, m_surfParams.hessianThreshold, m_surfParams.nOctaves, m_surfParams.nOctaveLayers,
+			m_surfParams.extended, m_surfParams.upright);
 	}
 	default: break;
 	}
@@ -102,8 +102,8 @@ KNN::Test() {
 	}
 	case DataExtractionMethod::SURF:
 	{
-		m_preprocessor->ApplySiftTest(m_numberOfComponents, m_siftParams.nFeatures, m_siftParams.nOctaveLayers, m_siftParams.contrastThreshold,
-			m_siftParams.edgeThreshold, m_siftParams.sigma);
+		m_preprocessor->ApplySurfTest(m_numberOfComponents, m_surfParams.hessianThreshold, m_surfParams.nOctaves, m_surfParams.nOctaveLayers, 
+			m_surfParams.extended, m_surfParams.upright);
 	}
 	default: break;
 	}
