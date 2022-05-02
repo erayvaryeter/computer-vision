@@ -165,7 +165,10 @@ FeatureDetector::ApplyBRISK(cv::Mat image, int thresh, int octaves, float patter
     auto briskPtr = cv::BRISK::create(thresh, octaves, patternScale);
     m_keypoints.clear();
     m_descriptor.release();
+    m_principalComponents.release();
     briskPtr->detectAndCompute(image, cv::Mat(), m_keypoints, m_descriptor);
+    if (!m_descriptor.empty())
+        cv::reduce(m_descriptor, m_principalComponents, 0, CV_REDUCE_AVG, CV_32F);
     m_lastImageWithKeypoints.release();
     cv::drawKeypoints(image, m_keypoints, m_lastImageWithKeypoints);
 }

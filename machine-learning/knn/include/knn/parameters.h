@@ -53,3 +53,9 @@ struct OrbParams {
 	int patchSize = 31;
 	int fastThreshold = 20;
 };
+
+struct BriskParams {
+	int thresh = 30;
+	int octaves = 3;
+	float patternScale = 1.0f;
+};

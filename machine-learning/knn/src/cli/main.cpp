@@ -8,8 +8,8 @@
 // #define METHOD_SURF
 // #define METHOD_FAST
 // #define METHOD_BRIEF
-#define METHOD_ORB
-// #define METHOD_BRISK
+// #define METHOD_ORB
+#define METHOD_BRISK
 
 int main(int argc, char** argv) {
 	std::string trainDir = "../../../../machine-learning/resource/train/";
@@ -67,6 +67,10 @@ int main(int argc, char** argv) {
 	#ifdef METHOD_ORB
 	auto knnPtr = std::make_shared<ml::KNN>(7, 50, ml::DataExtractionMethod::ORB);
 	knnPtr->SetOrbParams(500, 1.1f, 10, 10, 0, 2, cv::ORB::HARRIS_SCORE, 31, 20);
+	#endif
+	#ifdef METHOD_BRISK
+	auto knnPtr = std::make_shared<ml::KNN>(5, 50, ml::DataExtractionMethod::BRISK);
+	knnPtr->SetBriskParams(13, 3, 0.5f);
 	#endif
 
 	knnPtr->ClearTrainData();

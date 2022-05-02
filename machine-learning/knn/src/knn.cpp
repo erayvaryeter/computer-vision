@@ -74,6 +74,10 @@ KNN::Train() {
 		m_preprocessor->ApplyOrbTrain(m_numberOfComponents, m_orbParams.nFeatures, m_orbParams.scaleFactor, m_orbParams.nLevels, m_orbParams.edgeThreshold, 
 			m_orbParams.firstLevel, m_orbParams.WTA_K, m_orbParams.st, m_orbParams.patchSize, m_orbParams.fastThreshold);
 	}
+	case DataExtractionMethod::BRISK:
+	{
+		m_preprocessor->ApplyBriskTrain(m_numberOfComponents, m_briskParams.thresh, m_briskParams.octaves, m_briskParams.patternScale);
+	}
 	default: break;
 	}
 
@@ -130,6 +134,10 @@ KNN::Test() {
 	{
 		m_preprocessor->ApplyOrbTest(m_numberOfComponents, m_orbParams.nFeatures, m_orbParams.scaleFactor, m_orbParams.nLevels, m_orbParams.edgeThreshold,
 			m_orbParams.firstLevel, m_orbParams.WTA_K, m_orbParams.st, m_orbParams.patchSize, m_orbParams.fastThreshold);
+	}
+	case DataExtractionMethod::BRISK:
+	{
+		m_preprocessor->ApplyBriskTest(m_numberOfComponents, m_briskParams.thresh, m_briskParams.octaves, m_briskParams.patternScale);
 	}
 	default: break;
 	}

@@ -421,4 +421,51 @@ Preprocessing::ApplyOrbTest(int numComponents, int nFeatures, float scaleFactor,
 	}
 }
 
+std::map<int, std::vector<cv::Mat>>
+ApplyBrisk(std::map<int, std::vector<cv::Mat>> imagesWithLabels, int numComponents, int thresh, int octaves, float patternScale) {
+	auto featureDetector = std::make_shared<features::FeatureDetector>();
+	std::map<int, std::vector<cv::Mat>> retVal;
+	for (auto data : imagesWithLabels) {
+		std::vector<cv::Mat> principalComponents;
+		for (auto image : data.second) {
+			featureDetector->ApplyBRISK(image, thresh, octaves, patternScale);
+			auto component = featureDetector->GetPrincipalComponents();
+			if (component.rows != 0 && component.cols != 0) {
+				auto rectangleSize = numComponents <= component.cols ? numComponents : component.cols;
+				component = component(cv::Rect(0, 0, rectangleSize, 1));
+				principalComponents.emplace_back(std::move(component.t()));
+			}
+		}
+		auto pair = std::make_pair(data.first, principalComponents);
+		retVal.insert(retVal.end(), std::move(pair));
+	}
+	return retVal;
+}
+
+void
+Preprocessing::ApplyBriskTrain(int numComponents, int thresh, int octaves, float patternScale) {
+	m_trainData.release();
+	m_trainLabels.release();
+	auto briskResult = ApplyBrisk(m_trainImagesWithLabels, numComponents, thresh, octaves, patternScale);
+	for (auto components : briskResult) {
+		for (auto component : components.second) {
+			m_trainData.push_back(component.t());
+			m_trainLabels.push_back(components.first);
+		}
+	}
+}
+
+void
+Preprocessing::ApplyBriskTest(int numComponents, int thresh, int octaves, float patternScale) {
+	m_testData.release();
+	m_testLabels.release();
+	auto briskResult = ApplyBrisk(m_testImagesWithLabels, numComponents, thresh, octaves, patternScale);
+	for (auto components : briskResult) {
+		for (auto component : components.second) {
+			m_testData.push_back(component.t());
+			m_testLabels.push_back(components.first);
+		}
+	}
+}
+
 }

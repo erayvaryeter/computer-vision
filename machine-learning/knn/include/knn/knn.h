@@ -82,6 +82,12 @@ public:
 		m_orbParams.fastThreshold = fastThreshold;
 	}
 
+	void SetBriskParams(int thresh = 30, int octaves = 3, float patternScale = 1.0f) {
+		m_briskParams.thresh = thresh;
+		m_briskParams.octaves = octaves;
+		m_briskParams.patternScale = patternScale;
+	}
+
 	void ClearTrainData() { 
 		m_trainImageDirectories.clear();
 		m_trainLabels.clear();
@@ -121,6 +127,7 @@ private:
 	FastParams m_fastParams;
 	BriefParams m_briefParams;
 	OrbParams m_orbParams;
+	BriskParams m_briskParams;
 };
 
 }
