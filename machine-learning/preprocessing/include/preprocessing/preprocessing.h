@@ -69,6 +69,16 @@ public:
 	void ApplyFastTrain(int numComponents, int threshold = 10, bool nonmaxSupression = true);
 	void ApplyFastTest(int numComponents, int threshold = 10, bool nonmaxSupression = true);
 
+	// BRIEF
+	void ApplyBriefTrain(int numComponents, int bytes = 32, bool useOrientation = false);
+	void ApplyBriefTest(int numComponents, int bytes = 32, bool useOrientation = false);
+
+	// ORB
+	void ApplyOrbTrain(int numComponents, int nFeatures = 500, float scaleFactor = 1.2f, int nLevels = 8, int edgeThreshold = 31, int firstLevel = 0,
+		int WTA_K = 2, cv::ORB::ScoreType st = cv::ORB::ScoreType::HARRIS_SCORE, int patchSize = 31, int fastThreshold = 20);
+	void ApplyOrbTest(int numComponents, int nFeatures = 500, float scaleFactor = 1.2f, int nLevels = 8, int edgeThreshold = 31, int firstLevel = 0,
+		int WTA_K = 2, cv::ORB::ScoreType st = cv::ORB::ScoreType::HARRIS_SCORE, int patchSize = 31, int fastThreshold = 20);
+
 private:
 	cv::Mat m_trainData;
 	cv::Mat m_trainLabels;

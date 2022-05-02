@@ -137,7 +137,10 @@ FeatureDetector::ApplyBRIEF(cv::Mat image, int bytes, bool useOrientation) {
     m_siftKeypointDetector->detect(image, m_keypoints);
     if (m_keypoints.size() <= 2000) {
         m_descriptor.release();
+        m_principalComponents.release();
         briefPtr->compute(image, m_keypoints, m_descriptor);
+        if (!m_descriptor.empty())
+            cv::reduce(m_descriptor, m_principalComponents, 0, CV_REDUCE_AVG, CV_32F);
     }
     m_lastImageWithKeypoints.release();
     cv::drawKeypoints(image, m_keypoints, m_lastImageWithKeypoints);
@@ -149,7 +152,10 @@ FeatureDetector::ApplyORB(cv::Mat image, int nFeatures, float scaleFactor, int n
     auto orbPtr = cv::ORB::create(nFeatures, scaleFactor, nLevels, edgeThreshold, firstLevel, WTA_K, st, patchSize, fastThreshold);
     m_keypoints.clear();
     m_descriptor.release();
+    m_principalComponents.release();
     orbPtr->detectAndCompute(image, cv::Mat(), m_keypoints, m_descriptor);
+    if (!m_descriptor.empty())
+        cv::reduce(m_descriptor, m_principalComponents, 0, CV_REDUCE_AVG, CV_32F);
     m_lastImageWithKeypoints.release();
     cv::drawKeypoints(image, m_keypoints, m_lastImageWithKeypoints);
 }

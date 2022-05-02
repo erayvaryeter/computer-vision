@@ -65,6 +65,15 @@ KNN::Train() {
 	{
 		m_preprocessor->ApplyFastTrain(m_numberOfComponents, m_fastParams.threshold, m_fastParams.nonmaxSupression);
 	}
+	case DataExtractionMethod::BRIEF:
+	{
+		m_preprocessor->ApplyBriefTrain(m_numberOfComponents, m_briefParams.bytes, m_briefParams.useOrientation);
+	}
+	case DataExtractionMethod::ORB:
+	{
+		m_preprocessor->ApplyOrbTrain(m_numberOfComponents, m_orbParams.nFeatures, m_orbParams.scaleFactor, m_orbParams.nLevels, m_orbParams.edgeThreshold, 
+			m_orbParams.firstLevel, m_orbParams.WTA_K, m_orbParams.st, m_orbParams.patchSize, m_orbParams.fastThreshold);
+	}
 	default: break;
 	}
 
@@ -112,6 +121,15 @@ KNN::Test() {
 	case DataExtractionMethod::FAST:
 	{
 		m_preprocessor->ApplyFastTest(m_numberOfComponents, m_fastParams.threshold, m_fastParams.nonmaxSupression);
+	}
+	case DataExtractionMethod::BRIEF:
+	{
+		m_preprocessor->ApplyBriefTest(m_numberOfComponents, m_briefParams.bytes, m_briefParams.useOrientation);
+	}
+	case DataExtractionMethod::ORB:
+	{
+		m_preprocessor->ApplyOrbTest(m_numberOfComponents, m_orbParams.nFeatures, m_orbParams.scaleFactor, m_orbParams.nLevels, m_orbParams.edgeThreshold,
+			m_orbParams.firstLevel, m_orbParams.WTA_K, m_orbParams.st, m_orbParams.patchSize, m_orbParams.fastThreshold);
 	}
 	default: break;
 	}

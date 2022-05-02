@@ -64,6 +64,24 @@ public:
 		m_fastParams.nonmaxSupression = nonmaxSupression;
 	}
 
+	void SetBriefParams(int bytes = 32, bool useOrientation = false) {
+		m_briefParams.bytes = bytes;
+		m_briefParams.useOrientation = useOrientation;
+	}
+
+	void SetOrbParams(int nFeatures = 500, float scaleFactor = 1.2f, int nLevels = 8, int edgeThreshold = 31, int firstLevel = 0,
+			int WTA_K = 2, cv::ORB::ScoreType st = cv::ORB::ScoreType::HARRIS_SCORE, int patchSize = 31, int fastThreshold = 20) {
+		m_orbParams.nFeatures = nFeatures;
+		m_orbParams.scaleFactor = scaleFactor;
+		m_orbParams.nLevels = nLevels;
+		m_orbParams.edgeThreshold = edgeThreshold;
+		m_orbParams.firstLevel = firstLevel;
+		m_orbParams.WTA_K = WTA_K;
+		m_orbParams.st = st;
+		m_orbParams.patchSize = patchSize;
+		m_orbParams.fastThreshold = fastThreshold;
+	}
+
 	void ClearTrainData() { 
 		m_trainImageDirectories.clear();
 		m_trainLabels.clear();
@@ -101,6 +119,8 @@ private:
 	SiftParams m_siftParams;
 	SurfParams m_surfParams;
 	FastParams m_fastParams;
+	BriefParams m_briefParams;
+	OrbParams m_orbParams;
 };
 
 }

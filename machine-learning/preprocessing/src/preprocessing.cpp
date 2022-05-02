@@ -324,4 +324,101 @@ Preprocessing::ApplyFastTest(int numComponents, int threshold, bool nonmaxSupres
 	}
 }
 
+std::map<int, std::vector<cv::Mat>>
+ApplyBrief(std::map<int, std::vector<cv::Mat>> imagesWithLabels, int numComponents, int bytes, bool useOrientation) {
+	auto featureDetector = std::make_shared<features::FeatureDetector>();
+	std::map<int, std::vector<cv::Mat>> retVal;
+	for (auto data : imagesWithLabels) {
+		std::vector<cv::Mat> principalComponents;
+		for (auto image : data.second) {
+			featureDetector->ApplyBRIEF(image, bytes, useOrientation);
+			auto component = featureDetector->GetPrincipalComponents();
+			if (component.rows != 0 && component.cols != 0) {
+				auto rectangleSize = numComponents <= component.cols ? numComponents : component.cols;
+				component = component(cv::Rect(0, 0, rectangleSize, 1));
+				principalComponents.emplace_back(std::move(component.t()));
+			}
+		}
+		auto pair = std::make_pair(data.first, principalComponents);
+		retVal.insert(retVal.end(), std::move(pair));
+	}
+	return retVal;
+}
+
+void
+Preprocessing::ApplyBriefTrain(int numComponents, int bytes, bool useOrientation) {
+	m_trainData.release();
+	m_trainLabels.release();
+	auto briefResult = ApplyBrief(m_trainImagesWithLabels, numComponents, bytes, useOrientation);
+	for (auto components : briefResult) {
+		for (auto component : components.second) {
+			m_trainData.push_back(component.t());
+			m_trainLabels.push_back(components.first);
+		}
+	}
+}
+
+void
+Preprocessing::ApplyBriefTest(int numComponents, int bytes, bool useOrientation) {
+	m_testData.release();
+	m_testLabels.release();
+	auto briefResult = ApplyBrief(m_testImagesWithLabels, numComponents, bytes, useOrientation);
+	for (auto components : briefResult) {
+		for (auto component : components.second) {
+			m_testData.push_back(component.t());
+			m_testLabels.push_back(components.first);
+		}
+	}
+}
+
+std::map<int, std::vector<cv::Mat>>
+ApplyOrb(std::map<int, std::vector<cv::Mat>> imagesWithLabels, int numComponents, int nFeatures, float scaleFactor, int nLevels, int edgeThreshold, int firstLevel, int WTA_K, 
+		cv::ORB::ScoreType st, int patchSize, int fastThreshold) {
+	auto featureDetector = std::make_shared<features::FeatureDetector>();
+	std::map<int, std::vector<cv::Mat>> retVal;
+	for (auto data : imagesWithLabels) {
+		std::vector<cv::Mat> principalComponents;
+		for (auto image : data.second) {
+			featureDetector->ApplyORB(image, nFeatures, scaleFactor, nLevels, edgeThreshold, firstLevel, WTA_K, st, patchSize, fastThreshold);
+			auto component = featureDetector->GetPrincipalComponents();
+			if (component.rows != 0 && component.cols != 0) {
+				auto rectangleSize = numComponents <= component.cols ? numComponents : component.cols;
+				component = component(cv::Rect(0, 0, rectangleSize, 1));
+				principalComponents.emplace_back(std::move(component.t()));
+			}
+		}
+		auto pair = std::make_pair(data.first, principalComponents);
+		retVal.insert(retVal.end(), std::move(pair));
+	}
+	return retVal;
+}
+
+void
+Preprocessing::ApplyOrbTrain(int numComponents, int nFeatures, float scaleFactor, int nLevels, int edgeThreshold, int firstLevel, int WTA_K, cv::ORB::ScoreType st, 
+		int patchSize, int fastThreshold) {
+	m_trainData.release();
+	m_trainLabels.release();
+	auto orbResult = ApplyOrb(m_trainImagesWithLabels, numComponents, nFeatures, scaleFactor, nLevels, edgeThreshold, firstLevel, WTA_K, st, patchSize, fastThreshold);
+	for (auto components : orbResult) {
+		for (auto component : components.second) {
+			m_trainData.push_back(component.t());
+			m_trainLabels.push_back(components.first);
+		}
+	}
+}
+
+void
+Preprocessing::ApplyOrbTest(int numComponents, int nFeatures, float scaleFactor, int nLevels, int edgeThreshold, int firstLevel, int WTA_K, cv::ORB::ScoreType st, 
+		int patchSize, int fastThreshold) {
+	m_testData.release();
+	m_testLabels.release();
+	auto orbResult = ApplyOrb(m_testImagesWithLabels, numComponents, nFeatures, scaleFactor, nLevels, edgeThreshold, firstLevel, WTA_K, st, patchSize, fastThreshold);
+	for (auto components : orbResult) {
+		for (auto component : components.second) {
+			m_testData.push_back(component.t());
+			m_testLabels.push_back(components.first);
+		}
+	}
+}
+
 }

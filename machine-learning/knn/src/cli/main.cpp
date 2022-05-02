@@ -6,7 +6,10 @@
 // #define METHOD_SHI_TOMASI_CORNERS
 // #define METHOD_SIFT
 // #define METHOD_SURF
-#define METHOD_FAST
+// #define METHOD_FAST
+// #define METHOD_BRIEF
+#define METHOD_ORB
+// #define METHOD_BRISK
 
 int main(int argc, char** argv) {
 	std::string trainDir = "../../../../machine-learning/resource/train/";
@@ -56,6 +59,14 @@ int main(int argc, char** argv) {
 	#ifdef METHOD_FAST
 	auto knnPtr = std::make_shared<ml::KNN>(7, 50, ml::DataExtractionMethod::FAST);
 	knnPtr->SetFastParams(6, true);
+	#endif
+	#ifdef METHOD_BRIEF
+	auto knnPtr = std::make_shared<ml::KNN>(7, 50, ml::DataExtractionMethod::BRIEF);
+	knnPtr->SetBriefParams(64, true);
+	#endif
+	#ifdef METHOD_ORB
+	auto knnPtr = std::make_shared<ml::KNN>(7, 50, ml::DataExtractionMethod::ORB);
+	knnPtr->SetOrbParams(500, 1.1f, 10, 10, 0, 2, cv::ORB::HARRIS_SCORE, 31, 20);
 	#endif
 
 	knnPtr->ClearTrainData();
