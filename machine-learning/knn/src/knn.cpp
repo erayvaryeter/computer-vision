@@ -61,6 +61,10 @@ KNN::Train() {
 		m_preprocessor->ApplySurfTrain(m_numberOfComponents, m_surfParams.hessianThreshold, m_surfParams.nOctaves, m_surfParams.nOctaveLayers,
 			m_surfParams.extended, m_surfParams.upright);
 	}
+	case DataExtractionMethod::FAST:
+	{
+		m_preprocessor->ApplyFastTrain(m_numberOfComponents, m_fastParams.threshold, m_fastParams.nonmaxSupression);
+	}
 	default: break;
 	}
 
@@ -104,6 +108,10 @@ KNN::Test() {
 	{
 		m_preprocessor->ApplySurfTest(m_numberOfComponents, m_surfParams.hessianThreshold, m_surfParams.nOctaves, m_surfParams.nOctaveLayers, 
 			m_surfParams.extended, m_surfParams.upright);
+	}
+	case DataExtractionMethod::FAST:
+	{
+		m_preprocessor->ApplyFastTest(m_numberOfComponents, m_fastParams.threshold, m_fastParams.nonmaxSupression);
 	}
 	default: break;
 	}

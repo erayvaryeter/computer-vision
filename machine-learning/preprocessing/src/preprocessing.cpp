@@ -263,12 +263,60 @@ Preprocessing::ApplySurfTrain(int numComponents, double hessianThreshold, int nO
 		}
 	}
 }
+
 void
 Preprocessing::ApplySurfTest(int numComponents, double hessianThreshold, int nOctaves, int nOctaveLayers, bool extended, bool upright) {
 	m_testData.release();
 	m_testLabels.release();
 	auto siftResult = ApplySurf(m_testImagesWithLabels, numComponents, hessianThreshold, nOctaves, nOctaveLayers, extended, upright);
 	for (auto components : siftResult) {
+		for (auto component : components.second) {
+			m_testData.push_back(component.t());
+			m_testLabels.push_back(components.first);
+		}
+	}
+}
+
+std::map<int, std::vector<cv::Mat>>
+ApplyFast(std::map<int, std::vector<cv::Mat>> imagesWithLabels, int numComponents, int threshold, bool nonmaxSupression) {
+	auto featureDetector = std::make_shared<features::FeatureDetector>();
+	std::map<int, std::vector<cv::Mat>> retVal;
+	for (auto data : imagesWithLabels) {
+		std::vector<cv::Mat> principalComponents;
+		for (auto image : data.second) {
+			featureDetector->ApplyFAST(image, threshold, nonmaxSupression);
+			auto component = featureDetector->GetPrincipalComponents();
+			if (component.rows != 0 && component.cols != 0) {
+				auto rectangleSize = numComponents <= component.cols ? numComponents : component.cols;
+				component = component(cv::Rect(0, 0, rectangleSize, 1));
+				principalComponents.emplace_back(std::move(component.t()));
+			}
+		}
+		auto pair = std::make_pair(data.first, principalComponents);
+		retVal.insert(retVal.end(), std::move(pair));
+	}
+	return retVal;
+}
+
+void
+Preprocessing::ApplyFastTrain(int numComponents, int threshold, bool nonmaxSupression) {
+	m_trainData.release();
+	m_trainLabels.release();
+	auto fastResult = ApplyFast(m_trainImagesWithLabels, numComponents, threshold, nonmaxSupression);
+	for (auto components : fastResult) {
+		for (auto component : components.second) {
+			m_trainData.push_back(component.t());
+			m_trainLabels.push_back(components.first);
+		}
+	}
+}
+
+void
+Preprocessing::ApplyFastTest(int numComponents, int threshold, bool nonmaxSupression) {
+	m_testData.release();
+	m_testLabels.release();
+	auto fastResult = ApplyFast(m_testImagesWithLabels, numComponents, threshold, nonmaxSupression);
+	for (auto components : fastResult) {
 		for (auto component : components.second) {
 			m_testData.push_back(component.t());
 			m_testLabels.push_back(components.first);

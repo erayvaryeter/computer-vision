@@ -5,7 +5,8 @@
 // #define METHOD_HARRIS_CORNERS
 // #define METHOD_SHI_TOMASI_CORNERS
 // #define METHOD_SIFT
-#define METHOD_SURF
+// #define METHOD_SURF
+#define METHOD_FAST
 
 int main(int argc, char** argv) {
 	std::string trainDir = "../../../../machine-learning/resource/train/";
@@ -49,8 +50,12 @@ int main(int argc, char** argv) {
 	knnPtr->SetSiftParams(0, 3, 0.04, 5.0, 2.8);
 	#endif
 	#ifdef METHOD_SURF
-	auto knnPtr = std::make_shared<ml::KNN>(3, 50, ml::DataExtractionMethod::SURF);
-	knnPtr->SetSurfParams(100.0, 4, 3, false, false);
+	auto knnPtr = std::make_shared<ml::KNN>(5, 50, ml::DataExtractionMethod::SURF);
+	knnPtr->SetSurfParams(75.0, 4, 3, false, false);
+	#endif
+	#ifdef METHOD_FAST
+	auto knnPtr = std::make_shared<ml::KNN>(7, 50, ml::DataExtractionMethod::FAST);
+	knnPtr->SetFastParams(6, true);
 	#endif
 
 	knnPtr->ClearTrainData();

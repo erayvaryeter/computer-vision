@@ -124,7 +124,10 @@ FeatureDetector::ApplyFAST(cv::Mat image, int threshold, bool nonmaxSupression) 
     m_lastImageWithKeypoints.release();
     cv::drawKeypoints(image, m_keypoints, m_lastImageWithKeypoints);
     m_descriptor.release();
+    m_principalComponents.release();
     briskPtr->compute(image, m_keypoints, m_descriptor);
+    if (!m_descriptor.empty())
+        cv::reduce(m_descriptor, m_principalComponents, 0, CV_REDUCE_AVG, CV_32F);
 }
 
 void 

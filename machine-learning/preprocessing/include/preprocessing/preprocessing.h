@@ -65,6 +65,10 @@ public:
 	void ApplySurfTest(int numComponents, double hessianThreshold = 100, int nOctaves = 4, int nOctaveLayers = 3, bool extended = false,
 		bool upright = false);
 
+	// FAST
+	void ApplyFastTrain(int numComponents, int threshold = 10, bool nonmaxSupression = true);
+	void ApplyFastTest(int numComponents, int threshold = 10, bool nonmaxSupression = true);
+
 private:
 	cv::Mat m_trainData;
 	cv::Mat m_trainLabels;

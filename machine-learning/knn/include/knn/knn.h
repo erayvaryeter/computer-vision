@@ -59,6 +59,11 @@ public:
 		m_surfParams.upright = upright;
 	}
 
+	void SetFastParams(int threshold = 10, bool nonmaxSupression = true) {
+		m_fastParams.threshold = threshold;
+		m_fastParams.nonmaxSupression = nonmaxSupression;
+	}
+
 	void ClearTrainData() { 
 		m_trainImageDirectories.clear();
 		m_trainLabels.clear();
@@ -95,6 +100,7 @@ private:
 	ShiTomasiCornerParams m_shiTomasiCornerParams;
 	SiftParams m_siftParams;
 	SurfParams m_surfParams;
+	FastParams m_fastParams;
 };
 
 }

@@ -31,3 +31,8 @@ struct SurfParams {
 	bool extended = false;
 	bool upright = false;
 };
+
+struct FastParams {
+	int threshold = 10;
+	bool nonmaxSupression = true;
+};
