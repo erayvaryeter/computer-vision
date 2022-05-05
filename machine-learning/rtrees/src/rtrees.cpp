@@ -5,28 +5,28 @@
 #include <opencv2/imgproc.hpp>
 #include <pca/pca.h>
 
-#include "knn/knn.h"
+#include "rtrees/rtrees.h"
 
-std::shared_ptr<base::Logger> ml::KNN::m_logger = std::make_shared<base::Logger>();
+std::shared_ptr<base::Logger> ml::RTrees::m_logger = std::make_shared<base::Logger>();
 
 namespace ml {
 
 void
-KNN::AppendTrainData(std::string imageDirectory, int label, std::string imageExtension) {
+RTrees::AppendTrainData(std::string imageDirectory, int label, std::string imageExtension) {
 	m_trainImageDirectories.emplace_back(std::move(imageDirectory));
 	m_trainLabels.emplace_back(std::move(label));
 	m_trainExtensions.emplace_back(std::move(imageExtension));
 }
 
 void
-KNN::AppendTestData(std::string imageDirectory, int label, std::string imageExtension) {
+RTrees::AppendTestData(std::string imageDirectory, int label, std::string imageExtension) {
 	m_testImageDirectories.emplace_back(std::move(imageDirectory));
 	m_testLabels.emplace_back(std::move(label));
 	m_testExtensions.emplace_back(std::move(imageExtension));
 }
 
 void 
-KNN::Train() {
+RTrees::Train() {
 	ASSERT(m_trainImageDirectories.size() == m_trainExtensions.size(), "Train data size is not valid", base::Logger::Severity::Error);
 	ASSERT(m_trainExtensions.size() == m_trainLabels.size(), "Train data size is not valid", base::Logger::Severity::Error);
 	m_preprocessor->ClearTrainImages();
@@ -89,11 +89,11 @@ KNN::Train() {
 
 	auto trainData = m_preprocessor->GetTrainData();
 	auto trainLabels = m_preprocessor->GetTrainLabels();
-	m_knnPtr->train(trainData, cv::ml::ROW_SAMPLE, trainLabels);
+	m_rtreesPtr->train(trainData, cv::ml::ROW_SAMPLE, trainLabels);
 }
 
 void
-KNN::Test() {
+RTrees::Test() {
 	ASSERT(m_testImageDirectories.size() == m_testExtensions.size(), "Test data size is not valid", base::Logger::Severity::Error);
 	ASSERT(m_testExtensions.size() == m_testLabels.size(), "Test data size is not valid", base::Logger::Severity::Error);
 	m_preprocessor->ClearTestImages();
@@ -161,16 +161,14 @@ KNN::Test() {
 	int wrongClassify = 0;
 
 	for (int i = 0; i < testData.rows; i++) {
-		cv::Mat result;
 		cv::Mat neighbors;
-		m_knnPtr->findNearest(testData.row(i), m_k, result, neighbors);
+		float response = m_rtreesPtr->predict(testData.row(i));
 		int expected = testLabels.at<int>(i);
-		int predicted = (int)result.at<float>(0);
-		if (expected == predicted)
+		if (expected == response)
 			correctClassify++;
 		else
 			wrongClassify++;
-		std::cout << "Expected: " << expected << " - Predicted: " << predicted << " Neighbors: " << neighbors << std::endl;
+		std::cout << "Expected: " << expected << " - Predicted: " << response << " Neighbors: " << neighbors << std::endl;
 	}
 
 	std::cout << "-------------------------------------------------------------------------------" << std::endl;
