@@ -30,7 +30,16 @@ struct Detection {
 
 struct DetectionResult {
 	std::vector<Detection> detections;
+	cv::Mat originalImage;
 	cv::Mat imageWithBbox;
+};
+
+struct NetworkProperties {
+	std::string configFilePath = "";
+	std::string weightFilePath = "";
+	int imageInputWidth = 0;
+	int imageInputHeight = 0;
+	NetworkType networkType;
 };
 
 class Detector {
@@ -64,7 +73,7 @@ public:
 		m_confidenceThreshold = confidenceThreshold;
 	}
 
-	DetectionResult Detect(const cv::Mat& frame, std::optional<Object> oneClassNetwork, std::optional<int> width, std::optional<int> height);
+	DetectionResult Detect(const cv::Mat& frame, std::optional<Object> oneClassNetwork);
 
 	static std::string ConvertObjectTypeToString(Object object);
 	static Object ConvertObjectStringToType(const std::string& objectStr);

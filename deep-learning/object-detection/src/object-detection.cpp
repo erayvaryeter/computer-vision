@@ -11,28 +11,25 @@ std::shared_ptr<base::Logger> dl::Detector::m_logger = std::make_shared<base::Lo
 namespace dl {
 
 DetectionResult
-Detector::Detect(const cv::Mat& frame, std::optional<Object> oneClassNetwork, std::optional<int> width, std::optional<int> height) {
+Detector::Detect(const cv::Mat& frame, std::optional<Object> oneClassNetwork) {
     DetectionResult retVal;
     frame.copyTo(retVal.imageWithBbox);
+    frame.copyTo(retVal.originalImage);
 
     int imageWidth, imageHeight;
-    if (width.has_value())
-        imageWidth = width.value();
-    else
-        imageWidth = frame.size().width;
-    if (height.has_value())
-        imageHeight = height.value();
-    else
-        imageHeight = frame.size().width;
+    imageWidth = frame.size().width;
+    imageHeight = frame.size().width;
 
     cv::Mat inputBlob;
     if (m_networkType == NetworkType::CAFFE)
         inputBlob = cv::dnn::blobFromImage(frame, m_scaleFactor, cv::Size(imageWidth, imageHeight), m_meanValues, false, false);
     else if (m_networkType == NetworkType::TENSORFLOW)
         inputBlob = cv::dnn::blobFromImage(frame, m_scaleFactor, cv::Size(imageWidth, imageHeight), m_meanValues, true, false);
+
     m_network.setInput(inputBlob, "data");
     cv::Mat detection = m_network.forward("detection_out");
     cv::Mat detection_matrix(detection.size[2], detection.size[3], CV_32F, detection.ptr<float>());
+
     for (int i = 0; i < detection_matrix.rows; i++) {
         float confidence = detection_matrix.at<float>(i, 2);
         if (confidence < m_confidenceThreshold) {
