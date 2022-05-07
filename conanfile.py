@@ -46,7 +46,7 @@ class DevelopmentConan(ConanFile):
         self.requires("cxxopts/[>=3.0.0]@")
         self.requires("catch2/[>=2.13.7]@")
         self.requires("spdlog/[>=1.9.2]@")
-        self.requires("opencv/[>=4.5.5]@")
+        self.requires("opencv/[=4.5.0]@")
 
     def _configure_cmake(self):
         cmake = CMake(self)
