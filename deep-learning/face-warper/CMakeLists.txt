@@ -2,6 +2,7 @@
 
 set(include_files
 	include/face-warper/face-warper.h
+	include/face-warper/reference.h
 )
 
 set(source_files

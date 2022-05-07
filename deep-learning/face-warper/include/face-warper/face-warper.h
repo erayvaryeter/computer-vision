@@ -5,6 +5,9 @@
 #include <map>
 #include <memory>
 
+#define WARPED_FACE_WIDTH 160
+#define WARPED_FACE_HEIGHT 240
+
 namespace base {
 	class Logger;
 }
@@ -12,7 +15,8 @@ namespace base {
 namespace dl {
 
 struct Warping {
-	std::vector<cv::Point2f> landmarks;
+	std::vector<cv::Point2f> originalLandmarks;
+	std::vector<cv::Point2f> warpedLandmarks;
 	cv::Mat warpedFaceImage;
 	cv::Mat warpedFaceImageWithLandmarks;
 };
