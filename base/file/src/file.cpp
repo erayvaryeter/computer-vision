@@ -124,6 +124,15 @@ File::GetFilesWithExtension(std::string& dir, std::string ext) {
     return pair;
 }
 
+std::vector<std::string>
+File::GetDirectories(const std::string& dir) {
+    std::vector<std::string> directories;
+    for (auto& p : std::filesystem::recursive_directory_iterator(dir))
+        if (p.is_directory())
+            directories.push_back(p.path().string());
+    return directories;
+}
+
 }
 
 template<typename T1, typename T2>

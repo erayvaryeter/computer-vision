@@ -41,42 +41,76 @@ FaceDetector::InitializeNetworkPaths() {
 }
 
 DetectionResult
-FaceDetector::Detect(const cv::Mat& frame, std::optional<Object> oneClassNetwork) {
+FaceDetector::Detect(const cv::Mat& frame, std::optional<Object> oneClassNetwork, bool oneFace) {
 	auto frameWidth = frame.size().width;
 	auto frameHeight = frame.size().height;
 	auto ratioWidth = static_cast<double>(frameWidth) / static_cast<double>(m_networkProperties.imageInputWidth);
 	auto ratioHeight = static_cast<double>(frameHeight) / static_cast<double>(m_networkProperties.imageInputHeight);
 	auto ratio = ratioWidth < ratioHeight ? ratioWidth : ratioHeight;
-	bool resizeRequired = false;
-	if (ratio > 1.2)
-		resizeRequired = true;
 	DetectionResult retVal;
-	if (resizeRequired) {
-		// resize input frame
-		cv::Mat resizedFrame;
-		cv::resize(frame, resizedFrame, cv::Size(static_cast<int>(frameWidth / ratio), static_cast<int>(frameHeight / ratio)));
-		retVal = m_detector->Detect(resizedFrame, oneClassNetwork);
-		// adjust the resized detection result
-		frame.copyTo(retVal.imageWithBbox);
-		frame.copyTo(retVal.originalImage);
-		for (auto& det : retVal.detections) {
-			det.bbox.x *= ratio;
-			det.bbox.y *= ratio;
-			det.bbox.width *= ratio;
-			det.bbox.height *= ratio;
-			cv::rectangle(retVal.imageWithBbox, det.bbox, cv::Scalar(0, 255, 0), 1, 8, 0);
-			if (det.objectClassString.has_value()) {
-				cv::Point textPoint = cv::Point(det.bbox.x, det.bbox.y);
-				cv::putText(retVal.imageWithBbox, det.objectClassString.value(), textPoint, 1, 1, cv::Scalar(255, 0, 0));
+
+	auto CorrectBoundingBoxes = [&]() {
+		std::vector<dl::Detection> detections;
+		for (size_t i = 0; i < retVal.detections.size(); ++i) {
+			if (retVal.detections[i].bbox.x * ratio >= frameWidth ||
+				retVal.detections[i].bbox.y * ratio >= frameHeight ||
+				retVal.detections[i].bbox.width * ratio > frameWidth ||
+				retVal.detections[i].bbox.height * ratio > frameHeight ||
+				(retVal.detections[i].bbox.x + retVal.detections[i].bbox.width) * ratio > frameWidth ||
+				(retVal.detections[i].bbox.y + retVal.detections[i].bbox.height) * ratio > frameHeight) {
+				;
 			}
-			cv::Point textPoint = cv::Point(det.bbox.x, det.bbox.y + 15);
-			cv::putText(retVal.imageWithBbox, std::to_string(det.confidence), textPoint, 1, 1, cv::Scalar(255, 0, 0));
+			else {
+				detections.push_back(retVal.detections[i]);
+			}
 		}
+		retVal.detections.clear();
+		if (oneFace) {
+			double maxDistance = static_cast<double>(frameWidth);
+			dl::Detection oneFaceDetection;
+			for (size_t i = 0; i < detections.size(); ++i) {
+				double distance;
+				auto det = detections[i];
+				auto dist1 = (((2 * det.bbox.x) + det.bbox.width) / 2) - (frameWidth / 2);
+				auto dist2 = (((2 * det.bbox.y) + det.bbox.height) / 2) - (frameHeight / 2);
+				distance = std::sqrt(std::pow(dist1, 2) + std::pow(dist2, 2));
+				if (distance < maxDistance) {
+					retVal.detections.clear();
+					oneFaceDetection = detections[i];
+					maxDistance = distance;
+					retVal.detections.emplace_back(std::move(oneFaceDetection));
+				}
+			}
+		}
+		else {
+			retVal.detections = detections;
+		}
+	};
+
+	// resize input frame
+	cv::Mat resizedFrame;
+	cv::resize(frame, resizedFrame, cv::Size(static_cast<int>(frameWidth / ratio), static_cast<int>(frameHeight / ratio)));
+	retVal = m_detector->Detect(resizedFrame, oneClassNetwork);
+	// adjust the resized detection result
+	frame.copyTo(retVal.imageWithBbox);
+	frame.copyTo(retVal.originalImage);
+	// remove the wrongly detected out of region bbox
+	CorrectBoundingBoxes();
+	// iterate over detections
+	for (auto& det : retVal.detections) {
+		det.bbox.x *= ratio;
+		det.bbox.y *= ratio;
+		det.bbox.width *= ratio;
+		det.bbox.height *= ratio;
+		cv::rectangle(retVal.imageWithBbox, det.bbox, cv::Scalar(0, 255, 0), 1, 8, 0);
+		if (det.objectClassString.has_value()) {
+			cv::Point textPoint = cv::Point(det.bbox.x, det.bbox.y);
+			cv::putText(retVal.imageWithBbox, det.objectClassString.value(), textPoint, 1, 1, cv::Scalar(255, 0, 0));
+		}
+		cv::Point textPoint = cv::Point(det.bbox.x, det.bbox.y + 15);
+		cv::putText(retVal.imageWithBbox, std::to_string(det.confidence), textPoint, 1, 1, cv::Scalar(255, 0, 0));
 	}
-	else {
-		retVal = m_detector->Detect(frame, oneClassNetwork);
-	}
-	
+
 	return retVal;
 }
 

@@ -25,7 +25,7 @@ public:
 		m_detector->SetDetectionParameters(scaleFactor, meanValues, confidenceThreshold);
 	}
 
-	DetectionResult Detect(const cv::Mat& frame, std::optional<Object> oneClassNetwork);
+	DetectionResult Detect(const cv::Mat& frame, std::optional<Object> oneClassNetwork, bool oneFace = false);
 
 private:
 	std::shared_ptr<Detector> m_detector;

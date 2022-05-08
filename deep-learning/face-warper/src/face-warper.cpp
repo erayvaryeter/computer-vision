@@ -68,9 +68,13 @@ FaceWarper::WarpWithLandmarks(const DetectionResult& detectionResult) {
 			res.originalLandmarks = allLandmarks[i];
 			// create the cut out image
 			auto bbox = faces[i];
-			int xRange = static_cast<double>(fullImage.size().width) * 0.02;
-			int yRange = static_cast<double>(fullImage.size().height) * 0.02;
-			auto cutOutImage = fullImage(cv::Rect(bbox.x - xRange, bbox.y - yRange, bbox.width + (2 * xRange), bbox.height + (2 * yRange)));
+			int xRange = static_cast<double>(fullImage.size().width) * 0.03;
+			int yRange = static_cast<double>(fullImage.size().height) * 0.03;
+			// protect the range here
+			auto cutOutImage = fullImage(cv::Rect(std::max(bbox.x - xRange, 0), std::max(bbox.y - yRange, 0), 
+				std::min(bbox.width + (2 * xRange), fullImage.size().width), 
+				std::min(bbox.height + (2 * yRange), fullImage.size().height)));
+			// resize
 			cv::resize(cutOutImage, cutOutImage, cv::Size(WARPED_FACE_WIDTH, WARPED_FACE_HEIGHT));
 			std::vector<cv::Rect> oneFaceVector;
 			std::vector<std::vector<cv::Point2f>> oneFaceLandmarks;
@@ -90,18 +94,18 @@ FaceWarper::WarpWithLandmarks(const DetectionResult& detectionResult) {
 				cv::warpPerspective(cutOutImage, cutOutWarpedImage, homography, cutOutWarpedImage.size());
 				cutOutWarpedImage.copyTo(res.warpedFaceImage);
 				cutOutWarpedImage.copyTo(res.warpedFaceImageWithLandmarks);
+				// create warped landmarks and warped face image with warped landmarks
+				oneFaceVector.clear();
+				oneFaceLandmarks.clear();
+				oneFaceVector.push_back(cv::Rect(0, 0, cutOutWarpedImage.size().width, cutOutWarpedImage.size().height));
+				success = m_facemark->fit(cutOutWarpedImage, oneFaceVector, oneFaceLandmarks);
+				if (success) {
+					res.warpedLandmarks = oneFaceLandmarks[0];
+					DrawLandmarks(res.warpedFaceImageWithLandmarks, res.warpedLandmarks);
+					// insert the results
+					retVal.warpingResults.emplace_back(std::move(res));
+				}
 			}
-			// create warped landmarks and warped face image with warped landmarks
-			oneFaceVector.clear();
-			oneFaceLandmarks.clear();
-			oneFaceVector.push_back(cv::Rect(0, 0, cutOutWarpedImage.size().width, cutOutWarpedImage.size().height));
-			success = m_facemark->fit(cutOutWarpedImage, oneFaceVector, oneFaceLandmarks);
-			if (success) {
-				res.warpedLandmarks = oneFaceLandmarks[0];
-				DrawLandmarks(res.warpedFaceImageWithLandmarks, res.warpedLandmarks);
-			}
-			// insert the results
-			retVal.warpingResults.emplace_back(std::move(res));
 		}
 	}
 	return retVal;

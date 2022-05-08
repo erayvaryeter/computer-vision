@@ -24,6 +24,7 @@ public:
 	static std::string GetParentPath(std::string& path);
 	static std::string GetFileExtension(std::string& file);
 	static std::vector<std::pair<std::string, std::string>> GetFilesWithExtension(std::string& dir, std::string ext = ".*");
+	static std::vector<std::string> GetDirectories(const std::string& dir);
 	
 	static std::shared_ptr<base::Logger> GetLogger() { return m_logger; }
 
