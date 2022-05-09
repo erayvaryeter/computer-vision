@@ -40,10 +40,11 @@ int main(int argc, char** argv) {
 
 	auto detectionResults = detector->Detect(image, dl::Object::FACE);
 	auto warpResults = warper->WarpWithLandmarks(detectionResults);
-	auto recognizer = std::make_shared<dl::FaceRecognizer>(dl::FaceRecognizerType::FISHER, detector, warper);
+	auto recognizer = std::make_shared<dl::FaceRecognizer>(dl::FaceRecognizerType::EIGEN, detector, warper);
 	
 	for (auto& warpResult : warpResults.warpingResults) {
 		auto recognitionResult = recognizer->Predict(warpResult.warpedFaceImage, std::nullopt);
+		std::cout << "Predicted: " << recognitionResult.predictedLabel << " - Distance: " << recognitionResult.distance << std::endl;
 	}
 
 	return 0;

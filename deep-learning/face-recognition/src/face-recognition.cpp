@@ -20,12 +20,12 @@ FaceRecognizer::FaceRecognizer(FaceRecognizerType type, const std::shared_ptr<dl
 	switch (m_recognizerType) {
 	case FaceRecognizerType::EIGEN:
 	{
-		m_faceRecognizer = cv::face::EigenFaceRecognizer::create();
+		m_faceRecognizer = cv::face::EigenFaceRecognizer::create(320);
 		break;
 	}
 	case FaceRecognizerType::FISHER:
 	{
-		m_faceRecognizer = cv::face::FisherFaceRecognizer::create();
+		m_faceRecognizer = cv::face::FisherFaceRecognizer::create(320);
 		break;
 	}
 	case FaceRecognizerType::LBPH:
@@ -41,13 +41,17 @@ FaceRecognizer::FaceRecognizer(FaceRecognizerType type, const std::shared_ptr<dl
 
 RecognitionResult
 FaceRecognizer::Predict(cv::Mat warpedFaceImage, std::optional<std::string> expectedLabel) {
-	ASSERT(warpedFaceImage.size().width == WARPED_FACE_WIDTH, "Input warped face image width is incorrect", base::Logger::Severity::Error);
-	ASSERT(warpedFaceImage.size().height == WARPED_FACE_HEIGHT, "Input warped face image height is incorrect", base::Logger::Severity::Error);
-	int predictedLabel = 0;
-	double confidence = 0.0;
-	m_faceRecognizer->predict(warpedFaceImage, predictedLabel, confidence);
+	ASSERT((warpedFaceImage.size().width == WARPED_FACE_WIDTH), "Input warped face image width is incorrect", base::Logger::Severity::Error);
+	ASSERT((warpedFaceImage.size().height == WARPED_FACE_HEIGHT), "Input warped face image height is incorrect", base::Logger::Severity::Error);
+	int predictedLabel = -1;
+	double distance = 0.0;
+	// static int x = 0;
+	// cv::imwrite(std::to_string(x++) + ".jpg", warpedFaceImage);
+	cv::Mat grayscale;
+	cv::cvtColor(warpedFaceImage, grayscale, cv::COLOR_BGR2GRAY);
+	m_faceRecognizer->predict(grayscale, predictedLabel, distance);
 	RecognitionResult res;
-	res.confidence = confidence;
+	res.distance = distance;
 	res.predictedLabel = m_faceLabelMap[predictedLabel];
 	if (expectedLabel.has_value()) {
 		res.expectedLabel = expectedLabel.value();
@@ -100,7 +104,9 @@ FaceRecognizer::Train() {
 		std::string logMsg = "Training model for images of " + faceIt.first;
 		m_logger->LogInfo(logMsg.c_str());
 		for (auto warpedImage : faceIt.second.warpedImages) {
-			images.emplace_back(std::move(warpedImage));
+			cv::Mat grayscale;
+			cv::cvtColor(warpedImage, grayscale, cv::COLOR_BGR2GRAY);
+			images.emplace_back(std::move(grayscale));
 			labels.emplace_back(faceIt.second.label);
 		}
 		auto pair = std::make_pair(faceIt.second.label, faceIt.first);

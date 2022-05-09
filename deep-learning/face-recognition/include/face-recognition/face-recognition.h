@@ -28,7 +28,7 @@ struct FaceDatabase {
 
 struct RecognitionResult {
 	std::string predictedLabel;
-	double confidence;
+	double distance;
 	std::optional<std::string> expectedLabel;
 	std::optional<bool> recognitionCorrect;
 };
