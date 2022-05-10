@@ -89,4 +89,23 @@ private:
 	static std::shared_ptr<base::Logger> m_logger;
 };
 
+class BaseDetector {
+public:
+	BaseDetector() {}
+	~BaseDetector() {}
+
+	virtual void InitializeNetworkPaths() = 0;
+
+	void SetDetectionParameters(double scaleFactor = 1.0, cv::Scalar meanValues = { 104., 177.0, 123.0 }, float confidenceThreshold = 0.75f) {
+		m_detector->SetDetectionParameters(scaleFactor, meanValues, confidenceThreshold);
+	}
+
+	virtual DetectionResult Detect(const cv::Mat& frame, std::optional<Object> oneClassNetwork, bool oneFace = false) = 0;
+
+protected:
+	std::shared_ptr<Detector> m_detector;
+	NetworkProperties m_networkProperties;
+
+};
+
 }

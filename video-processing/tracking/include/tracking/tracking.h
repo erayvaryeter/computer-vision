@@ -1,6 +1,6 @@
 #pragma once
 
-#include <object-detection/object-detection.h>
+#include <face-detection/face-detection.h>
 #include <opencv2/opencv.hpp>
 #include <opencv2/tracking.hpp>
 #include <opencv2/tracking/tracking.hpp>
@@ -39,15 +39,18 @@ public:
 
 	~Tracker() {}
 
-	void AppendDetector(std::shared_ptr<dl::Detector> detector);
+	void AppendFaceDetector(std::shared_ptr<dl::FaceDetector> detector);
 	std::vector<TrackingResult> ApplyDetectionOnSingleFrame(const cv::Mat& image);
-	void AppendTracker(std::vector<TrackerType> types, const cv::Mat& initialImage, std::vector<TrackingResult>& initialDetectionResults);
-	std::optional<TrackingResult> PushFrame(cv::Mat& image);
+	bool AppendTracker(std::vector<TrackerType> types, const cv::Mat& initialImage, std::vector<TrackingResult>& initialDetectionResults);
+	std::vector<TrackingResult> PushFrame(cv::Mat& image);
 
 private:
-	std::vector<std::shared_ptr<dl::Detector>> m_detectors;
+	std::vector<std::pair<dl::Object, std::shared_ptr<dl::BaseDetector>>> m_detectors;
 	cv::Ptr<cv::MultiTracker> m_multiTracker;
 	int m_redetectSteps;
+	int m_lastNumberOfObjects = 0;
+	std::vector<TrackingResult> m_lastTrackingResults;
+	std::vector<TrackerType> m_trackerTypes;
 	static std::shared_ptr<base::Logger> m_logger;
 };
 

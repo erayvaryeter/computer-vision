@@ -10,20 +10,42 @@ std::shared_ptr<base::Logger> video::Tracker::m_logger = std::make_shared<base::
 namespace video {
 
 void
-Tracker::AppendDetector(std::shared_ptr<dl::Detector> detector) {
-    m_detectors.emplace_back(std::move(detector));
+Tracker::AppendFaceDetector(std::shared_ptr<dl::FaceDetector> detector) {
+    auto pair = std::make_pair(dl::Object::FACE, detector);
+    m_detectors.emplace_back(std::move(pair));
 }
 
 std::vector<TrackingResult>
 Tracker::ApplyDetectionOnSingleFrame(const cv::Mat& image) {
     std::vector<TrackingResult> results;
-    for (auto& detector : m_detectors) {
-        // apply detections here
+    std::vector<dl::DetectionResult> detectionResults;
+    for (const auto& detector : m_detectors) {
+        switch (detector.first) {
+        case dl::Object::FACE:
+        {
+            auto result = static_pointer_cast<dl::FaceDetector>(detector.second)->Detect(image, dl::Object::FACE);
+            detectionResults.emplace_back(std::move(result));
+            break;
+        }
+        default: break;
+        }
     }
+    for (const auto& dets : detectionResults) {
+        for (const auto& det : dets.detections) {
+            TrackingResult res;
+            res.bbox = det.bbox;
+            res.confidence = det.confidence;
+            if (det.objectClassString.has_value())
+                res.objClass = det.objectClassString;
+            results.emplace_back(std::move(res));
+        }
+    }
+    m_lastNumberOfObjects = results.size();
+    m_lastTrackingResults = results;
     return results;
 }
 
-void
+bool
 Tracker::AppendTracker(std::vector<TrackerType> types, const cv::Mat& initialImage, std::vector<TrackingResult>& initialDetectionResults) {
     std::vector<cv::Rect> ROIs;
     if (!initialDetectionResults.empty()) {
@@ -32,11 +54,6 @@ Tracker::AppendTracker(std::vector<TrackerType> types, const cv::Mat& initialIma
         for (auto result : initialDetectionResults) {
             ROIs.push_back(result.bbox);
         }
-    }
-    else {
-        cv::selectROIs("tracker", initialImage, ROIs);
-        ASSERT(types.size() == ROIs.size(), "Size of vectors of tracker types and ROIs must be equal",
-            base::Logger::Severity::Error);
     }
 
     auto CreateTrackerByName = [](TrackerType type) -> cv::Ptr<cv::Tracker> {
@@ -83,23 +100,59 @@ Tracker::AppendTracker(std::vector<TrackerType> types, const cv::Mat& initialIma
     // initialize the tracker
     std::vector<cv::Rect2d> objects;
     std::vector<cv::Ptr<cv::Tracker>> algorithms;
+    m_trackerTypes.clear();
     for (size_t i = 0; i < ROIs.size(); ++i) {
         algorithms.push_back(CreateTrackerByName(types[i]));
         objects.push_back(ROIs[i]);
+        m_trackerTypes.push_back(types[i]);
     }
 
-    m_multiTracker->add(algorithms, initialImage, objects);
+    if (!ROIs.empty()) {
+        m_multiTracker->add(algorithms, initialImage, objects);
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
-std::optional<TrackingResult>
+std::vector<TrackingResult>
 Tracker::PushFrame(cv::Mat& image) {
-    static int counter = 0;
-    std::vector<cv::Rect2d> bbox;
-    bool ok = m_multiTracker->update(image, bbox);
+    std::vector<TrackingResult> retVal;
+    bool ok = m_multiTracker->update(image);
     if (ok) {
-        
+        auto objects = m_multiTracker->getObjects();
+        if (objects.size() == m_lastNumberOfObjects) {
+            for (size_t i = 0; i < objects.size(); ++i) {
+                TrackingResult res;
+                res.bbox = objects[i];
+                if (m_lastTrackingResults[i].confidence.has_value())
+                    res.confidence = m_lastTrackingResults[i].confidence.value();
+                if (m_lastTrackingResults[i].objClass.has_value())
+                    res.objClass = m_lastTrackingResults[i].objClass.value();
+                retVal.emplace_back(std::move(res));
+            }
+        }
+        else {
+            for (auto object : objects) {
+                TrackingResult res;
+                res.bbox = object;
+                retVal.emplace_back(std::move(res));
+            }
+            m_lastNumberOfObjects = objects.size();
+        }
     }
-    return std::nullopt;
+    else {
+        m_logger->LogCritical("Multi tracker update failed, triggering the neural network for initial detection ...");
+        auto detections = ApplyDetectionOnSingleFrame(image);
+        if (!detections.empty()) {
+            m_multiTracker->clear();
+            m_multiTracker = cv::MultiTracker::create();
+            if (AppendTracker(m_trackerTypes, image, detections))
+                return PushFrame(image);
+        }
+    }
+    return retVal;
 }
 
 }
