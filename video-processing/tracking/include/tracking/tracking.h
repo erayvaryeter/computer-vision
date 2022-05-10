@@ -43,6 +43,7 @@ public:
 	std::vector<TrackingResult> ApplyDetectionOnSingleFrame(const cv::Mat& image);
 	bool AppendTracker(std::vector<TrackerType> types, const cv::Mat& initialImage, std::vector<TrackingResult>& initialDetectionResults);
 	std::vector<TrackingResult> PushFrame(cv::Mat& image);
+	void Run(cv::VideoCapture& cap);
 
 private:
 	std::vector<std::pair<dl::Object, std::shared_ptr<dl::BaseDetector>>> m_detectors;
