@@ -122,7 +122,7 @@ Tracker::PushFrame(cv::Mat& image) {
     bool ok = m_multiTracker->update(image);
     if (ok) {
         auto objects = m_multiTracker->getObjects();
-        if (objects.size() == m_lastNumberOfObjects) {
+        if (objects.size() == m_lastNumberOfObjects && objects.size() == m_lastTrackingResults.size()) {
             for (size_t i = 0; i < objects.size(); ++i) {
                 TrackingResult res;
                 res.bbox = objects[i];

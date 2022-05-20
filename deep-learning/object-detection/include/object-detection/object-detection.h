@@ -26,6 +26,7 @@ struct Detection {
 	float confidence;
 	std::optional<Object> objectClass;
 	std::optional<std::string> objectClassString;
+	std::optional<cv::Mat> objectMask;
 };
 
 struct DetectionResult {
@@ -40,6 +41,32 @@ struct NetworkProperties {
 	int imageInputWidth = 0;
 	int imageInputHeight = 0;
 	NetworkType networkType;
+};
+
+enum class DetectionFeature {
+	CONFIDENCE = 1,
+	BBOX_LEFT = 2,
+	BBOX_TOP = 3,
+	BBOX_RIGHT = 4,
+	BBOX_BOTTOM = 5,
+	CLASS_ID = 6,
+};
+
+struct DetectionParameters {
+	double scaleFactor = 1.0;
+	cv::Scalar meanValues = { 104.0, 177.0, 123.0 };
+	float confidenceThreshold = 0.75f;
+	std::string inputName = "data";
+	std::string outputDetectionName = "detection_out";
+	std::string outputMaskName;
+	std::map<DetectionFeature, int> detectionFeatureMap = { 
+		{ dl::DetectionFeature::CLASS_ID, 1 }, 
+		{ dl::DetectionFeature::CONFIDENCE, 2 },
+		{ dl::DetectionFeature::BBOX_LEFT, 3 },
+		{ dl::DetectionFeature::BBOX_TOP, 4 },
+		{ dl::DetectionFeature::BBOX_RIGHT, 5 },
+		{ dl::DetectionFeature::BBOX_BOTTOM, 6 },
+	};
 };
 
 class Detector {
@@ -67,10 +94,14 @@ public:
 
 	~Detector() {}
 
-	void SetDetectionParameters(double scaleFactor = 1.0, cv::Scalar meanValues = { 104., 177.0, 123.0 }, float confidenceThreshold = 0.75f) {
-		m_scaleFactor = scaleFactor;
-		m_meanValues = meanValues;
-		m_confidenceThreshold = confidenceThreshold;
+	void SetDetectionParameters(DetectionParameters params) {
+		m_scaleFactor = params.scaleFactor;
+		m_meanValues = params.meanValues;
+		m_confidenceThreshold = params.confidenceThreshold;
+		m_inputName = params.inputName;
+		m_outputDetectionName = params.outputDetectionName;
+		m_outputMaskName = params.outputMaskName;
+		m_detectionFeatureMap = params.detectionFeatureMap;
 	}
 
 	DetectionResult Detect(const cv::Mat& frame, std::optional<Object> oneClassNetwork);
@@ -83,9 +114,15 @@ private:
 	std::string m_weightFilePath;
 	NetworkType m_networkType;
 	cv::dnn::Net m_network;
+	// Detection Parameters
 	double m_scaleFactor;
 	cv::Scalar m_meanValues;
 	float m_confidenceThreshold;
+	std::string m_inputName;
+	std::string m_outputDetectionName;
+	std::string m_outputMaskName;
+	std::map<DetectionFeature, int> m_detectionFeatureMap;
+	// Logger
 	static std::shared_ptr<base::Logger> m_logger;
 };
 
@@ -96,8 +133,8 @@ public:
 
 	virtual void InitializeNetworkPaths() = 0;
 
-	void SetDetectionParameters(double scaleFactor = 1.0, cv::Scalar meanValues = { 104., 177.0, 123.0 }, float confidenceThreshold = 0.75f) {
-		m_detector->SetDetectionParameters(scaleFactor, meanValues, confidenceThreshold);
+	void SetDetectionParameters(DetectionParameters params) {
+		m_detector->SetDetectionParameters(params);
 	}
 
 	virtual DetectionResult Detect(const cv::Mat& frame, std::optional<Object> oneClassNetwork, bool oneFace = false) = 0;

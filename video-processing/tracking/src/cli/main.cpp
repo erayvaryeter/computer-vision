@@ -35,13 +35,14 @@ int main(int argc, char** argv) {
 
 	cv::Mat image = cv::imread(imagePath.c_str());
 	auto detector = std::make_shared<dl::FaceDetector>(dl::FaceDetectorType::CAFFE_300x300);
-	detector->SetDetectionParameters(1.0, { 104.0, 177.0, 123.0 }, 0.70f);
+	dl::DetectionParameters params;
+	detector->SetDetectionParameters(params);
 	auto detectionResults = detector->Detect(image, dl::Object::FACE);
 
 	auto tracker = std::make_shared<video::Tracker>(7);
 	tracker->AppendFaceDetector(detector);
 	
-	cv::VideoCapture cap(0);
+	cv::VideoCapture cap(1);
 	if (!cap.isOpened()) {
 		std::cout << "Error opening webcam" << std::endl;
 		return -1;

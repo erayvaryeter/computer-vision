@@ -18,7 +18,7 @@ Detector::Detect(const cv::Mat& frame, std::optional<Object> oneClassNetwork) {
 
     int imageWidth, imageHeight;
     imageWidth = frame.size().width;
-    imageHeight = frame.size().width;
+    imageHeight = frame.size().height;
 
     cv::Mat inputBlob;
     if (m_networkType == NetworkType::CAFFE)
@@ -26,21 +26,22 @@ Detector::Detect(const cv::Mat& frame, std::optional<Object> oneClassNetwork) {
     else if (m_networkType == NetworkType::TENSORFLOW)
         inputBlob = cv::dnn::blobFromImage(frame, m_scaleFactor, cv::Size(imageWidth, imageHeight), m_meanValues, true, false);
 
-    m_network.setInput(inputBlob, "data");
-    cv::Mat detection = m_network.forward("detection_out");
+    m_network.setInput(inputBlob, m_inputName);
+    cv::Mat detection = m_network.forward(m_outputDetectionName);
     cv::Mat detection_matrix(detection.size[2], detection.size[3], CV_32F, detection.ptr<float>());
 
     for (int i = 0; i < detection_matrix.rows; i++) {
-        float confidence = detection_matrix.at<float>(i, 2);
+        float confidence = detection_matrix.at<float>(i, m_detectionFeatureMap[DetectionFeature::CONFIDENCE]);
         if (confidence < m_confidenceThreshold) {
             continue;
         }
-        int x_left_bottom = static_cast<int>(detection_matrix.at<float>(i, 3) * frame.cols);
-        int y_left_bottom = static_cast<int>(detection_matrix.at<float>(i, 4) * frame.rows);
-        int x_right_top = static_cast<int>(detection_matrix.at<float>(i, 5) * frame.cols);
-        int y_right_top = static_cast<int>(detection_matrix.at<float>(i, 6) * frame.rows);
+        int classId = static_cast<int>(detection_matrix.at<float>(i, m_detectionFeatureMap[DetectionFeature::CLASS_ID]));
+        int left = static_cast<int>(detection_matrix.at<float>(i, m_detectionFeatureMap[DetectionFeature::BBOX_LEFT]) * frame.cols);
+        int top = static_cast<int>(detection_matrix.at<float>(i, m_detectionFeatureMap[DetectionFeature::BBOX_TOP]) * frame.rows);
+        int right = static_cast<int>(detection_matrix.at<float>(i, m_detectionFeatureMap[DetectionFeature::BBOX_RIGHT]) * frame.cols);
+        int bottom = static_cast<int>(detection_matrix.at<float>(i, m_detectionFeatureMap[DetectionFeature::BBOX_BOTTOM]) * frame.rows);
         Detection res;
-        res.bbox = cv::Rect(x_left_bottom, y_left_bottom, (x_right_top - x_left_bottom), (y_right_top - y_left_bottom));
+        res.bbox = cv::Rect(left, top, (right - left), (bottom - top));
         res.confidence = confidence;
         cv::Point textPoint = cv::Point(res.bbox.x, res.bbox.y + 15);
         cv::putText(retVal.imageWithBbox, std::to_string(res.confidence), textPoint, 1, 1, cv::Scalar(255, 0, 0));
