@@ -11,16 +11,21 @@ std::shared_ptr<base::Logger> dl::FaceDetector::m_logger = std::make_shared<base
 
 namespace dl {
 
-FaceDetector::FaceDetector(FaceDetectorType type) {
+FaceDetector::FaceDetector(FaceDetectorType type, std::optional<AgeEstimatorType> ageEstimatorType, 
+	std::optional<GenderEstimatorType> genderEstimatorType) {
 	m_faceDetectorType = type;
 	InitializeNetworkPaths();
 	m_networkProperties = m_networkPropertiesMap[m_faceDetectorType];
 	m_detector = std::make_shared<Detector>(m_networkProperties.networkType, m_networkProperties.configFilePath, m_networkProperties.weightFilePath);
+	if (ageEstimatorType.has_value())
+		m_ageEstimator = std::make_shared<AgeEstimator>(ageEstimatorType.value());
+	if (genderEstimatorType.has_value())
+		m_genderEstimator = std::make_shared<GenderEstimator>(genderEstimatorType.value());
 }
 
 void
 FaceDetector::InitializeNetworkPaths() {
-	// CAFFE_300x300
+	// CAFFE_300x300 FACE DETECTOR
 	NetworkProperties prop1;
 	prop1.configFilePath = "../../../../deep-learning/face-detection/resource/face/caffe/300x300/deploy.prototxt";
 	prop1.weightFilePath = "../../../../deep-learning/face-detection/resource/face/caffe/300x300/res10_300x300_ssd_iter_140000_fp16.caffemodel";
@@ -29,7 +34,7 @@ FaceDetector::InitializeNetworkPaths() {
 	prop1.networkType = NetworkType::CAFFE;
 	auto pair1 = std::make_pair(FaceDetectorType::CAFFE_300x300, prop1);
 	m_networkPropertiesMap.insert(m_networkPropertiesMap.end(), pair1);
-	// TENSORFLOW_300x300
+	// TENSORFLOW_300x300 FACE DETECTOR
 	NetworkProperties prop2;
 	prop2.configFilePath = "../../../../deep-learning/face-detection/resource/face/tensorflow/300x300/opencv_face_detector.pbtxt";
 	prop2.weightFilePath = "../../../../deep-learning/face-detection/resource/face/tensorflow/300x300/opencv_face_detector_uint8.pb";
@@ -109,6 +114,20 @@ FaceDetector::Detect(const cv::Mat& frame, std::optional<Object> oneClassNetwork
 		}
 		cv::Point textPoint = cv::Point(det.bbox.x, det.bbox.y + 15);
 		cv::putText(retVal.imageWithBbox, std::to_string(det.confidence), textPoint, 1, 1, cv::Scalar(255, 0, 0));
+		// Age Estimation
+		if (m_ageEstimator.has_value()) {
+			auto ageResult = m_ageEstimator.value()->Estimate(retVal.originalImage(det.bbox));
+			det.ageEstimation = ageResult;
+			textPoint = cv::Point(det.bbox.x, det.bbox.y + 30);
+			cv::putText(retVal.imageWithBbox, "Age: " + ageResult, textPoint, 1, 1, cv::Scalar(255, 0, 0));
+		}
+		// Gender Estimation
+		if (m_genderEstimator.has_value()) {
+			auto genderResult = m_genderEstimator.value()->Estimate(retVal.originalImage(det.bbox));
+			det.genderEstimation = genderResult;
+			textPoint = cv::Point(det.bbox.x, det.bbox.y + 45);
+			cv::putText(retVal.imageWithBbox, "Gender: " + genderResult, textPoint, 1, 1, cv::Scalar(255, 0, 0));
+		}
 	}
 
 	return retVal;

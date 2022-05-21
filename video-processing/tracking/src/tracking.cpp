@@ -37,6 +37,10 @@ Tracker::ApplyDetectionOnSingleFrame(const cv::Mat& image) {
             res.confidence = det.confidence;
             if (det.objectClassString.has_value())
                 res.objClass = det.objectClassString;
+            if (det.ageEstimation.has_value())
+                res.ageEstimation = det.ageEstimation;
+            if (det.genderEstimation.has_value())
+                res.genderEstimation = det.genderEstimation;
             results.emplace_back(std::move(res));
         }
     }
@@ -119,8 +123,21 @@ Tracker::AppendTracker(std::vector<TrackerType> types, const cv::Mat& initialIma
 std::vector<TrackingResult>
 Tracker::PushFrame(cv::Mat& image) {
     std::vector<TrackingResult> retVal;
+    static int counter = 1;
     bool ok = m_multiTracker->update(image);
-    if (ok) {
+    if (counter % 30 == 0) {
+        counter = 1;
+        m_logger->LogCritical("Redetecting with neural network every 30th frame ...");
+        auto detections = ApplyDetectionOnSingleFrame(image);
+        if (!detections.empty()) {
+            m_multiTracker->clear();
+            m_multiTracker = cv::MultiTracker::create();
+            if (AppendTracker(m_trackerTypes, image, detections))
+                return PushFrame(image);
+        }
+    }
+    else if (ok) {
+        counter++;
         auto objects = m_multiTracker->getObjects();
         if (objects.size() == m_lastNumberOfObjects && objects.size() == m_lastTrackingResults.size()) {
             for (size_t i = 0; i < objects.size(); ++i) {
@@ -130,6 +147,10 @@ Tracker::PushFrame(cv::Mat& image) {
                     res.confidence = m_lastTrackingResults[i].confidence.value();
                 if (m_lastTrackingResults[i].objClass.has_value())
                     res.objClass = m_lastTrackingResults[i].objClass.value();
+                if (m_lastTrackingResults[i].ageEstimation.has_value())
+                    res.ageEstimation = m_lastTrackingResults[i].ageEstimation.value();
+                if (m_lastTrackingResults[i].genderEstimation.has_value())
+                    res.genderEstimation = m_lastTrackingResults[i].genderEstimation.value();
                 retVal.emplace_back(std::move(res));
             }
         }
@@ -143,6 +164,7 @@ Tracker::PushFrame(cv::Mat& image) {
         }
     }
     else {
+        counter = 1;
         m_logger->LogCritical("Multi tracker update failed, triggering the neural network for initial detection ...");
         auto detections = ApplyDetectionOnSingleFrame(image);
         if (!detections.empty()) {
@@ -189,6 +211,10 @@ Tracker::Run(cv::VideoCapture& cap) {
                     cv::putText(drawImage, det.objClass.value(), cv::Point(det.bbox.x, det.bbox.y), 1, 1, cv::Scalar(0, 255, 0));
                 if (det.confidence.has_value())
                     cv::putText(drawImage, std::to_string(det.confidence.value()), cv::Point(det.bbox.x, det.bbox.y + 10), 1, 1, cv::Scalar(0, 255, 0));
+                if (det.ageEstimation.has_value())
+                    cv::putText(drawImage, det.ageEstimation.value(), cv::Point(det.bbox.x, det.bbox.y + 20), 1, 1, cv::Scalar(0, 255, 0));
+                if (det.genderEstimation.has_value())
+                    cv::putText(drawImage, det.genderEstimation.value(), cv::Point(det.bbox.x, det.bbox.y + 30), 1, 1, cv::Scalar(0, 255, 0));
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿add_subdirectory("object-detection")
+add_subdirectory("estimators")
 add_subdirectory("face-detection")
 add_subdirectory("face-warper")
 add_subdirectory("face-recognition")

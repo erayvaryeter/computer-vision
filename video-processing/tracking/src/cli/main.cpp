@@ -34,7 +34,8 @@ int main(int argc, char** argv) {
 	}
 
 	cv::Mat image = cv::imread(imagePath.c_str());
-	auto detector = std::make_shared<dl::FaceDetector>(dl::FaceDetectorType::CAFFE_300x300);
+	auto detector = std::make_shared<dl::FaceDetector>(dl::FaceDetectorType::CAFFE_300x300, 
+		dl::AgeEstimatorType::CAFFE_227x227, dl::GenderEstimatorType::CAFFE_227x227);
 	dl::DetectionParameters params;
 	detector->SetDetectionParameters(params);
 	auto detectionResults = detector->Detect(image, dl::Object::FACE);

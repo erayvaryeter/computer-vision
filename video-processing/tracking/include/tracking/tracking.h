@@ -28,6 +28,8 @@ struct TrackingResult {
 	cv::Rect bbox;
 	std::optional<std::string> objClass;
 	std::optional<float> confidence;
+	std::optional<std::string> ageEstimation;
+	std::optional<std::string> genderEstimation;
 };
 
 class Tracker {

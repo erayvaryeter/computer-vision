@@ -27,6 +27,8 @@ struct Detection {
 	std::optional<Object> objectClass;
 	std::optional<std::string> objectClassString;
 	std::optional<cv::Mat> objectMask;
+	std::optional<std::string> ageEstimation;
+	std::optional<std::string> genderEstimation;
 };
 
 struct DetectionResult {
