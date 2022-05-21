@@ -18,6 +18,7 @@ class DevelopmentConan(ConanFile):
         "opencv:cpu_baseline": None,
         "opencv:cpu_dispatch": None,
         "opencv:dnn": True,
+        "opencv:dnn_cuda": True,
         "opencv:nonfree": True,
         "opencv:parallel": False,
         "opencv:shared": False,

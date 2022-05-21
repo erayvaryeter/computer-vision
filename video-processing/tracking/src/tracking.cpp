@@ -15,6 +15,12 @@ Tracker::AppendFaceDetector(std::shared_ptr<dl::FaceDetector> detector) {
     m_detectors.emplace_back(std::move(pair));
 }
 
+void
+Tracker::AppendInstanceSegmentator(std::shared_ptr<dl::InstanceSegmentator> segmentator) {
+    auto pair = std::make_pair(dl::Object::INSTANCE_SEGMENTATION, segmentator);
+    m_detectors.emplace_back(std::move(pair));
+}
+
 std::vector<TrackingResult>
 Tracker::ApplyDetectionOnSingleFrame(const cv::Mat& image) {
     std::vector<TrackingResult> results;
@@ -24,6 +30,12 @@ Tracker::ApplyDetectionOnSingleFrame(const cv::Mat& image) {
         case dl::Object::FACE:
         {
             auto result = static_pointer_cast<dl::FaceDetector>(detector.second)->Detect(image, dl::Object::FACE);
+            detectionResults.emplace_back(std::move(result));
+            break;
+        }
+        case dl::Object::INSTANCE_SEGMENTATION:
+        {
+            auto result = static_pointer_cast<dl::InstanceSegmentator>(detector.second)->Detect(image, std::nullopt);
             detectionResults.emplace_back(std::move(result));
             break;
         }
@@ -41,6 +53,8 @@ Tracker::ApplyDetectionOnSingleFrame(const cv::Mat& image) {
                 res.ageEstimation = det.ageEstimation;
             if (det.genderEstimation.has_value())
                 res.genderEstimation = det.genderEstimation;
+            if (det.drawingElement.has_value())
+                res.drawingElement = det.drawingElement;
             results.emplace_back(std::move(res));
         }
     }
@@ -151,6 +165,8 @@ Tracker::PushFrame(cv::Mat& image) {
                     res.ageEstimation = m_lastTrackingResults[i].ageEstimation.value();
                 if (m_lastTrackingResults[i].genderEstimation.has_value())
                     res.genderEstimation = m_lastTrackingResults[i].genderEstimation.value();
+                if (m_lastTrackingResults[i].drawingElement.has_value())
+                    res.drawingElement = m_lastTrackingResults[i].drawingElement.value();
                 retVal.emplace_back(std::move(res));
             }
         }
@@ -215,6 +231,10 @@ Tracker::Run(cv::VideoCapture& cap) {
                     cv::putText(drawImage, det.ageEstimation.value(), cv::Point(det.bbox.x, det.bbox.y + 20), 1, 1, cv::Scalar(0, 255, 0));
                 if (det.genderEstimation.has_value())
                     cv::putText(drawImage, det.genderEstimation.value(), cv::Point(det.bbox.x, det.bbox.y + 30), 1, 1, cv::Scalar(0, 255, 0));
+                if (det.drawingElement.has_value()) {
+                    auto& e = det.drawingElement.value();
+                    e.coloredRoi.copyTo(drawImage(e.bbox), e.mask);
+                }
             }
         }
 

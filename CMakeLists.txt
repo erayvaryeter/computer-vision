@@ -35,3 +35,6 @@ add_subdirectory("homography")
 add_subdirectory("machine-learning")
 add_subdirectory("deep-learning")
 add_subdirectory("video-processing")
+
+# Helper targets
+add_subdirectory("helper")

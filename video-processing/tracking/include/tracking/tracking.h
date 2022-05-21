@@ -1,6 +1,8 @@
 #pragma once
 
 #include <face-detection/face-detection.h>
+#include <object-detection/object-detection.h>
+#include <instance-segmentation/instance-segmentation.h>
 #include <opencv2/opencv.hpp>
 #include <opencv2/tracking.hpp>
 #include <opencv2/tracking/tracking.hpp>
@@ -30,6 +32,7 @@ struct TrackingResult {
 	std::optional<float> confidence;
 	std::optional<std::string> ageEstimation;
 	std::optional<std::string> genderEstimation;
+	std::optional<dl::SegmentationDrawingElement> drawingElement;
 };
 
 class Tracker {
@@ -42,6 +45,7 @@ public:
 	~Tracker() {}
 
 	void AppendFaceDetector(std::shared_ptr<dl::FaceDetector> detector);
+	void AppendInstanceSegmentator(std::shared_ptr<dl::InstanceSegmentator> segmentator);
 	std::vector<TrackingResult> ApplyDetectionOnSingleFrame(const cv::Mat& image);
 	bool AppendTracker(std::vector<TrackerType> types, const cv::Mat& initialImage, std::vector<TrackingResult>& initialDetectionResults);
 	std::vector<TrackingResult> PushFrame(cv::Mat& image);
