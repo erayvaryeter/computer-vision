@@ -16,7 +16,6 @@ int main(int argc, char** argv) {
 	tracker->AppendInstanceSegmentator(segmentator);
 
 	auto videoFile = "../../../../video-processing/tracking/resource/Cars.mp4";
-	auto videoFile2 = "../../../../video-processing/tracking/resource/Runners.mp4";
 
 	cv::VideoCapture cap(videoFile);
 	if (!cap.isOpened()) {
@@ -25,14 +24,6 @@ int main(int argc, char** argv) {
 	}
 	tracker->Run(cap);
 	cap.release();
-
-	cv::VideoCapture cap2(videoFile2);
-	if (!cap2.isOpened()) {
-		std::cout << "Error opening the second video file" << std::endl;
-		return -1;
-	}
-	tracker->Run(cap2);
-	cap2.release();
 
 	return 0;
 }

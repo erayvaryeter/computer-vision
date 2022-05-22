@@ -56,6 +56,7 @@ private:
 	cv::Ptr<cv::MultiTracker> m_multiTracker;
 	int m_redetectSteps;
 	int m_lastNumberOfObjects = 0;
+	bool m_segmentationDrawing = false;
 	std::vector<TrackingResult> m_lastTrackingResults;
 	std::vector<TrackerType> m_trackerTypes;
 	static std::shared_ptr<base::Logger> m_logger;

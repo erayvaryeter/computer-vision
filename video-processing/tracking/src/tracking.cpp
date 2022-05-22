@@ -53,8 +53,10 @@ Tracker::ApplyDetectionOnSingleFrame(const cv::Mat& image) {
                 res.ageEstimation = det.ageEstimation;
             if (det.genderEstimation.has_value())
                 res.genderEstimation = det.genderEstimation;
-            if (det.drawingElement.has_value())
+            if (det.drawingElement.has_value()) {
+                m_segmentationDrawing = true;
                 res.drawingElement = det.drawingElement;
+            }
             results.emplace_back(std::move(res));
         }
     }
@@ -136,6 +138,14 @@ Tracker::AppendTracker(std::vector<TrackerType> types, const cv::Mat& initialIma
 
 std::vector<TrackingResult>
 Tracker::PushFrame(cv::Mat& image) {
+    auto EqualizeTrackerTypeVector = [&](size_t size) {
+        if (m_trackerTypes.size() < size) {
+            size_t diff = size - m_trackerTypes.size();
+            for (size_t i = 0; i < diff; ++i) {
+                m_trackerTypes.push_back(m_trackerTypes[i % m_trackerTypes.size()]);
+            }
+        }
+    };
     std::vector<TrackingResult> retVal;
     static int counter = 1;
     bool ok = m_multiTracker->update(image);
@@ -146,6 +156,7 @@ Tracker::PushFrame(cv::Mat& image) {
         if (!detections.empty()) {
             m_multiTracker->clear();
             m_multiTracker = cv::MultiTracker::create();
+            EqualizeTrackerTypeVector(detections.size());
             if (AppendTracker(m_trackerTypes, image, detections))
                 return PushFrame(image);
         }
@@ -186,6 +197,7 @@ Tracker::PushFrame(cv::Mat& image) {
         if (!detections.empty()) {
             m_multiTracker->clear();
             m_multiTracker = cv::MultiTracker::create();
+            EqualizeTrackerTypeVector(detections.size());
             if (AppendTracker(m_trackerTypes, image, detections))
                 return PushFrame(image);
         }
@@ -232,13 +244,19 @@ Tracker::Run(cv::VideoCapture& cap) {
                 if (det.genderEstimation.has_value())
                     cv::putText(drawImage, det.genderEstimation.value(), cv::Point(det.bbox.x, det.bbox.y + 30), 1, 1, cv::Scalar(0, 255, 0));
                 if (det.drawingElement.has_value()) {
-                    auto& e = det.drawingElement.value();
-                    e.coloredRoi.copyTo(drawImage(e.bbox), e.mask);
+                    if (m_segmentationDrawing) {
+                        auto& e = det.drawingElement.value();
+                        e.coloredRoi.copyTo(drawImage(e.bbox), e.mask);
+                    }
                 }
             }
         }
 
         cv::imshow("Webcam with Face Detections", drawImage);
+        if (m_segmentationDrawing) {
+            m_segmentationDrawing = false;
+            cv::waitKey(1000);
+        }
 
         char c = (char)cv::waitKey(25);
         if (c == 27)
