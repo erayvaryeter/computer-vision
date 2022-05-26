@@ -63,3 +63,19 @@ ORB is a fast robust local feature detector. It is based on FAST keypoint detect
 
 # 2.1.8 BRISK (Binary Robust Invariant Scalable Keypoints)
 BRISK has a predefined sampling pattern as compared to BRIEF or ORB. Pixels are sampled over concentric rings. For each sampling point, a small patch is considered around it. Before starting the algorithm, the patch is smoothed using gaussian smoothing. This method provides both features and descriptors, and can be run by changing the argument to "BRISK".
+
+# 2.2 Feature Matching
+Feature matching is the process of defining a distance calculation function which is then used to calculate the distance between a particular descriptor in the first image with all descriptors in the second image. If the calculated distance is lower than a certain user defined threshold, these two descriptors can be considered as a good match. OpenCV offers FLANN based and Brut Force matchers. BFMatcher is going to try all the possibilities (which is the meaning of "Brute Force" and hence it will find the best matches. FLANN, meaning "Fast Library for Approximate Nearest Neighbors", will be much faster but will find an approximate nearest neighbors. It will find a good matching, but not necessarily the best possible one. In this project BFMatcher is used to get good results.
+
+It is possible to use different matching functionalities. This project offers regular matching, knn matching (k parameter is given as the maximum count of best matches found per descriptor), and radius matching (which gives the option to define a threshold for the distance between the matched descriptors).
+
+This project offers a cli which you can try by the following arguments, and you should get this output where you can see matching of extracted features.
+  "--image1",
+  "../../../../features/feature-matcher/resource/1.jpg",
+  "--image2",
+  "../../../../features/feature-matcher/resource/2.jpg",
+  "--matching-type",
+  "Radius"
+![image](https://user-images.githubusercontent.com/80865017/170466681-ddc3d17f-4464-428c-99ae-c8d194eca1aa.png)
+
+You can change the matching type command line argument to "Regular" or "Knn" to see different results.
