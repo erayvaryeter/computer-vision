@@ -49,6 +49,17 @@ This is similar to Harris Corner detector with slight changes in score calculati
 # 2.1.3 SIFT (Scale Invariant Feature Transform)
 This method transforms an image into a large collection of feature vectors, each of which is invariant to image translation, scaling and rotation, and partially invariant to illumination changes and robust to local geometric distortion. SIFT method provides both features and descriptors. Same executable can be run by changing the argument to "SIFT".
 
-# 2.1.4 SURF
+# 2.1.4 SURF (Speeded up Robust Features)
 This method is inspired by SIFT, however several times faster and claimed to be more robust against different image transformations. This method provides both features and descriptors, and can be run by changing the argument to "SURF".
 
+# 2.1.5 FAST (Features from Accelerated Segment Test)
+FAST detector uses a circle of 16 pixels to classify whether a candidate point p is actually a corner. Each pixel in the circle is labeled from integer number from 1 to 16 clockwise. If a set of N contiguous pixels in the circle are all brighter than the intensity of candidate pixel p + threshold value, or all darker than the intensity of candidate pixel p - threshold value, then p is classified as corner. This method provides only keypoints. Executable can be run by changing the argument to "FAST".
+
+# 2.1.6 BRIEF (Binary Robust Independent Elementary Features)
+BRIEF is another algorithm with scale and rotation invariance. It constructs the feature descriptor of the local image through the grayscale relationship of random point pairs in the neighborhood of the local image, and obtains the binary feature descriptor. This method provides both features and descriptors, and can be run by changing the argument to "BRIEF".
+
+# 2.1.7 ORB (Oriented FAST and Rotated BRIEF)
+ORB is a fast robust local feature detector. It is based on FAST keypoint detector and modified version of the visual BRIEF descriptor, which has an aim of providing a fast and efficient alternative to SIFT. This method provides both features and descriptors, and can be run by changing the argument to "ORB".
+
+# 2.1.8 BRISK (Binary Robust Invariant Scalable Keypoints)
+BRISK has a predefined sampling pattern as compared to BRIEF or ORB. Pixels are sampled over concentric rings. For each sampling point, a small patch is considered around it. Before starting the algorithm, the patch is smoothed using gaussian smoothing. This method provides both features and descriptors, and can be run by changing the argument to "BRISK".
