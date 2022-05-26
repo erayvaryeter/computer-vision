@@ -19,3 +19,24 @@ If you have NVIDIA CUDA enabled GPU, you can create OpenCV package with CUDA sup
 
 After you successfuly build the complete project, you can run each executable.
 
+# Explanation
+
+# 1. Base
+
+base directory contains helper libraries for assertion, date & time, file & folder handling, logger and string helpers.
+You can see the usage of each library in their corresponding unit tests.
+
+# 2. Features
+
+Feature is a piece of information about the content of an image, typically about whether a certain region of the image has certain properties. Features might be specific structures in the image such as points, edges or objects. Correctly extracted features can be used for computer vision tasks like object detection/classification/segmentation. Some commonly used feature extraction methods are implemented in this project.
+
+# 2.1 Feature Detector
+
+# 2.1.1 Harris Corner Detector
+Harris corner detector takes the differential of the corner score into account with reference to direction directly, and proved to be more accurate in distinguishing between edges and corners. If you run feature-detector-cli executable with the following command line arguments, you will get the following chessboard image containing detected points:
+  "--image",
+  "../../../../features/feature-detector/resource/Chessboard.jpg",
+  "--detector-type",
+  "HarrisCorner"
+  Example Output:
+  ![image](https://user-images.githubusercontent.com/80865017/170388434-449d013d-7805-46cf-b73f-ffec3105dbff.png)
