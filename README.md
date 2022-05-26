@@ -32,11 +32,23 @@ Feature is a piece of information about the content of an image, typically about
 
 # 2.1 Feature Detector
 
+Feature detection contains two steps: keypoint extraction and descriptor extraction. Keypoint usually contains the patch 2D position and other related information such as scale and orientation of the image feature. Descriptor contains the visual description of the patch and it is used to compare the similarity between image features. Not every method that will be mentioned here provides both functionalities. For the methods that only provide feature extraction, brisk method is used to extract the descriptor of the found feature in the code implementation in this project.
+
 # 2.1.1 Harris Corner Detector
-Harris corner detector takes the differential of the corner score into account with reference to direction directly, and proved to be more accurate in distinguishing between edges and corners. If you run feature-detector-cli executable with the following command line arguments, you will get the following chessboard image containing detected points:
+Harris corner detector takes the differential of the corner score into account with reference to direction directly, and proved to be more accurate in distinguishing between edges and corners. This method only provides the keypoints, therefore brisk is used to calculate the descriptor. If you run feature-detector-cli executable with the following command line arguments, you will get the following chessboard image containing detected points:
   "--image",
   "../../../../features/feature-detector/resource/Chessboard.jpg",
   "--detector-type",
   "HarrisCorner"
   Example Output:
   ![image](https://user-images.githubusercontent.com/80865017/170388434-449d013d-7805-46cf-b73f-ffec3105dbff.png)
+
+# 2.1.2 Shi Tomasi Corner Detector
+This is similar to Harris Corner detector with slight changes in score calculation formulate, which in the end provides slightly better results overall. Same executable can be run by changing the command line argument from "HarrisCorner" to "ShiTomasi". This method also only provides the keypoints, and descriptors are extracted with brisk method.
+
+# 2.1.3 SIFT (Scale Invariant Feature Transform)
+This method transforms an image into a large collection of feature vectors, each of which is invariant to image translation, scaling and rotation, and partially invariant to illumination changes and robust to local geometric distortion. SIFT method provides both features and descriptors. Same executable can be run by changing the argument to "SIFT".
+
+# 2.1.4 SURF
+This method is inspired by SIFT, however several times faster and claimed to be more robust against different image transformations. This method provides both features and descriptors, and can be run by changing the argument to "SURF".
+
