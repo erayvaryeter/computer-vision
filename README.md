@@ -80,7 +80,7 @@ This project offers a cli which you can try by the following arguments, and you 
 
 You can change the matching type command line argument to "Regular" or "Knn" to see different results.
 
-# 3 Homography
+# 3. Homography
 
 Homography describes the projective geometry of two cameras and a world plane. In simple terms, homography maps images of points which lie on a world plane from one camera view to another. Two images of the same planar surface in space are related by a homography (assuming a pinhole camera model). This has many practical applications, such as image rectification, image registration, or camera motion—rotation and translation—between two images
 
@@ -110,7 +110,7 @@ OpenCV provides stitching functionality from images that cover common areas. Imp
 As the result of stitching, we get this stitched output:
 ![image](https://user-images.githubusercontent.com/80865017/170471121-ca859e8f-410b-4f70-9e40-eece6ebaac4f.png)
 
-# 4 Machine Learning
+# 4. Machine Learning
 
 This repository provides implementations for 3 algorithms: PCA, KNN and Random Forest. 
 
@@ -126,9 +126,9 @@ Example output:
 
 ![image](https://user-images.githubusercontent.com/80865017/170828393-20ebb84e-b363-49af-9d48-20f070bdb9e2.png)
 
-# Deep Learning
+# 5. Deep Learning
 
-# Face Detection and Estimation
+# 5.1 Face Detection and Estimation
 
 OpenCV supports functionality for running pre-trained neural networks. This project provides some neural networks for face detection and age/gender/ethnicity estimations. Classification networks that are used for estimation tasks are trained by me by taking ResNet architecture as the base structure. Dataset that was used for this training can be seen from https://www.kaggle.com/datasets/jangedoo/utkface-new
 
@@ -136,7 +136,7 @@ Age prediction is not working well as there was not enough number of images for 
 
 ![image](https://user-images.githubusercontent.com/80865017/170828782-c9d9b53c-3370-4cee-b66a-427934867ba6.png)
 
-# Face Warping
+# 5.2 Face Warping
 
 Image warping is a transformation which maps all positions in one image plane to positions in a second plane, which is very useful for correcting image distortion. In order to have a good face recognition system, it is crucial to warp detected faces to a proper reference plane so that matching will make more sense in the recognition phase. This project provides a warping library and also a command line interface as example. 
 
@@ -147,3 +147,17 @@ Face warping is using the 68 face landmarks as reference points. Homography matr
 ![image](https://user-images.githubusercontent.com/80865017/170829112-dddd959f-aa2a-4748-954c-a1f8ce3d5bb9.png)
 
 As you can see from the results, detected faces were warped and corrected.
+
+# 5.3 Face Recognition
+
+OpenCV provides face recognition functionalities. This project uses couple images of Brad Pitt, Don Cheadle, Elliott Gould, George Clooney and Matt Damon. Command line interface application demonstrates the training and testing phase of face recognition. However, since there are not many images used for training, recognition results are not good. Example output is as follows:
+
+![image](https://user-images.githubusercontent.com/80865017/170831342-3e235c35-751c-427f-b2c7-46b7ad1b02a7.png)
+
+# 5.4 Instance Segmentation
+
+Instance segmentation is a computer vision task for detecting and localizing an object in an image. Instance segmentation is a natural sequence of semantic segmentation, and it is also one of the biggest challenges compared to other segmentation techniques. The goal of instance segmentation is to get a view of objects of the same class divided into different instances. In order to solve instance segmentation problem, Mask R-CNN model is used, which is a deep neural network based on a faster R-CNN architecture that in addition to classification and detection, also provides mask prediction for each bounding box. 
+
+This repository uses a pre-trained Mask R-CNN neural network to detect many classes including faces, vehicles, etc. Running instance segmentation cli executable will result in the following output: 
+
+![image](https://user-images.githubusercontent.com/80865017/170831638-5ea0b1ac-90d3-42db-be74-3f56fcd7153d.png)
