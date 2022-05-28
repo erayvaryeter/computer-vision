@@ -46,6 +46,13 @@ int main(int argc, char** argv) {
 
 	auto warper = std::make_shared<dl::FaceWarper>();
 	auto warpResults = warper->WarpWithLandmarks(detectionResults);
+	
+	for (size_t i = 0; i < warpResults.warpingResults.size(); ++i) {
+		std::string windowName = "Result" + std::to_string(i+1);
+		cv::imshow(windowName, warpResults.warpingResults[i].warpedFaceImageWithLandmarks);
+	}
+
+	cv::waitKey(0);
 
 	return 0;
 }
