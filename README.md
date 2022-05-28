@@ -63,3 +63,34 @@ ORB is a fast robust local feature detector. It is based on FAST keypoint detect
 
 # 2.1.8 BRISK (Binary Robust Invariant Scalable Keypoints)
 BRISK has a predefined sampling pattern as compared to BRIEF or ORB. Pixels are sampled over concentric rings. For each sampling point, a small patch is considered around it. Before starting the algorithm, the patch is smoothed using gaussian smoothing. This method provides both features and descriptors, and can be run by changing the argument to "BRISK".
+
+# 2.2 Feature Matching
+Feature matching is the process of defining a distance calculation function which is then used to calculate the distance between a particular descriptor in the first image with all descriptors in the second image. If the calculated distance is lower than a certain user defined threshold, these two descriptors can be considered as a good match. OpenCV offers FLANN based and Brut Force matchers. BFMatcher is going to try all the possibilities (which is the meaning of "Brute Force" and hence it will find the best matches. FLANN, meaning "Fast Library for Approximate Nearest Neighbors", will be much faster but will find an approximate nearest neighbors. It will find a good matching, but not necessarily the best possible one. In this project BFMatcher is used to get good results.
+
+It is possible to use different matching functionalities. This project offers regular matching, knn matching (k parameter is given as the maximum count of best matches found per descriptor), and radius matching (which gives the option to define a threshold for the distance between the matched descriptors).
+
+This project offers a cli which you can try by the following arguments, and you should get this output where you can see matching of extracted features.
+  "--image1",
+  "../../../../features/feature-matcher/resource/1.jpg",
+  "--image2",
+  "../../../../features/feature-matcher/resource/2.jpg",
+  "--matching-type",
+  "Radius"
+![image](https://user-images.githubusercontent.com/80865017/170466681-ddc3d17f-4464-428c-99ae-c8d194eca1aa.png)
+
+You can change the matching type command line argument to "Regular" or "Knn" to see different results.
+
+# 3 Homography
+
+Homography describes the projective geometry of two cameras and a world plane. In simple terms, homography maps images of points which lie on a world plane from one camera view to another. Two images of the same planar surface in space are related by a homography (assuming a pinhole camera model). This has many practical applications, such as image rectification, image registration, or camera motion—rotation and translation—between two images
+
+# 3.1 Homography Calculator
+
+# 3.2 Stitching
+OpenCV provides stitching functionality from images that cover common areas. Implementation is quite simple, cli can be run without any command line argument. Program uses those 3 following images as input:
+![image](https://user-images.githubusercontent.com/80865017/170470898-49e99eea-4548-453f-a7a6-42aa7b91984c.png)
+![image](https://user-images.githubusercontent.com/80865017/170470958-dcd97a9a-b20d-4da0-8635-b1ced5cf7c33.png)
+![image](https://user-images.githubusercontent.com/80865017/170471003-9d9035d5-cffe-433e-bceb-c7df00dc75d9.png)
+
+As the result of stitching, we get this stitched output:
+![image](https://user-images.githubusercontent.com/80865017/170471121-ca859e8f-410b-4f70-9e40-eece6ebaac4f.png)
