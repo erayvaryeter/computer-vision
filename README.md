@@ -122,3 +122,28 @@ Random forest is a supervised machine learning algorithm that is used widely in 
 
 This repository uses MNIST dataset for classification. KNN and Random Forest methods are used and two cli programs are provided for their implementations. Results of classifications can be obtained by running the executables.
 
+Example output:
+
+![image](https://user-images.githubusercontent.com/80865017/170828393-20ebb84e-b363-49af-9d48-20f070bdb9e2.png)
+
+# Deep Learning
+
+# Face Detection and Estimation
+
+OpenCV supports functionality for running pre-trained neural networks. This project provides some neural networks for face detection and age/gender/ethnicity estimations. Classification networks that are used for estimation tasks are trained by me by taking ResNet architecture as the base structure. Dataset that was used for this training can be seen from https://www.kaggle.com/datasets/jangedoo/utkface-new
+
+Age prediction is not working well as there was not enough number of images for each age group. Running face detection command line interface with proper command line arguments results in the following output:
+
+![image](https://user-images.githubusercontent.com/80865017/170828782-c9d9b53c-3370-4cee-b66a-427934867ba6.png)
+
+# Face Warping
+
+Image warping is a transformation which maps all positions in one image plane to positions in a second plane, which is very useful for correcting image distortion. In order to have a good face recognition system, it is crucial to warp detected faces to a proper reference plane so that matching will make more sense in the recognition phase. This project provides a warping library and also a command line interface as example. 
+
+Face warping is using the 68 face landmarks as reference points. Homography matrix is found between the landmark points of the currently processed/detected face and reference landmarks points. Afterwards this matrix is used to warp the originally detected face. Example output of face warping can be seen as follows:
+
+![image](https://user-images.githubusercontent.com/80865017/170829050-7f2031b9-dc7f-488b-9a6f-e009994f02bb.png)![image](https://user-images.githubusercontent.com/80865017/170829066-500b3c2b-a91d-4212-854b-5080c65d2a70.png)![image](https://user-images.githubusercontent.com/80865017/170829077-801c8583-c638-4849-8e9f-f91724614d8c.png)
+![image](https://user-images.githubusercontent.com/80865017/170829099-9a03fc2b-f5f1-4b18-bd29-eea020f8489b.png)
+![image](https://user-images.githubusercontent.com/80865017/170829112-dddd959f-aa2a-4748-954c-a1f8ce3d5bb9.png)
+
+As you can see from the results, detected faces were warped and corrected.
