@@ -89,12 +89,15 @@ Homography describes the projective geometry of two cameras and a world plane. I
 Homography calculator cli program finds feature points of two images which have common area of view with different perspectives. Found features are then used to calculate the homography matrix. Homography matrix is used to warp the source image perspectively. At the end, original image is displayed with 50 percent weight and the warped perspective image is displayed with 50 percent weight. As it can be seen from the output image, very good features are selected, which is why we see a greatly colored area.
 
 First input image:
+
 ![image](https://user-images.githubusercontent.com/80865017/170826690-7f8a4228-85e3-482d-ade1-895a28c53458.png)
 
 Second input image:
+
 ![image](https://user-images.githubusercontent.com/80865017/170826704-71dcf3a7-ff63-48f4-8bec-0e913418ec13.png)
 
 Output image:
+
 ![image](https://user-images.githubusercontent.com/80865017/170826493-e8f6cb49-91be-4e5c-974d-bd04396e907d.png)
 
 # 3.2 Stitching
