@@ -128,7 +128,7 @@ Example output:
 
 # 5. Deep Learning
 
-# 5.1 Face Detection and Estimation
+# 5.1 Face Detection and Age/Gender/Ethnicity Estimation
 
 OpenCV supports functionality for running pre-trained neural networks. This project provides some neural networks for face detection and age/gender/ethnicity estimations. Classification networks that are used for estimation tasks are trained by me by taking ResNet architecture as the base structure. Dataset that was used for this training can be seen from https://www.kaggle.com/datasets/jangedoo/utkface-new
 
@@ -161,3 +161,29 @@ Instance segmentation is a computer vision task for detecting and localizing an 
 This repository uses a pre-trained Mask R-CNN neural network to detect many classes including faces, vehicles, etc. Running instance segmentation cli executable will result in the following output: 
 
 ![image](https://user-images.githubusercontent.com/80865017/170831638-5ea0b1ac-90d3-42db-be74-3f56fcd7153d.png)
+
+# 6. Tracking
+
+Why do we need tracking at all instead of detecting objects in every frame ? There are numereous reasons why:
+
+- When there are multiple objects (say people) detected in a video frame, tracking helps establishing the identity of objects across frames.
+- In some cases, object detection might fail but it may still be possible to track the object because tracking takes into account the location and appearance of the object in the previous frames.
+- If we always apply object detection, this will lead to slower execution. However, tracking algorithms are very fast because they do either local/global search. 
+
+If we perform the object detection only in every Nth frame, but just apply tracking algorithms in intermediate frames, we can obtain a very high frame rate !
+
+OpenCV provides 8 different tracker types: BOOSTING, MIL, KCF, TLD, MEDIANFLOW, GOTURN, MOSSE and CSTR. All of them are implemented in this project.
+
+There are 2 cli executables provided: Face Tracking and Instance Segmentation Tracking.
+
+# 6.1 Face Tracking
+
+Face tracking detects faces in the video every 30th frame, and just tracks the last detected faces for the other 29 frames. It also applies the available estimations. It is clear that neural networks for estimations need more work, better data and improvement in general. Example output of the face tracking is as follows:
+
+https://user-images.githubusercontent.com/80865017/170833410-26c94dc2-df03-4507-843a-b5f69bddfb8b.mp4
+
+# 6.2 Instance Segmentation Tracking
+
+This cli executable detects vehicles in the video every 30th frame, and just tracks the last detected vehicles for the other 29 frames. It also applies instance segmentation and displays the found mask. While displaying the found mask, program stops for a second to display it well because otherwise it will show the mask on the tracked bounding box which is moving, but mask stays right where it is. In order to avoid this, program stops on purpose for a second when mask is detected.
+
+https://user-images.githubusercontent.com/80865017/170833605-69745d5f-0f76-4220-965f-c3d41ac2bcaa.mp4
