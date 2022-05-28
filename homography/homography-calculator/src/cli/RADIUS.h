@@ -21,16 +21,16 @@ public:
 	}
 
 	struct RadiusDetectorUiOptions {
-		int thresh = 30;
+		int thresh = 36;
 		int octaves = 9;
-		int patternScale = 16;
+		int patternScale = 17;
 		int ratioThreshold = 70;
 	};
 
 	struct RadiusDetectorAlgOptions {
-		int thresh = 30;
-		int octaves = 3;
-		float patternScale = 1.0f;
+		int thresh = 36;
+		int octaves = 9;
+		float patternScale = 1.7f;
 		float ratioThreshold = 0.7f;
 		cv::Mat image1;
 		cv::Mat image2;

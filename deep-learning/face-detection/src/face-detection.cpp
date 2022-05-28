@@ -11,16 +11,18 @@ std::shared_ptr<base::Logger> dl::FaceDetector::m_logger = std::make_shared<base
 
 namespace dl {
 
-FaceDetector::FaceDetector(FaceDetectorType type, std::optional<AgeEstimatorType> ageEstimatorType, 
-	std::optional<GenderEstimatorType> genderEstimatorType) {
+FaceDetector::FaceDetector(FaceDetectorType type, std::optional<AgeEstimatorProperties> ageProp,
+	std::optional<GenderEstimatorProperties> genderProp, std::optional<EthnicityEstimatorProperties> ethnicityProp) {
 	m_faceDetectorType = type;
 	InitializeNetworkPaths();
 	m_networkProperties = m_networkPropertiesMap[m_faceDetectorType];
 	m_detector = std::make_shared<Detector>(m_networkProperties.networkType, m_networkProperties.configFilePath, m_networkProperties.weightFilePath);
-	if (ageEstimatorType.has_value())
-		m_ageEstimator = std::make_shared<AgeEstimator>(ageEstimatorType.value());
-	if (genderEstimatorType.has_value())
-		m_genderEstimator = std::make_shared<GenderEstimator>(genderEstimatorType.value());
+	if (ageProp.has_value())
+		m_ageEstimator = std::make_shared<AgeEstimator>(ageProp.value().type, ageProp.value().inputName, ageProp.value().outputName);
+	if (genderProp.has_value())
+		m_genderEstimator = std::make_shared<GenderEstimator>(genderProp.value().type, genderProp.value().inputName, genderProp.value().outputName);
+	if (ethnicityProp.has_value())
+		m_ethnicityEstimator = std::make_shared<EthnicityEstimator>(ethnicityProp.value().type, ethnicityProp.value().inputName, ethnicityProp.value().outputName);
 }
 
 void
@@ -127,6 +129,13 @@ FaceDetector::Detect(const cv::Mat& frame, std::optional<Object> oneClassNetwork
 			det.genderEstimation = genderResult;
 			textPoint = cv::Point(det.bbox.x, det.bbox.y + 45);
 			cv::putText(retVal.imageWithBbox, "Gender: " + genderResult, textPoint, 1, 1, cv::Scalar(255, 0, 0));
+		}
+		// Ethnicity Estimation
+		if (m_ethnicityEstimator.has_value()) {
+			auto ethnicityResult = m_ethnicityEstimator.value()->Estimate(retVal.originalImage(det.bbox));
+			det.ethnicityEstimation = ethnicityResult;
+			textPoint = cv::Point(det.bbox.x, det.bbox.y + 60);
+			cv::putText(retVal.imageWithBbox, "Ethnicity: " + ethnicityResult, textPoint, 1, 1, cv::Scalar(255, 0, 0));
 		}
 	}
 

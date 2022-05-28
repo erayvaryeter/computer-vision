@@ -2,6 +2,7 @@
 #include <string/string.h>
 #include <iostream>
 #include <filesystem>
+#include <opencv2/opencv.hpp>
 
 std::string
 CreateAgeDirectories(std::string targetDir) {
@@ -60,7 +61,7 @@ int main() {
 		auto separated = base::String::SplitString(file.second, "_");
 		// retrieve age
 		auto ageStr = separated[0];
-		std::filesystem::copy_file(file.first, ageRootDir + "/" + ageStr + "/" + newName);
+		 std::filesystem::copy_file(file.first, ageRootDir + "/" + ageStr + "/" + newName);
 		// retrieve gender
 		auto genderStr = separated[1];
 		if (genderStr == "0") {

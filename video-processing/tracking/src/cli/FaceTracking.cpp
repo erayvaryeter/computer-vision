@@ -4,8 +4,12 @@
 #include <assertion/assertion.h>
 
 int main(int argc, char** argv) {
-	auto detector = std::make_shared<dl::FaceDetector>(dl::FaceDetectorType::CAFFE_300x300, 
-		dl::AgeEstimatorType::CAFFE_227x227, dl::GenderEstimatorType::CAFFE_227x227);
+
+	dl::AgeEstimatorProperties ageProp = { dl::AgeEstimatorType::ONNX_200x200, "imageinput", "classoutput" };
+	dl::GenderEstimatorProperties genderProp = { dl::GenderEstimatorType::ONNX_200x200, "imageinput", "classoutput" };
+	dl::EthnicityEstimatorProperties ethnicityProp = { dl::EthnicityEstimatorType::ONNX_200x200, "imageinput", "classoutput" };
+
+	auto detector = std::make_shared<dl::FaceDetector>(dl::FaceDetectorType::CAFFE_300x300, ageProp, genderProp, ethnicityProp);
 	dl::DetectionParameters params;
 	detector->SetDetectionParameters(params);
 

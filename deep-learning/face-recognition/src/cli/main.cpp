@@ -33,8 +33,12 @@ int main(int argc, char** argv) {
 		imagePath = result["image"].as<std::string>();
 	}
 
+	dl::AgeEstimatorProperties ageProp = { dl::AgeEstimatorType::ONNX_200x200, "imageinput", "classoutput" };
+	dl::GenderEstimatorProperties genderProp = { dl::GenderEstimatorType::ONNX_200x200, "imageinput", "classoutput" };
+	dl::EthnicityEstimatorProperties ethnicityProp = { dl::EthnicityEstimatorType::ONNX_200x200, "imageinput", "classoutput" };
+
 	cv::Mat image = cv::imread(imagePath.c_str());
-	auto detector = std::make_shared<dl::FaceDetector>(dl::FaceDetectorType::CAFFE_300x300);
+	auto detector = std::make_shared<dl::FaceDetector>(dl::FaceDetectorType::CAFFE_300x300, ageProp, genderProp, ethnicityProp);
 	dl::DetectionParameters params;
 	detector->SetDetectionParameters(params);
 	auto warper = std::make_shared<dl::FaceWarper>();

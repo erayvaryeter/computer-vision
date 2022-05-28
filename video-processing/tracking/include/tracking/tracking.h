@@ -32,6 +32,7 @@ struct TrackingResult {
 	std::optional<float> confidence;
 	std::optional<std::string> ageEstimation;
 	std::optional<std::string> genderEstimation;
+	std::optional<std::string> ethnicityEstimation;
 	std::optional<dl::SegmentationDrawingElement> drawingElement;
 };
 

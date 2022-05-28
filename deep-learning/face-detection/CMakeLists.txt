@@ -24,6 +24,7 @@ target_link_libraries(${project_name} file)
 target_link_libraries(${project_name} object-detection)
 target_link_libraries(${project_name} age-estimator)
 target_link_libraries(${project_name} gender-estimator)
+target_link_libraries(${project_name} ethnicity-estimator)
 target_link_libraries(${project_name} CONAN_PKG::opencv)
 target_link_libraries(${project_name} CONAN_PKG::cxxopts)
 

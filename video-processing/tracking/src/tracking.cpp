@@ -53,6 +53,8 @@ Tracker::ApplyDetectionOnSingleFrame(const cv::Mat& image) {
                 res.ageEstimation = det.ageEstimation;
             if (det.genderEstimation.has_value())
                 res.genderEstimation = det.genderEstimation;
+            if (det.ethnicityEstimation.has_value())
+                res.ethnicityEstimation = det.ethnicityEstimation;
             if (det.drawingElement.has_value()) {
                 m_segmentationDrawing = true;
                 res.drawingElement = det.drawingElement;
@@ -176,6 +178,8 @@ Tracker::PushFrame(cv::Mat& image) {
                     res.ageEstimation = m_lastTrackingResults[i].ageEstimation.value();
                 if (m_lastTrackingResults[i].genderEstimation.has_value())
                     res.genderEstimation = m_lastTrackingResults[i].genderEstimation.value();
+                if (m_lastTrackingResults[i].ethnicityEstimation.has_value())
+                    res.ethnicityEstimation = m_lastTrackingResults[i].ethnicityEstimation.value();
                 if (m_lastTrackingResults[i].drawingElement.has_value())
                     res.drawingElement = m_lastTrackingResults[i].drawingElement.value();
                 retVal.emplace_back(std::move(res));
@@ -243,6 +247,8 @@ Tracker::Run(cv::VideoCapture& cap) {
                     cv::putText(drawImage, det.ageEstimation.value(), cv::Point(det.bbox.x, det.bbox.y + 20), 1, 1, cv::Scalar(0, 255, 0));
                 if (det.genderEstimation.has_value())
                     cv::putText(drawImage, det.genderEstimation.value(), cv::Point(det.bbox.x, det.bbox.y + 30), 1, 1, cv::Scalar(0, 255, 0));
+                if (det.ethnicityEstimation.has_value())
+                    cv::putText(drawImage, det.ethnicityEstimation.value(), cv::Point(det.bbox.x, det.bbox.y + 40), 1, 1, cv::Scalar(0, 255, 0));
                 if (det.drawingElement.has_value()) {
                     if (m_segmentationDrawing) {
                         auto& e = det.drawingElement.value();

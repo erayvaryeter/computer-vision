@@ -98,7 +98,8 @@ enum class Object {
 
 enum class NetworkType {
 	CAFFE = 1,
-	TENSORFLOW = 2
+	TENSORFLOW = 2,
+	ONNX = 3
 };
 
 // structs for drawing instance segmentation
@@ -116,6 +117,7 @@ struct Detection {
 	std::optional<std::string> objectClassString;
 	std::optional<std::string> ageEstimation;
 	std::optional<std::string> genderEstimation;
+	std::optional<std::string> ethnicityEstimation;
 	std::optional<SegmentationDrawingElement> drawingElement;
 };
 
@@ -134,6 +136,8 @@ struct NetworkProperties {
 	int imageInputWidth = 0;
 	int imageInputHeight = 0;
 	NetworkType networkType;
+	std::optional<std::vector<std::string>> expectedList;
+	cv::Scalar meanValues = cv::Scalar(0, 0, 0);
 };
 
 enum class DetectionFeature {
