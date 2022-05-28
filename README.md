@@ -101,6 +101,7 @@ Output image:
 ![image](https://user-images.githubusercontent.com/80865017/170826493-e8f6cb49-91be-4e5c-974d-bd04396e907d.png)
 
 # 3.2 Stitching
+
 OpenCV provides stitching functionality from images that cover common areas. Implementation is quite simple, cli can be run without any command line argument. Program uses those 3 following images as input:
 ![image](https://user-images.githubusercontent.com/80865017/170470898-49e99eea-4548-453f-a7a6-42aa7b91984c.png)
 ![image](https://user-images.githubusercontent.com/80865017/170470958-dcd97a9a-b20d-4da0-8635-b1ced5cf7c33.png)
@@ -108,3 +109,16 @@ OpenCV provides stitching functionality from images that cover common areas. Imp
 
 As the result of stitching, we get this stitched output:
 ![image](https://user-images.githubusercontent.com/80865017/170471121-ca859e8f-410b-4f70-9e40-eece6ebaac4f.png)
+
+# 4 Machine Learning
+
+This repository provides implementations for 3 algorithms: PCA, KNN and Random Forest. 
+
+PCA (Principal component analysis is a technique for reducing the dimensionality of datasets by increasing the interpretability but at the same time minimizing the information loss. This is being done by creating new uncorrelated variables that successively maximize the variance. PCA can be considered as a feature extraction method as well.
+
+KNN (K-Nearest Neighbor) is a classification method which has an output of a class membership. An object is classified by a plurality vote of its neighbors with the object being assigned to the class most common among it's k nearest neighbors.
+
+Random forest is a supervised machine learning algorithm that is used widely in classification and regression problems. It builds decision trees on different samples and takes their majority vote for classification and average in case of regression. 
+
+This repository uses MNIST dataset for classification. KNN and Random Forest methods are used and two cli programs are provided for their implementations. Results of classifications can be obtained by running the executables.
+
