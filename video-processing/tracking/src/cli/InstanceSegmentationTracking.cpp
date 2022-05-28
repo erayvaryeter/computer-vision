@@ -10,6 +10,7 @@ int main(int argc, char** argv) {
 	params.meanValues = { 0.0, 0.0, 0.0 };
 	params.outputDetectionName = "detection_out_final";
 	params.outputMaskName = "detection_masks";
+	params.confidenceThreshold = 0.6;
 	segmentator->SetDetectionParameters(params);
 
 	auto tracker = std::make_shared<video::Tracker>(7);

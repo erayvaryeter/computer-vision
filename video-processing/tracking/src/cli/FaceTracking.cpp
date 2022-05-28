@@ -11,6 +11,7 @@ int main(int argc, char** argv) {
 
 	auto detector = std::make_shared<dl::FaceDetector>(dl::FaceDetectorType::CAFFE_300x300, ageProp, genderProp, ethnicityProp);
 	dl::DetectionParameters params;
+	params.confidenceThreshold = 0.5;
 	detector->SetDetectionParameters(params);
 
 	auto tracker = std::make_shared<video::Tracker>(7);

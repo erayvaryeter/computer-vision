@@ -40,6 +40,7 @@ int main(int argc, char** argv) {
 	auto res = reader->ReadBarcode(image1);
 	auto resImage = reader->DrawResult(image1, res);
 	cv::imshow("Result Image", resImage);
+	cv::waitKey(0);
 
 	return 0;
 }
