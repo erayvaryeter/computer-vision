@@ -180,10 +180,10 @@ There are 2 cli executables provided: Face Tracking and Instance Segmentation Tr
 
 Face tracking detects faces in the video every 30th frame, and just tracks the last detected faces for the other 29 frames. It also applies the available estimations. It is clear that neural networks for estimations need more work, better data and improvement in general. Example output of the face tracking is as follows:
 
-https://user-images.githubusercontent.com/80865017/170833410-26c94dc2-df03-4507-843a-b5f69bddfb8b.mp4
+https://user-images.githubusercontent.com/80865017/170860652-e91d75df-4987-4822-b2de-51dffb36ae15.mp4
 
 # 6.2 Instance Segmentation Tracking
 
 This cli executable detects vehicles in the video every 30th frame, and just tracks the last detected vehicles for the other 29 frames. It also applies instance segmentation and displays the found mask. While displaying the found mask, program stops for a second to display it well because otherwise it will show the mask on the tracked bounding box which is moving, but mask stays right where it is. In order to avoid this, program stops on purpose for a second when mask is detected.
 
-https://user-images.githubusercontent.com/80865017/170833605-69745d5f-0f76-4220-965f-c3d41ac2bcaa.mp4
+https://user-images.githubusercontent.com/80865017/170860674-566ecfd2-6be8-4fee-87ce-b7b5eaf9d1fa.mp4
