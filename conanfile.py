@@ -45,8 +45,8 @@ class DevelopmentConan(ConanFile):
     
     def requirements(self):
         self.requires("cxxopts/[>=3.0.0]@")
-        self.requires("catch2/[>=2.13.7]@")
-        self.requires("spdlog/[>=1.9.2]@")
+        self.requires("catch2/[=3.1.0]@")
+        self.requires("spdlog/[=1.10.0]@")
         self.requires("opencv/[=4.5.0]@")
         self.requires("zxing-cpp/[=1.0.8]@")
 

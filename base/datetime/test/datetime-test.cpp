@@ -1,4 +1,5 @@
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
+#include <catch2/catch_approx.hpp>
 #include <datetime/datetime.h>
 #include <logger/logger.h>
 #include <iostream>
@@ -28,5 +29,5 @@ TEST_CASE("Append Date Times") {
 	auto dateTimeStr2 = base::DateTime::GetDateTimeAsString(datetime);
 	base::DateTime dt1(dateTimeStr1);
 	base::DateTime dt2(dateTimeStr2);
-	CHECK(Approx((dt1 - dt2).ToMsec()).margin(5) == 0.0);
+	CHECK(Catch::Approx((dt1 - dt2).ToMsec()).margin(5) == 0.0);
 }

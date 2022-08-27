@@ -1,4 +1,5 @@
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
+#include <catch2/catch_approx.hpp>
 #include <string/string.h>
 #include <logger/logger.h>
 
@@ -134,21 +135,21 @@ TEST_CASE("Combine Numericals to Strings - Strings to Numericals") {
 	CHECK(base::String::ConvertStringToNumerical<int>(int2.c_str()) == std::numeric_limits<int>::max());
 	CHECK(base::String::ConvertStringToNumerical<int>(int3.c_str()) == std::numeric_limits<int>::lowest());
 
-	CHECK(Approx(base::String::ConvertStringToNumerical<double>(double1.c_str())).margin(1e-307) == std::numeric_limits<double>::min());
-	CHECK(Approx(base::String::ConvertStringToNumerical<double>(double2.c_str())).margin(1e-307) == std::numeric_limits<double>::max());
-	CHECK(Approx(base::String::ConvertStringToNumerical<double>(double3.c_str())).margin(1e-307) == std::numeric_limits<double>::lowest());
+	CHECK(Catch::Approx(base::String::ConvertStringToNumerical<double>(double1.c_str())).margin(1e-307) == std::numeric_limits<double>::min());
+	CHECK(Catch::Approx(base::String::ConvertStringToNumerical<double>(double2.c_str())).margin(1e-307) == std::numeric_limits<double>::max());
+	CHECK(Catch::Approx(base::String::ConvertStringToNumerical<double>(double3.c_str())).margin(1e-307) == std::numeric_limits<double>::lowest());
 
-	CHECK(Approx(base::String::ConvertStringToNumerical<float>(float1.c_str())).margin(1e-37) == std::numeric_limits<float>::min());
-	CHECK(Approx(base::String::ConvertStringToNumerical<float>(float2.c_str())).margin(1e-37) == std::numeric_limits<float>::max());
-	CHECK(Approx(base::String::ConvertStringToNumerical<float>(float3.c_str())).margin(1e-37) == std::numeric_limits<float>::lowest());
+	CHECK(Catch::Approx(base::String::ConvertStringToNumerical<float>(float1.c_str())).margin(1e-37) == std::numeric_limits<float>::min());
+	CHECK(Catch::Approx(base::String::ConvertStringToNumerical<float>(float2.c_str())).margin(1e-37) == std::numeric_limits<float>::max());
+	CHECK(Catch::Approx(base::String::ConvertStringToNumerical<float>(float3.c_str())).margin(1e-37) == std::numeric_limits<float>::lowest());
 
 	CHECK(base::String::ConvertStringToNumerical<long>(long1.c_str()) == std::numeric_limits<long>::min());
 	CHECK(base::String::ConvertStringToNumerical<long>(long2.c_str()) == std::numeric_limits<long>::max());
 	CHECK(base::String::ConvertStringToNumerical<long>(long3.c_str()) == std::numeric_limits<long>::lowest());
 
-	CHECK(Approx(base::String::ConvertStringToNumerical<long double>(longdouble1.c_str())).margin(1e-307) == std::numeric_limits<long double>::min());
-	CHECK(Approx(base::String::ConvertStringToNumerical<long double>(longdouble2.c_str())).margin(1e-307) == std::numeric_limits<long double>::max());
-	CHECK(Approx(base::String::ConvertStringToNumerical<long double>(longdouble3.c_str())).margin(1e-307) == std::numeric_limits<long double>::lowest());
+	CHECK(Catch::Approx(base::String::ConvertStringToNumerical<long double>(longdouble1.c_str())).margin(1e-307) == std::numeric_limits<long double>::min());
+	CHECK(Catch::Approx(base::String::ConvertStringToNumerical<long double>(longdouble2.c_str())).margin(1e-307) == std::numeric_limits<long double>::max());
+	CHECK(Catch::Approx(base::String::ConvertStringToNumerical<long double>(longdouble3.c_str())).margin(1e-307) == std::numeric_limits<long double>::lowest());
 
 	CHECK(base::String::ConvertStringToNumerical<long long>(longlong1.c_str()) == std::numeric_limits<long long>::min());
 	CHECK(base::String::ConvertStringToNumerical<long long>(longlong2.c_str()) == std::numeric_limits<long long>::max());
