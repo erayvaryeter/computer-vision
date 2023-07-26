@@ -1,0 +1,72 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <map>
+#include <vector>
+
+int main()
+{
+    std::ifstream file_dependency("C:/Users/erayv/.conan/data/libjpeg/9e/_/_/export/dependency.html");
+    if (file_dependency.is_open()) {
+        std::string line = "";
+        std::map<int, std::string> nodes;
+        std::map<int, std::vector<int>> affectedNodes;
+        bool nodesStarted = false;
+        bool nodesFinished = false;
+        bool edgesStarted = false;
+        bool edgesFinished = false;
+        while (!file_dependency.eof()) {
+            std::getline(file_dependency, line);
+            if (line.find("var nodes = new vis.DataSet([") != std::string::npos) {
+                nodesStarted = true;
+            }
+            if (nodesStarted == true && line.find("]);") != std::string::npos) {
+                nodesFinished = true;
+            }
+            if (nodesStarted && nodesFinished && line.find("var edges = new vis.DataSet([") != std::string::npos) {
+                edgesStarted = true;
+            }
+            if (nodesStarted && nodesFinished && edgesStarted && line.find("]);") != std::string::npos) {
+                edgesFinished = true;
+            }
+            // read nodes
+            if (nodesStarted && !nodesFinished) {
+                if (line.find("id: ") != std::string::npos) {
+                    auto iteratorStart = line.find("id: ") + 4;
+                    auto iteratorFinish = line.find(",");
+                    auto nodeId = std::stoi(line.substr(iteratorStart, iteratorFinish - iteratorStart));
+                    std::getline(file_dependency, line);
+                    iteratorStart = line.find("label: '") + 8;
+                    iteratorFinish = line.find("',");
+                    auto nodeName = line.substr(iteratorStart, iteratorFinish - iteratorStart);
+                    nodes.insert({ nodeId, nodeName });
+                }
+            }
+            // read edges
+            if (nodesStarted && nodesFinished && edgesStarted && !edgesFinished) {
+                if (line.find("from: ") != std::string::npos) {
+                    auto iteratorStart = line.find("from: ") + 6;
+                    auto iteratorFinish = line.find(", to");
+                    int affectedNode = std::stoi(line.substr(iteratorStart, iteratorFinish - iteratorStart));
+                    iteratorStart = line.find("to: ") + 4;
+                    iteratorFinish = line.find(" }");
+                    int node = std::stoi(line.substr(iteratorStart, iteratorFinish - iteratorStart));
+                    affectedNodes[node].push_back(affectedNode);
+                }
+            }
+            // create relation
+            if (nodesStarted && nodesFinished && edgesStarted && edgesFinished) {
+                for (auto& it : affectedNodes) {
+                    std::cout << "-------------------------------" << std::endl;
+                    std::cout << "Change in package " << nodes[it.first] << " requires the rebuild of the following packages: " << std::endl;
+                    for (auto& affectedIt : it.second) {
+                        std::cout << nodes[affectedIt] << std::endl;
+                    }
+                    std::cout << "-------------------------------" << std::endl;
+                }
+                break;
+            }
+        }
+        file_dependency.close();
+    }
+}
