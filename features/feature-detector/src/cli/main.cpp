@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "HarrisCornerDetector.h"
 #include "ShiTomasiCornerDetector.h"
 #include "SIFT.h"

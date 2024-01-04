@@ -6,6 +6,7 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/tracking.hpp>
 #include <opencv2/tracking/tracking.hpp>
+#include <opencv2/tracking/tracking_legacy.hpp>
 #include <opencv2/core/ocl.hpp>
 #include <optional>
 
@@ -18,12 +19,11 @@ namespace video {
 enum class TrackerType {
 	BOOSTING = 1,
 	CSRT = 2,
-	GOTURN = 3,
-	KCF = 4,
-	MEDIANFLOW = 5,
-	MIL = 6,
-	MOSSE = 7,
-	TLD = 8
+	KCF = 3,
+	MEDIANFLOW = 4,
+	MIL = 5,
+	MOSSE = 6,
+	TLD = 7
 };
 
 struct TrackingResult {
@@ -40,7 +40,7 @@ class Tracker {
 public:
 	Tracker(int redetectSteps)
 	: m_redetectSteps(redetectSteps) {
-		m_multiTracker = cv::MultiTracker::create();
+		m_multiTracker = cv::legacy::MultiTracker::create();
 	}
 
 	~Tracker() {}
@@ -54,7 +54,7 @@ public:
 
 private:
 	std::vector<std::pair<dl::Object, std::shared_ptr<dl::BaseDetector>>> m_detectors;
-	cv::Ptr<cv::MultiTracker> m_multiTracker;
+	cv::Ptr<cv::legacy::MultiTracker> m_multiTracker;
 	int m_redetectSteps;
 	int m_lastNumberOfObjects = 0;
 	bool m_segmentationDrawing = false;

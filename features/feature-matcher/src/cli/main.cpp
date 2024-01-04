@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "REGULAR.h"
 #include "KNN.h"
 #include "RADIUS.h"

@@ -78,39 +78,35 @@ Tracker::AppendTracker(std::vector<TrackerType> types, const cv::Mat& initialIma
         }
     }
 
-    auto CreateTrackerByName = [](TrackerType type) -> cv::Ptr<cv::Tracker> {
+    auto CreateTrackerByName = [](TrackerType type) -> cv::Ptr<cv::legacy::Tracker> {
         switch (type) {
         case TrackerType::BOOSTING:
         {
-            return cv::TrackerBoosting::create();
+            return cv::legacy::TrackerBoosting::create();
         }
         case TrackerType::CSRT:
         {
-            return cv::TrackerCSRT::create();
-        }
-        case TrackerType::GOTURN:
-        {
-            return cv::TrackerGOTURN::create();
+            return cv::legacy::TrackerCSRT::create();
         }
         case TrackerType::KCF:
         {
-            return cv::TrackerKCF::create();
+            return cv::legacy::TrackerKCF::create();
         }
         case TrackerType::MEDIANFLOW:
         {
-            return cv::TrackerMedianFlow::create();
+            return cv::legacy::TrackerMedianFlow::create();
         }
         case TrackerType::MIL:
         {
-            return cv::TrackerMIL::create();
+            return cv::legacy::TrackerMIL::create();
         }
         case TrackerType::MOSSE:
         {
-            return cv::TrackerMOSSE::create();
+            return cv::legacy::TrackerMOSSE::create();
         }
         case TrackerType::TLD:
         {
-            return cv::TrackerTLD::create();
+            return cv::legacy::TrackerTLD::create();
         }
         default:
         {
@@ -121,7 +117,7 @@ Tracker::AppendTracker(std::vector<TrackerType> types, const cv::Mat& initialIma
 
     // initialize the tracker
     std::vector<cv::Rect2d> objects;
-    std::vector<cv::Ptr<cv::Tracker>> algorithms;
+    std::vector<cv::Ptr<cv::legacy::Tracker>> algorithms;
     m_trackerTypes.clear();
     for (size_t i = 0; i < ROIs.size(); ++i) {
         algorithms.push_back(CreateTrackerByName(types[i]));
@@ -157,7 +153,7 @@ Tracker::PushFrame(cv::Mat& image) {
         auto detections = ApplyDetectionOnSingleFrame(image);
         if (!detections.empty()) {
             m_multiTracker->clear();
-            m_multiTracker = cv::MultiTracker::create();
+            m_multiTracker = cv::legacy::MultiTracker::create();
             EqualizeTrackerTypeVector(detections.size());
             if (AppendTracker(m_trackerTypes, image, detections))
                 return PushFrame(image);
@@ -200,7 +196,7 @@ Tracker::PushFrame(cv::Mat& image) {
         auto detections = ApplyDetectionOnSingleFrame(image);
         if (!detections.empty()) {
             m_multiTracker->clear();
-            m_multiTracker = cv::MultiTracker::create();
+            m_multiTracker = cv::legacy::MultiTracker::create();
             EqualizeTrackerTypeVector(detections.size());
             if (AppendTracker(m_trackerTypes, image, detections))
                 return PushFrame(image);

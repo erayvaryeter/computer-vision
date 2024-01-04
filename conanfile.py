@@ -37,17 +37,18 @@ class DevelopmentConan(ConanFile):
         "opencv:with_png": True,
         "opencv:with_quirc": True,
         "opencv:with_tiff": True,
-        "opencv:with_webp": True
+        "opencv:with_webp": True,
+        "opencv:with_tesseract": False
     }
 
     def imports(self):
        self.copy("*.dll")
     
     def requirements(self):
-        self.requires("cxxopts/[>=3.0.0]@")
-        self.requires("catch2/[=3.1.0]@")
-        self.requires("spdlog/[=1.10.0]@")
-        self.requires("opencv/[=4.5.0]@")
+        self.requires("cxxopts/[>=3.1.1]@")
+        self.requires("catch2/[=3.5.1]@")
+        self.requires("spdlog/[=1.12.0]@")
+        self.requires("opencv/[=4.8.1]@")
         self.requires("zxing-cpp/[=1.0.8]@")
 
     def _configure_cmake(self):
