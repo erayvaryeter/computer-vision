@@ -7,7 +7,7 @@ Naturally, CMake needs to be installed on your machine.
 This repository is using conan package manager. Most of the used libraries are already existing in conan-center remote, which means installing conan on your machine should be sufficient for gathering most of the libraries.
 However, I am using OpenCV/4.8.1 with a different configuration other than the existing packages, therefore it is built locally.
 
-Building OpenCV/4.5.0 with correct configuration:
+Building OpenCV/4.8.1 with correct configuration:
   - You must checkout https://github.com/conan-io/conan-center-index repository to your local.
   - Go to conan-center-index\recipes\opencv\4.x, open the terminal here (make sure conan executable is in your PATH environment
   - Delete test_package and test_package_v1 folders locally (don't push to conan center index repo)
