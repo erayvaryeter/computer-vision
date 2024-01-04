@@ -4,7 +4,7 @@ class DevelopmentConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     generators = "cmake_multi", "txt", "cmake"
     
-    name = "development"
+    name = "computer-vision"
     version = "1.0.0"
     license = "proprietary"
     description = "tools"

@@ -1,4 +1,4 @@
-﻿set(project_name development)
+﻿set(project_name computer-vision)
 cmake_minimum_required (VERSION 3.18)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
