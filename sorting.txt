@@ -1,0 +1,105 @@
+#include <iostream>
+#include <map>
+#include <vector>
+#include <algorithm>
+
+enum Status : uint8_t {
+    eNew = 0,
+    eUpdated = 1,
+    eNotUpdated = 2,
+    eDeleted = 3
+};
+
+struct RwrThreat {
+    uint16_t ID = 0;
+    uint16_t priority = 0;
+    Status status = eDeleted;
+    bool blink = false;
+};
+
+// siralama sonucu: 1 - 3 - 2 - 0
+
+void Step(std::vector<RwrThreat>& threats) {
+    std::vector<RwrThreat> sortedThreats = threats;
+
+    std::sort(sortedThreats.begin(), sortedThreats.end(), [](const RwrThreat& t1, const RwrThreat& t2) {
+        return (t1.priority > t2.priority) || (t1.priority == t2.priority 
+            && static_cast<uint8_t>(t1.status) < static_cast<uint8_t>(t2.status));
+    });
+
+    size_t stepIndex = 0;
+    bool blinkFound = false;
+
+    for (size_t i = 0; i < sortedThreats.size(); ++i) {
+        if (sortedThreats[i].blink) {
+            stepIndex = i;
+            blinkFound = true;
+        }
+    }
+
+    if (blinkFound) {
+        stepIndex++;
+        if (stepIndex >= sortedThreats.size()) {
+            stepIndex = 0;
+        }
+    }
+
+    uint16_t idForBlinking = sortedThreats[stepIndex].ID;
+
+    for (auto& threat : threats) {
+        if (threat.ID == idForBlinking) {
+            threat.blink = true;
+        }
+        else {
+            threat.blink = false;
+        }
+    }
+}
+
+void Print(std::vector<RwrThreat>& threats) {
+    for (auto& t : threats) {
+        if (t.blink) {
+            std::cout << "Blinking threat ID: " << static_cast<int>(t.ID) << std::endl;
+        }
+    }
+}
+
+int main() {
+    std::vector<RwrThreat> threats;
+    
+    RwrThreat t1;
+    t1.ID = 0;
+    t1.priority = 25;
+    t1.status = eNew;
+
+    RwrThreat t2;
+    t2.ID = 1;
+    t2.priority = 100;
+    t2.status = eUpdated;
+
+    RwrThreat t3;
+    t3.ID = 2;
+    t3.priority = 50;
+    t3.status = eNotUpdated;
+
+    RwrThreat t4;
+    t4.ID = 3;
+    t4.priority = 50;
+    t4.status = eUpdated;
+
+    threats.push_back(t1);
+    threats.push_back(t2);
+    threats.push_back(t3);
+    threats.push_back(t4);
+
+    Step(threats);
+    Print(threats);
+
+    for (int i = 0; i < 20; ++i) {
+        Step(threats);
+        Print(threats);
+    }
+
+    return 0;
+}
+
